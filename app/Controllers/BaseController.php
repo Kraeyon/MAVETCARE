@@ -10,7 +10,7 @@ class BaseController
         // Convert dot notation like 'auth.login' to file path
         $viewPath = str_replace('.', '/', $view);
 
-        // Full path to the view
+        // Full path to the views
         $fullPath = '../app/Views/' . $viewPath . '.php';
 
         // Check if file exists
