@@ -1,4 +1,3 @@
-<?php include '../app/Views/includes/header.php'; ?>
 
 <link rel="stylesheet" href="/assets/css/login.css">
 
@@ -19,7 +18,4 @@
     <button type="submit">LOGIN</button>
   </form>
   
-  <?php include '../app/Views/auth/register_form.php'; ?>
 </section>
-
-<?php include '../app/Views/includes/footer.php'; ?>

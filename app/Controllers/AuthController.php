@@ -1,21 +1,9 @@
 <?php
 
-require_once 'BaseController.php';
+namespace App\Controllers;
 
-class AuthController extends BaseController
-{
-    public function showLogin()
-    {
-        $this->render('auth.login');
-    }
-
-    public function showRegister()
-    {
-        $this->render('auth.register');
-    }
-
-    public function showLoginRegister()
-    {
-        $this->render('auth.login_register');
+class AuthController extends BaseController {
+    public function renderLogin() {
+        $this->render('auth/login');
     }
 }

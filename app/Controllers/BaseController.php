@@ -1,23 +1,31 @@
 <?php
 
-class BaseController
-{
-    protected function render($view, $data = [])
-    {
-        // Extract the $data array to variables
+namespace App\Controllers;
+
+class BaseController {
+
+    protected function getViewPath(string $relativePath): string {
+        $path = __DIR__ . "/../Views/{$relativePath}.php";
+
+        if (!file_exists($path)) {
+           echo "View not found: {$relativePath}";
+        }
+
+        return $path;
+    }
+    
+    public function render($view, $data = []) {
+        // Start output buffering only once
+        ob_start();
+
+        $viewPath = $this->getViewPath($view);
+
         extract($data);
 
-        // Convert dot notation like 'auth.login' to file path
-        $viewPath = str_replace('.', '/', $view);
+        include $viewPath;
 
-        // Full path to the views
-        $fullPath = '../app/Views/' . $viewPath . '.php';
+        $content = ob_get_clean();
 
-        // Check if file exists
-        if (file_exists($fullPath)) {
-            require $fullPath;
-        } else {
-            echo "View not found: $fullPath";
-        }
+        echo $content;
     }
 }
