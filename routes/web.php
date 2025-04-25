@@ -8,3 +8,4 @@ $router->map('GET', '/', 'App\Controllers\HomeController#index', 'home');
 
 // Auth routes
 $router->map('GET', '/login', 'App\Controllers\AuthController#renderLogin', 'render-login');
+$router->map('GET', '/register', 'App\Controllers\AuthController#renderRegister', 'render-register');

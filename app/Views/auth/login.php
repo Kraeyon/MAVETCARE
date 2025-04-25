@@ -14,8 +14,8 @@
     </div>
     <label><input type="checkbox"> Remember me</label>
     <a href="#" class="forgot-link">Forgot Password?</a>
-    <a href="#" class="create-account">Create an account</a>
-    <button type="submit">LOGIN</button>
+    <a href="/register" class="create-account">Create an account</a>
+    <button type="submit">Login</button>
   </form>
   
 </section>
