@@ -9,4 +9,5 @@ class HomeController extends BaseController {
     public function aboutpage() {
         $this->render('home/aboutpage');
     }
+    
 }

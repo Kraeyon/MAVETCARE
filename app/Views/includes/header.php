@@ -22,12 +22,20 @@
         <a href="#" class="active">Home</a>
         <a href="#">About</a>
         <div class="dropdown">
-            <a href="#">Services</a>
-            <!-- You can add dropdown functionality with JavaScript later -->
+            <a href="#">Services ▼</a> <!-- Added ▼ arrow -->
+            <div class="dropdown-content">
+                <a href="#">Vaccination</a>
+                <a href="#">Deworming</a>
+                <a href="#">Anti-Parasitic Program</a>
+                <a href="#">Surgeries</a>
+                <a href="#">Grooming</a>
+                <a href="#">Treatment</a>
+                <a href="#">Confinement</a>
+            </div>
         </div>
         <a href="#">Products</a>
     </div>
-
+    </div>
     <div class="nav-buttons">
         <a href="#">Book an appointment</a>
         <a href="#">Log in</a>
