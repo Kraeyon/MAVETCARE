@@ -14,7 +14,7 @@
 
 <div class="header">
     <div class="logo">
-        <img src="paw.png" alt="Logo">
+        <img src="/assets/images/paw.png" alt="Logo">
         <span>MavetCare</span>
     </div>
 
