@@ -30,7 +30,7 @@
 
         <div class="hero-image">
             <div class="hero-image-container">
-                <img src="/api/placeholder/400/320" alt="Dog and cat with stethoscope">
+                <img src="/assets/images/dogs-with-stethoscope.png" alt="Dog and cat with stethoscope">
             </div>
         </div>
     </section>
@@ -55,12 +55,14 @@
         <div class="info-box">
             <h3>Address</h3>
             <p><strong>MavetCare Veterinary Medical Clinic</strong>,<br>
-            123 Pet Care Street, Mabolo,<br>
+            Juan Luna Ave, Mabolo,<br>
             Cebu City, Philippines.</p>
 
             <h3 style="margin-top: 20px;">Contact Details</h3>
-            <p>📞 +63 123 456 7890<br>
-               ✉️ <a href="mailto:mavetcare@email.com">mavetcare@email.com</a>
+            <p>📞 233-20-39<br>
+            📞 0916-295-8059 <br>
+            📞 0956-734-6746 <br>
+               ✉️ <a href="mailto:mavetcare@email.com">deliamontanez92@email.com</a>
             </p>
         </div>
 
