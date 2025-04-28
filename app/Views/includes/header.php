@@ -18,29 +18,32 @@
         <span>MavetCare</span>
     </div>
 
-    <div class="nav-links">
-        <a href="#" class="active">Home</a>
-        <a href="#">About</a>
-        <div class="dropdown">
-            <a href="#">Services ▼</a> <!-- Added ▼ arrow -->
-            <div class="dropdown-content">
-                <a href="#">Vaccination</a>
-                <a href="#">Deworming</a>
-                <a href="#">Anti-Parasitic Program</a>
-                <a href="#">Surgeries</a>
-                <a href="#">Grooming</a>
-                <a href="#">Treatment</a>
-                <a href="#">Confinement</a>
+    <div style="display: flex; align-items: center; gap: 20px;"> <!-- group nav-links and nav-buttons together -->
+        <div class="nav-links">
+            <a href="/" class="active">Home</a>
+            <a href="/about">About</a>
+            <div class="dropdown">
+                <a href="#">Services ▼</a> <!-- Added ▼ arrow -->
+                <div class="dropdown-content">
+                    <a href="#">Vaccination</a>
+                    <a href="#">Deworming</a>
+                    <a href="#">Anti-Parasitic Program</a>
+                    <a href="#">Surgeries</a>
+                    <a href="#">Grooming</a>
+                    <a href="#">Treatment</a>
+                    <a href="#">Confinement</a>
+                </div>
             </div>
+            <a href="#">Products</a>
         </div>
-        <a href="#">Products</a>
-    </div>
-    </div>
-    <div class="nav-buttons">
-        <a href="#">Book an appointment</a>
-        <a href="#">Log in</a>
+
+        <div class="nav-buttons">
+            <a href="#">Book an appointment</a>
+            <a href="/login">Log in</a>
+        </div>
     </div>
 </div>
+
 
 </body>
 </html>
