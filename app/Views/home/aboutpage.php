@@ -1,6 +1,7 @@
 <?php
 // MaVetCare Veterinary Website
 // Define services offered for dynamic content generation
+
 $services = [
     [
         "title" => "Vaccinations",
@@ -57,6 +58,7 @@ $hours = [
     "sunday" => "CLOSED"
 ];
 ?>
+<?php include_once '../app/views/includes/header.php'; ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -67,6 +69,7 @@ $hours = [
     <link rel="stylesheet" href="/assets/css/aboutpage.css">
 </head>
 <body>
+
     <section class="hero">
         <div class="paw-icons">
             <div class="paw-icon" style="top: 10px; left: 20px;">🐾</div>

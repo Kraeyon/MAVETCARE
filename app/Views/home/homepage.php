@@ -1,6 +1,4 @@
-<?php
-// This file would be inside the /views directory in MVC structure.
-?>
+<?php include_once '../app/views/includes/header.php'; ?>
 
 <!DOCTYPE html>
 <html lang="en">
