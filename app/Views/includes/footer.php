@@ -1,10 +1,9 @@
 <?php
 // This file would be inside the /views directory in MVC structure.
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> /*olive */
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MavetCare - Veterinary Medical Clinic</title>
