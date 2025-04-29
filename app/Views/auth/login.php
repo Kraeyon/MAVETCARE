@@ -1,21 +1,29 @@
+<!-- Bootstrap CSS (make sure this is included in your project) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<link rel="stylesheet" href="/assets/css/login.css">
-
-<section class="auth-section">
-  <h2>login to system</h2>
-  <form method="POST" action="#">
-    <div class="form-group">
-      <span class="form-label">Username or Email address</span>
-      <input type="text" name="email">
-    </div>
-    <div class="form-group">
-      <span class="form-label">Password</span>
-      <input type="password" name="password">
-    </div>
-    <label><input type="checkbox"> Remember me</label>
-    <a href="#" class="forgot-link">Forgot Password?</a>
-    <a href="/register" class="create-account">Create an account</a>
-    <button type="submit">Login</button>
-  </form>
-  
+<section class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+  <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
+    <h2 class="text-center mb-4">Login to System</h2>
+    <form method="POST" action="#">
+      <div class="mb-3">
+        <label for="email" class="form-label">Username or Email Address</label>
+        <input type="text" class="form-control" id="email" name="email" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="remember" name="remember">
+          <label class="form-check-label" for="remember">Remember me</label>
+        </div>
+        <a href="#" class="small">Forgot Password?</a>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Login</button>
+      <div class="text-center mt-3">
+        <a href="/register" class="small">Create an account</a>
+      </div>
+    </form>
+  </div>
 </section>
