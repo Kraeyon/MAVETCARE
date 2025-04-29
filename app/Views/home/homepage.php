@@ -17,7 +17,7 @@
       
       <div class="col-md-6 mb-4 mb-md-0">
         <h1 class="display-5 fw-bold">Providing Compassionate Care for Your Pets</h1>
-        <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse non est at risus cursus sagittis porttitor eu velit.</p>
+        <p class="lead">At MavetCare, we treat your pets like family. From preventive care to advanced treatments, we’re dedicated to keeping them healthy, happy, and safe.</p>
         <a href="#" class="btn btn-primary">Read More</a>
       </div>
 
