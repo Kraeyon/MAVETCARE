@@ -39,7 +39,7 @@ $current_page = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                 </div>
             </div>
             <a href="/products" class="<?= ($current_page == '/products') ? 'active' : '' ?>">Products</a>
-            <a href="/review" class="<?= ($current_page == '/review') ? 'active' : '' ?>">Review</a>
+            <a href="/reviews" class="<?= ($current_page == '/reviews') ? 'active' : '' ?>">Review</a>
         </div>    
 
         <div class="nav-buttons">
