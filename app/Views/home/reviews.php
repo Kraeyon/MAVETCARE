@@ -13,16 +13,17 @@
 <div class="container py-5">
 
   <!-- Header Section -->
-  <div class="row mb-5">
-    <div class="col-md-7">
-      <h1 class="display-5 fw-bold">PAW-SITIVE REVIEWS</h1>
-      <p class="lead">From loving pet parents</p>
-      <button class="btn btn-outline-primary btn-sm">Read More</button>
-    </div>
-    <div class="col-md-5 text-center">
-    <img src="/assets/images/homepage_cat.png" class="img-fluid rounded" alt="Dog and cat with stethoscope">
-    </div>
+<div class="row mb-5 align-items-center">
+  <div class="col-md-7">
+    <h1 class="display-5 fw-bold">PAW-SITIVE REVIEWS</h1>
+    <p class="lead">From loving pet parents</p>
+    <button class="btn btn-outline-primary btn-sm">Read More</button>
   </div>
+  <div class="col-md-5 text-center">
+    <img src="/assets/images/homepage_cat.png" class="img-fluid rounded" alt="Dog and cat with stethoscope">
+  </div>
+</div>
+
 
   <!-- Divider -->
   <div class="text-center mb-4">
