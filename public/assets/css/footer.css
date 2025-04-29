@@ -1,5 +1,5 @@
 .footer {
-    background-color: #8ec6db;
+    background-color: #8CCCE2;
     position: relative;
     margin-top: auto;
     font-family: Arial, sans-serif;
@@ -8,11 +8,12 @@
   .footer-main {
     max-width: 1200px;
     margin: auto;
-    padding: 40px 20px;
+    padding: 40px 20px; /* You could add top/bottom padding as well */
     display: grid;
     grid-template-columns: 1fr;
     border-bottom: 1px solid black;
-  }
+}
+
   
   @media (min-width: 768px) {
     .footer-main {
@@ -123,24 +124,30 @@
     margin-top: 10px;
   }
   
-  .dog-image {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    max-width: 150px;
-  }
-  
-  .cat-image {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    max-width: 100px;
-    transform: translateY(20%);
-  }
+/* Footer images positioning */
+.footer-dog-image {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  max-width: 150px; /* Adjust the image size as needed */
+  transform: translateY(20%); /* Move the image slightly down */
+  z-index: 1; /* Ensure it's above other content */
+}
+
+.footer-cat-image {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  max-width: 150px; /* Adjust the image size as needed */
+  transform: translateY(20%); /* Move the image slightly down */
+  z-index: 1; /* Ensure it's above other content */
+}
+
   
   .footer-bottom {
     text-align: center;
     font-size: 12px;
     padding: 12px;
   }
+  
   

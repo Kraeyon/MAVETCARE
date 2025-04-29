@@ -79,9 +79,9 @@
                 </span>
             </div>
 
-            <!-- Footer dogs image -->
-            <img alt="footer dogs" class="absolute bottom-0 right-0 max-w-[150px] md:max-w-[200px]" height="150" src="/assets/images/footer_lower_right.png" style="transform: translateY(20%)" width="150"/>
-        </div>
+    <!-- Footer dogs image -->
+    <img alt="footer dogs" class="absolute bottom-0 right-0 max-w-[150px] md:max-w-[300px]" height="150" src="/assets/images/footer_lower_right.png" style="transform: translateY(-0%)" width="300"/>
+    </div>
 
     </div>
 
@@ -91,7 +91,7 @@
     </div>
 
     <!-- Footer cat image -->
-    <img alt="footer cat" class="absolute bottom-0 left-0 max-w-[100px] md:max-w-[150px]" height="100" src="/assets/images/footer_lower_left.png" style="transform: translateY(20%)" width="100"/>
+    <img alt="footer cat" class="absolute bottom-0 left-0 max-w-[200px] md:max-w-[200px]" height="100" src="/assets/images/footer_lower_left.png" style="transform: translateY(-0%)" width="200"/>
 </footer>
 
 </body>
