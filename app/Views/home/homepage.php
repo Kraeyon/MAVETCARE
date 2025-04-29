@@ -15,20 +15,29 @@
 <section class="py-5 bg-light text-center">
   <div class="container">
     <div class="row align-items-center">
-      
+
+      <!-- Text Content -->
       <div class="col-md-6 mb-4 mb-md-0">
-        <h1 class="display-5 fw-bold">Providing Compassionate Care for Your Pets</h1>
-        <p class="lead">At MavetCare, we treat your pets like family. From preventive care to advanced treatments, we’re dedicated to keeping them healthy, happy, and safe.</p>
-        <a href="#" class="btn btn-primary">Read More</a>
+      <h1 class="display-5 fw-bold mb-3">
+  <span class="d-block text-primary fs-3 fw-semibold mb-2 fade-in-up" style="animation-delay: 0.2s;">Welcome to MaVetCare!</span>
+  <span class="fade-in-up" style="animation-delay: 0.4s;">Providing Compassionate Care for Your Pets</span>
+</h1>
+
+        <p class="lead fade-in-up" style="animation-delay: 0.2s;">
+          At MavetCare, we treat your pets like family. From preventive care to advanced treatments, we’re dedicated to keeping them healthy, happy, and safe.
+        </p>
+        <a href="#" class="btn btn-primary mt-3 fade-in-up" style="animation-delay: 0.4s;">Read More</a>
       </div>
 
+      <!-- Image -->
       <div class="col-md-6">
-        <img src="/assets/images/homepage_cat.png" class="img-fluid rounded" alt="Dog and cat with stethoscope">
+        <img src="/assets/images/homepage_cat.png" class="img-fluid rounded fade-in-up" alt="Dog and cat with stethoscope" style="animation-delay: 0.6s;">
       </div>
 
     </div>
   </div>
 </section>
+
 
 <!-- Divider -->
 <div class="text-center py-4">
@@ -105,5 +114,21 @@
   .card-hover:hover {
     transform: translateY(-8px);
     transition: transform 0.3s ease;
+  }
+  .fade-in-up {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s ease-out forwards;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .fade-in-up[style*="animation-delay"] {
+    animation-delay: inherit;
   }
 </style>

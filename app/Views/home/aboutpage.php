@@ -2,21 +2,8 @@
 // MaVetCare Veterinary Website
 // Define services offered for dynamic content generation
 
-$services = [
-    ["title" => "Vaccinations", "image" => "/api/placeholder/240/160"],
-    ["title" => "Deworming", "image" => "/api/placeholder/240/160"],
-    ["title" => "Grooming", "image" => "/api/placeholder/240/160"],
-    ["title" => "Surgeries", "image" => "/api/placeholder/240/160"],
-    ["title" => "Pet Confinement", "image" => "/api/placeholder/240/160"]
-];
-
 $features = ["Experienced Vets", "Modern Facilities", "Customer-Centric Service"];
 
-$testimonials = [
-    ["text" => "MaVetCare gave my dog the best treatment! The staff was caring and professional.", "author" => "Maria S.", "rating" => 5],
-    ["text" => "I've been bringing my cats here for years. Dr. Johnson is amazing with animals!", "author" => "John D.", "rating" => 5],
-    ["text" => "The grooming services are excellent. My pet always looks and feels great after a visit.", "author" => "Sarah T.", "rating" => 4]
-];
 
 $hours = [
     "monday-friday" => "9:00 AM - 6:00 PM",
@@ -33,30 +20,54 @@ $hours = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MaVetCare - Professional Veterinary Care</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- AOS Animation CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <!-- stylesheet -->
+    <link rel="stylesheet" href="/assets/css/aboutpage.css">
+
 </head>
 <body>
 
 <!-- Hero Section -->
-<section class="py-5 text-center bg-light">
-    <div class="container">
-        <img src="/api/placeholder/300/200" alt="Vet clinic" class="img-fluid mb-4">
-        <h1 class="display-4">Welcome to MaVetCare!</h1>
-        <p class="lead">Providing compassionate care for your pets.</p>
-        <a href="#" class="btn btn-primary">Book an Appointment</a>
+<section class="pt-0 pb-5 bg-light">
+  <div class="container">
+    <div class="row align-items-center">
+      <!-- Left image -->
+      <div class="col-md-6 text-center text-md-start" data-aos="fade-right">
+        <img src="/assets/images/doctor with pet 1.png" alt="Vet clinic" class="img-fluid">
+      </div>
+
+      <!-- Right text -->
+      <div class="col-md-6" data-aos="fade-left" data-aos-delay="100">
+        <h1 class="display-4">Get to Know MaVetCare</h1>
+        <p class="lead">Learn about our story, values, and the team behind your pet’s care.</p>
+        <a href="#" class="btn btn-primary mt-3" data-aos="zoom-in" data-aos-delay="200">Book an Appointment</a>
+      </div>
     </div>
+  </div>
 </section>
 
-<!-- Services Section -->
+
+<!-- What Do We Offer Section -->
 <section class="py-5">
     <div class="container">
-        <h2 class="text-center mb-4">OUR SERVICES</h2>
+        <h2 class="text-center mb-4">What Do We Offer?</h2>
         <div class="row g-4">
+            <?php 
+            // Updated services array with titles for overlay text
+            $services = [
+                ["title" => "Vaccinations", "image" => "/assets/images/home_vaccinations.png", "text" => "Vaccinations"],
+                ["title" => "Deworming", "image" => "/assets/images/home_grooming.png", "text" => "Grooming"],
+                ["title" => "Grooming", "image" => "/assets/images/home_foods.png", "text" => "Foods"],
+                ["title" => "Surgeries", "image" => "/assets/images/home_medicine.png", "text" => "Medicines"]
+            ];
+            ?>
             <?php foreach($services as $service): ?>
-            <div class="col-md-4">
-                <div class="card h-100 text-center">
+            <div class="col-md-3">
+                <div class="card h-100 position-relative service-card">
                     <img src="<?php echo htmlspecialchars($service['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($service['title']); ?>">
-                    <div class="card-body">
-                        <h5 class="card-title"><?php echo htmlspecialchars($service['title']); ?></h5>
+                    <div class="overlay position-absolute top-50 start-50 translate-middle text-center">
+                        <h5 class="text-white"><?php echo htmlspecialchars($service['text']); ?></h5>
                     </div>
                 </div>
             </div>
@@ -64,6 +75,7 @@ $hours = [
         </div>
     </div>
 </section>
+
 
 <!-- Why Choose Us Section -->
 <section class="py-5 bg-light">
@@ -81,28 +93,14 @@ $hours = [
 
 <!-- Testimonials Section -->
 <section class="py-5">
-    <div class="container">
-        <h2 class="text-center mb-4">CLIENT TESTIMONIALS</h2>
-        <div class="row g-4">
-            <?php foreach($testimonials as $testimonial): ?>
-            <div class="col-md-4">
-                <div class="card h-100 p-3">
-                    <blockquote class="blockquote mb-0">
-                        <p>"<?php echo htmlspecialchars($testimonial['text']); ?>"</p>
-                        <footer class="blockquote-footer"><?php echo htmlspecialchars($testimonial['author']); ?></footer>
-                        <div class="mt-2">
-                            <?php 
-                            for($i = 0; $i < $testimonial['rating']; $i++) echo '★';
-                            for($i = $testimonial['rating']; $i < 5; $i++) echo '☆';
-                            ?>
-                        </div>
-                    </blockquote>
-                </div>
-            </div>
-            <?php endforeach; ?>
-        </div>
+  <div class="container">
+    <h2 class="text-center mb-4">CLIENT TESTIMONIALS</h2>
+    <div class="row g-4" id="testimonials-container">
+      <!-- Testimonials will be dynamically inserted here -->
     </div>
+  </div>
 </section>
+
 
 <!-- Contact Hours Section -->
 <section class="py-5 bg-light">
@@ -132,7 +130,15 @@ $hours = [
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- AOS Animation JS -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init();
+</script>
+
+
 </body>
 </html>
 
-<?php include_once '../app/views/includes/footer    .php'; ?>
+
+<?php include_once '../app/views/includes/footer.php'; ?>

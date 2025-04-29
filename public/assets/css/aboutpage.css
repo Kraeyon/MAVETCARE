@@ -1,0 +1,54 @@
+
+  .card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .overlay {
+    background: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+    padding: 10px;
+    border-radius: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+  }
+
+  .overlay h5 {
+    font-size: 1.5rem;
+    color: white;
+  }
+  .service-card {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .service-card:hover {
+    transform: translateY(-10px); /* Slightly lift the card on hover */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Apply box shadow */
+  }
+
+  .overlay {
+    background: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    padding: 10px;
+    border-radius: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease; /* Make the text fade in */
+  }
+
+  .service-card:hover .overlay {
+    opacity: 1; /* Make the overlay text appear on hover */
+  }
+
+  .overlay h5 {
+    font-size: 1.5rem;
+    color: white;
+    font-weight: bold;
+  }
+
+  
