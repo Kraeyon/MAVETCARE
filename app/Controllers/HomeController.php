@@ -10,5 +10,9 @@ class HomeController extends BaseController {
     public function aboutpage() {
         $this->render('home/aboutpage');
     }
+    //reviews page
+    public function reviews() {
+        $this->render('home/reviews');
+    }
     
 }
