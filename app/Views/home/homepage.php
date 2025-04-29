@@ -22,7 +22,7 @@
       </div>
 
       <div class="col-md-6">
-        <img src="/assets/images/dogs-with-stethoscope.png" class="img-fluid rounded" alt="Dog and cat with stethoscope">
+        <img src="/assets/images/homepage_cat.png" class="img-fluid rounded" alt="Dog and cat with stethoscope">
       </div>
 
     </div>
