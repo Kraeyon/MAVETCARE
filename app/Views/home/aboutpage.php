@@ -3,55 +3,21 @@
 // Define services offered for dynamic content generation
 
 $services = [
-    [
-        "title" => "Vaccinations",
-        "image" => "/api/placeholder/240/160"
-    ],
-    [
-        "title" => "Deworming",
-        "image" => "/api/placeholder/240/160"
-    ],
-    [
-        "title" => "Grooming",
-        "image" => "/api/placeholder/240/160"
-    ],
-    [
-        "title" => "Surgeries",
-        "image" => "/api/placeholder/240/160"
-    ],
-    [
-        "title" => "Pet Confinement",
-        "image" => "/api/placeholder/240/160"
-    ]
+    ["title" => "Vaccinations", "image" => "/api/placeholder/240/160"],
+    ["title" => "Deworming", "image" => "/api/placeholder/240/160"],
+    ["title" => "Grooming", "image" => "/api/placeholder/240/160"],
+    ["title" => "Surgeries", "image" => "/api/placeholder/240/160"],
+    ["title" => "Pet Confinement", "image" => "/api/placeholder/240/160"]
 ];
 
-// Why Choose Us features
-$features = [
-    "Experienced Vets",
-    "Modern Facilities",
-    "Customer-Centric Service"
-];
+$features = ["Experienced Vets", "Modern Facilities", "Customer-Centric Service"];
 
-// Testimonials
 $testimonials = [
-    [
-        "text" => "MaVetCare gave my dog the best treatment! The staff was caring and professional.",
-        "author" => "Maria S.",
-        "rating" => 5
-    ],
-    [
-        "text" => "I've been bringing my cats here for years. Dr. Johnson is amazing with animals!",
-        "author" => "John D.",
-        "rating" => 5
-    ],
-    [
-        "text" => "The grooming services are excellent. My pet always looks and feels great after a visit.",
-        "author" => "Sarah T.",
-        "rating" => 4
-    ]
+    ["text" => "MaVetCare gave my dog the best treatment! The staff was caring and professional.", "author" => "Maria S.", "rating" => 5],
+    ["text" => "I've been bringing my cats here for years. Dr. Johnson is amazing with animals!", "author" => "John D.", "rating" => 5],
+    ["text" => "The grooming services are excellent. My pet always looks and feels great after a visit.", "author" => "Sarah T.", "rating" => 4]
 ];
 
-// Hours of operation
 $hours = [
     "monday-friday" => "9:00 AM - 6:00 PM",
     "saturday" => "9:00 AM - 5:00 PM",
@@ -66,135 +32,105 @@ $hours = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MaVetCare - Professional Veterinary Care</title>
-    <link rel="stylesheet" href="/assets/css/aboutpage.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
-    <section class="hero">
-        <div class="paw-icons">
-            <div class="paw-icon" style="top: 10px; left: 20px;">🐾</div>
-            <div class="paw-icon" style="bottom: 15px; left: 50px;">🐾</div>
-            <div class="paw-icon" style="top: 15px; right: 30px;">🐾</div>
-            <div class="paw-icon" style="bottom: 20px; right: 60px;">🐾</div>
-        </div>
-        
-        <div class="hero-image">
-            <img src="/api/placeholder/300/200" alt="Vet clinic with happy pets & staff">
-        </div>
-        
-        <div class="hero-content">
-            <h1>Welcome to MaVetCare!</h1>
-            <p>Providing compassionate care for your pets.</p>
-            <a href="#" class="cta-button">Book an Appointment</a>
-        </div>
-    </section>
+<!-- Hero Section -->
+<section class="py-5 text-center bg-light">
+    <div class="container">
+        <img src="/api/placeholder/300/200" alt="Vet clinic" class="img-fluid mb-4">
+        <h1 class="display-4">Welcome to MaVetCare!</h1>
+        <p class="lead">Providing compassionate care for your pets.</p>
+        <a href="#" class="btn btn-primary">Book an Appointment</a>
+    </div>
+</section>
 
-    <section class="services">
-        <h2 class="section-title">
-            <span>OUR </span>
-            <span>SERVICES</span>
-        </h2>
-        
-        <div class="service-grid">
+<!-- Services Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">OUR SERVICES</h2>
+        <div class="row g-4">
             <?php foreach($services as $service): ?>
-            <div class="service-item">
-                <img src="<?php echo htmlspecialchars($service['image']); ?>" alt="<?php echo htmlspecialchars($service['title']); ?>">
-                <div class="service-overlay">
-                    <?php echo htmlspecialchars($service['title']); ?>
+            <div class="col-md-4">
+                <div class="card h-100 text-center">
+                    <img src="<?php echo htmlspecialchars($service['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($service['title']); ?>">
+                    <div class="card-body">
+                        <h5 class="card-title"><?php echo htmlspecialchars($service['title']); ?></h5>
+                    </div>
                 </div>
             </div>
             <?php endforeach; ?>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section class="features">
-        <h2 class="section-title">
-            <span>WHY </span>
-            <span>CHOOSE US?</span>
-        </h2>
-        
-        <div class="features-container">
-            <ul class="features-list">
-                <?php foreach($features as $feature): ?>
-                <li class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <?php echo htmlspecialchars($feature); ?>
-                </li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    </section>
+<!-- Why Choose Us Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4">WHY CHOOSE US?</h2>
+        <ul class="list-group list-group-flush">
+            <?php foreach($features as $feature): ?>
+            <li class="list-group-item d-flex align-items-center">
+                <span class="me-2 text-success">✓</span> <?php echo htmlspecialchars($feature); ?>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+</section>
 
-    <section class="testimonials">
-        <h2 class="section-title">
-            <span>CLIENT </span>
-            <span>TESTIMONIALS</span>
-        </h2>
-        
-        <div class="testimonials-container">
-            <div class="testimonial-grid">
-                <?php foreach($testimonials as $testimonial): ?>
-                <div class="testimonial-card">
-                    <div class="testimonial-text">"<?php echo htmlspecialchars($testimonial['text']); ?>"</div>
-                    <div class="testimonial-author"><?php echo htmlspecialchars($testimonial['author']); ?></div>
-                    <div class="star-rating">
-                        <?php 
-                        for($i = 0; $i < $testimonial['rating']; $i++) {
-                            echo '★';
-                        }
-                        for($i = $testimonial['rating']; $i < 5; $i++) {
-                            echo '☆';
-                        }
-                        ?>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </section>
-
-    <section class="contact">
-        <h2 class="section-title contact-title">
-            <span>OUR </span>
-            <span>HOURS</span>
-        </h2>
-        
-        <div class="contact-container">
-            <div class="hours-container">
-                <div class="hours-header">OPEN</div>
-                
-                <div class="hours-row">
-                    <div class="day-label">Monday - Friday</div>
-                    <div class="time"><?php echo htmlspecialchars($hours['monday-friday']); ?></div>
-                </div>
-                
-                <div class="hours-row">
-                    <div class="day-label">Saturday</div>
-                    <div class="time"><?php echo htmlspecialchars($hours['saturday']); ?></div>
-                </div>
-                
-                <div class="hours-row">
-                    <div class="day-label">Sunday</div>
-                    <div class="time"><?php echo htmlspecialchars($hours['sunday']); ?></div>
+<!-- Testimonials Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">CLIENT TESTIMONIALS</h2>
+        <div class="row g-4">
+            <?php foreach($testimonials as $testimonial): ?>
+            <div class="col-md-4">
+                <div class="card h-100 p-3">
+                    <blockquote class="blockquote mb-0">
+                        <p>"<?php echo htmlspecialchars($testimonial['text']); ?>"</p>
+                        <footer class="blockquote-footer"><?php echo htmlspecialchars($testimonial['author']); ?></footer>
+                        <div class="mt-2">
+                            <?php 
+                            for($i = 0; $i < $testimonial['rating']; $i++) echo '★';
+                            for($i = $testimonial['rating']; $i < 5; $i++) echo '☆';
+                            ?>
+                        </div>
+                    </blockquote>
                 </div>
             </div>
+            <?php endforeach; ?>
         </div>
-    </section>
+    </div>
+</section>
 
-    <?php
-    // Appointment booking functionality could be added here
-    // if(isset($_POST['book_appointment'])) {
-    //     $pet_name = $_POST['pet_name'];
-    //     $owner_name = $_POST['owner_name'];
-    //     $service_type = $_POST['service_type'];
-    //     $appointment_date = $_POST['appointment_date'];
-    //     $appointment_time = $_POST['appointment_time'];
-    //     $contact_number = $_POST['contact_number'];
-    //     
-    //     // Process appointment booking
-    //     // Store in database
-    //     // Send confirmation email
-    // }
-    ?>
+<!-- Contact Hours Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4">OUR HOURS</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <table class="table table-bordered text-center">
+                    <tbody>
+                        <tr>
+                            <td>Monday - Friday</td>
+                            <td><?php echo htmlspecialchars($hours['monday-friday']); ?></td>
+                        </tr>
+                        <tr>
+                            <td>Saturday</td>
+                            <td><?php echo htmlspecialchars($hours['saturday']); ?></td>
+                        </tr>
+                        <tr>
+                            <td>Sunday</td>
+                            <td><?php echo htmlspecialchars($hours['sunday']); ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
