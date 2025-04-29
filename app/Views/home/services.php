@@ -1,6 +1,5 @@
-<?php
-// services.php
-?>
+<?php include_once '../app/views/includes/header.php'; ?>
+
 
 <main class="services-main">
     <h1>Our Services</h1>
