@@ -17,3 +17,4 @@ $router->map('GET', '/index', 'App\Controllers\AdminController#index', 'index');
 $router->map('GET', '/login', 'App\Controllers\AuthController#renderLogin', 'render-login');
 $router->map('GET', '/register', 'App\Controllers\AuthController#renderRegister', 'render-register');
 
+$router->map('GET', '/appointment', 'HomeController#appointment');

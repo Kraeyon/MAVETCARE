@@ -45,15 +45,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Appointment - MaVetCare</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS -->
+    <link rel="stylesheet" href="../assets/css/styles.css"> <!-- Link to your CSS -->
 </head>
 <body>
     <!-- Header Section (Same as Home Page) -->
-    <header>
-        <nav>
-            <!-- Navigation Bar or Logo Here -->
-        </nav>
-    </header>
+    
+<?php include_once '../app/views/includes/header.php'; ?>
 
     <!-- Appointment Booking Section -->
     <section id="appointment-section">
@@ -125,8 +122,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </section>
 
     <!-- Footer Section (Same as Home Page) -->
-    <footer>
-        <p>&copy; 2025 MaVetCare | All Rights Reserved</p>
-    </footer>
+    <?php include_once '../app/views/includes/footer.php'; ?>
 </body>
 </html>

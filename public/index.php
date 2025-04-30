@@ -26,3 +26,9 @@ if ($match) {
     http_response_code(404);
     echo "404 Not Found";
 }
+
+if ($_GET['page'] == 'appointment') {
+    $controller = new HomeController();
+    $controller->appointment();
+}
+
