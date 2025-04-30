@@ -1,38 +1,54 @@
-.services-main {
-    padding: 40px 20px;
-    background-color: #f7f7f7;
-    min-height: 80vh;
-}
 
-.services-main h1 {
-    text-align: center;
-    margin-bottom: 40px;
-    font-size: 2.5rem;
-}
+.card {
+    position: relative;
+    overflow: hidden;
+  }
 
-.services-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.service-item {
-    background-color: #ffffff;
-    padding: 20px;
+  .overlay {
+    background: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+    padding: 10px;
     border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    text-align: center;
-    transition: transform 0.3s, box-shadow 0.3s;
-}
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+  }
 
-.service-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
+  .overlay h5 {
+    font-size: 1.5rem;
+    color: white;
+  }
+  .service-card {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
 
-.service-item h2 {
-    margin-bottom: 10px;
-    color: #cba46b;
-}
+  .service-card:hover {
+    transform: translateY(-10px); /* Slightly lift the card on hover */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Apply box shadow */
+  }
+
+  .overlay {
+    background: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    padding: 10px;
+    border-radius: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease; /* Make the text fade in */
+  }
+
+  .service-card:hover .overlay {
+    opacity: 1; /* Make the overlay text appear on hover */
+  }
+
+  .overlay h5 {
+    font-size: 1.5rem;
+    color: white;
+    font-weight: bold;
+  }
+
+  

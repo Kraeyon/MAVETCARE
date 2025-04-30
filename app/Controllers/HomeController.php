@@ -14,5 +14,8 @@ class HomeController extends BaseController {
     public function reviews() {
         $this->render('home/reviews');
     }
-    
+    // services page
+    public function services() {
+        $this->render('home/services');
+    }
 }
