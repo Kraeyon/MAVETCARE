@@ -26,14 +26,14 @@
         
         <!-- Quick Links -->
         <div class="border-r border-black pr-6 mb-8 md:mb-0">
-            <h3 class="font-bold mb-4">Quick Links</h3>
-            <ul class="text-sm space-y-2">
-                <li>Home</li>
-                <li>About</li>
-                <li>Services</li>
-                <li>Products</li>
-            </ul>
-        </div>
+    <h3 class="font-bold mb-4">Quick Links</h3>
+    <ul class="text-sm space-y-2">
+        <li><a href="app/Views/home/index.php" class="text-black hover:text-blue-600 hover:underline transition">Home</a></li>
+        <li><a href="app/Views/home/aboutpage.php" class="text-black hover:text-blue-600 hover:underline transition">About</a></li>
+        <li><a href="app/Views/home/services.php" class="text-black hover:text-blue-600 hover:underline transition">Services</a></li>
+        <li><a href="app/Views/home/products.php" class="text-black hover:text-blue-600 hover:underline transition">Products</a></li>
+    </ul>
+</div>
 
         <!-- Center Logo and Socials -->
         <div class="flex flex-col items-center justify-center border-r border-black px-6 mb-8 md:mb-0">
@@ -79,9 +79,7 @@
                 </span>
             </div>
 
-    <!-- Footer dogs image -->
-    <img alt="footer dogs" class="absolute bottom-0 right-0 max-w-[150px] md:max-w-[300px]" height="150" src="/assets/images/footer_lower_right.png" style="transform: translateY(-0%)" width="300"/>
-    </div>
+            </div>
 
     </div>
 
@@ -90,9 +88,13 @@
         All Rights Reserved to <strong>MaVetCare 2025</strong>
     </div>
 
+    <!-- Footer dogs image -->
+    <img alt="footer dogs" class="absolute bottom-0 right-0 max-w-[150px] md:max-w-[350px]" height="150" src="/assets/images/footer_lower_right.png" style="transform: translateY(-0%)" width="330"/>
+    
     <!-- Footer cat image -->
-    <img alt="footer cat" class="absolute bottom-0 left-0 max-w-[200px] md:max-w-[200px]" height="100" src="/assets/images/footer_lower_left.png" style="transform: translateY(-0%)" width="200"/>
+    <img alt="footer cat" class="absolute bottom-0 left-0 max-w-[200px] md:max-w-[200px]" height="100" src="/assets/images/footer_lower_left.png" style="transform: translateY(-0%)" width="180"/>
 </footer>
+
 
 </body>
 </html>
