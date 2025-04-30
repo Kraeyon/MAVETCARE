@@ -8,6 +8,7 @@ $router->map('GET', '/', 'App\Controllers\HomeController#homepage', 'home');
 $router->map('GET', '/about', 'App\Controllers\HomeController#aboutpage', 'about');
 $router->map('GET', '/reviews', 'App\Controllers\HomeController#reviews', 'reviews');
 $router->map('GET', '/services', 'App\Controllers\HomeController#services', 'services');
+$router->map('GET', '/products', 'App\Controllers\HomeController#products', 'products');
 
 // Auth routes
 $router->map('GET', '/login', 'App\Controllers\AuthController#renderLogin', 'render-login');

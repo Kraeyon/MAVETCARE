@@ -20,13 +20,13 @@
   <div class="container">
     <div class="row align-items-center">
 
-    <!-- Right text -->
+    <!-- Left text -->
     <div class="col-md-6" data-aos="fade-right" data-aos-delay="100">
         <h1 class="display-4 fw-bold">Look for the services that you need.</h1>
         <p class="lead">Whether it’s a check-up or a special procedure, we’ve got your furry friend covered.</p>
       </div>
 
-      <!-- Left image -->
+      <!-- Right image -->
       <div class="col-md-6 text-center text-md-start" data-aos="fade-left">
         <img src="/assets/images/services_dog&cat.png" alt="Vet clinic" class="img-fluid">
       </div>
@@ -34,7 +34,6 @@
   </div>
 </section>
 
-<!-- What Do We Offer Section -->
 <section class="py-5">
     <div class="container">
         <div class="row g-4">
