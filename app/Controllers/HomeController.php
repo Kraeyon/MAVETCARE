@@ -23,7 +23,7 @@ class HomeController extends BaseController {
         $this->render('home/products');
     }
     public function appointment() {
-        $this->render('home/appointmentpage.php');
+        $this->render('home/appointmentpage');
     }
     
 }
