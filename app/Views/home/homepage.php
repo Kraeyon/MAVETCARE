@@ -71,7 +71,7 @@
         <div class="card h-100 shadow-sm rounded-4 card-hover">
           <div class="card-body">
             <h3 class="card-title">Address</h3>
-            <p><strong>MavetCare Veterinary Medical Clinic</strong><br>
+            <p><strong>Mabolo Veterinary Medical Clinic</strong><br>
               Juan Luna Ave, Mabolo,<br>
               Cebu City, Philippines.</p>
 
