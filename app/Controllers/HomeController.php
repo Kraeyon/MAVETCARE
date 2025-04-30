@@ -18,4 +18,8 @@ class HomeController extends BaseController {
     public function services() {
         $this->render('home/services');
     }
+    // products page
+    public function products() {
+        $this->render('home/products');
+    }
 }
