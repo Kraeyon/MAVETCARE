@@ -10,7 +10,6 @@ $router->map('GET', '/about', 'App\Controllers\HomeController#aboutpage', 'about
 $router->map('GET', '/reviews', 'App\Controllers\HomeController#reviews', 'reviews');
 $router->map('GET', '/services', 'App\Controllers\HomeController#services', 'services');
 $router->map('GET', '/products', 'App\Controllers\HomeController#products', 'products');
-$router->map('GET', '/appointment', 'App\Controllers\HomeController#appointment', 'appointmentpage');
 
 // Admin routes
 $router->map('GET', '/index', 'App\Controllers\AdminController#index', 'index');
