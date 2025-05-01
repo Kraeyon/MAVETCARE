@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Appointment - MaVetCare</title>
-    <link rel="stylesheet" href="../assets/css/styles.css"> <!-- Link to your CSS -->
+    <link rel="stylesheet" href="../assets/css/appointmentpage.css"> <!-- Link to your CSS -->
 </head>
 <body>
     <!-- Header Section (Same as Home Page) -->
@@ -90,8 +90,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label for="service">Select Service:</label>
             <select id="service" name="service" required>
                 <option value="vaccination">Vaccination</option>
-                <option value="grooming">Grooming</option>
+                <option value="vaccination">Deworming</option>
+                <option value="vaccination">Anti-parasitic Program</option>
                 <option value="surgery">Surgery</option>
+                <option value="grooming">Grooming</option>
+                <option value="grooming">Treatment</option>
+                <option value="grooming">Confinement</option>
                 <!-- Add other services as needed -->
             </select>
 
