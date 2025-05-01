@@ -26,4 +26,32 @@ class HomeController extends BaseController {
     public function appointment() {
         $this->render('home/appointmentpage');
     }
+    // vaccination page
+    public function vaccination() {
+        $this->render('home/vaccination');
+    }
+    // deworming page
+    public function deworming() {
+        $this->render('home/deworming');
+    }
+    // anti-parasitic page
+    public function antiparasitic() {
+        $this->render('home/antiparasitic');
+    }
+    // surgeries page
+    public function surgeries() {
+        $this->render('home/surgeries');
+    }
+    // grooming page
+    public function grooming() {
+        $this->render('home/grooming');
+    }
+    // treatment page
+    public function treatment() {
+        $this->render('home/treatment');
+    }
+    // confinement page
+    public function confinement() {
+        $this->render('home/confinement');
+    }
 }

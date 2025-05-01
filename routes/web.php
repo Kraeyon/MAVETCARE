@@ -11,6 +11,15 @@ $router->map('GET', '/reviews', 'App\Controllers\HomeController#reviews', 'revie
 $router->map('GET', '/services', 'App\Controllers\HomeController#services', 'services');
 $router->map('GET', '/products', 'App\Controllers\HomeController#products', 'products');
 $router->map('GET', '/appointment', 'App\Controllers\HomeController#appointment', 'appointmentpage');
+$router->map('GET', '/vaccination', 'App\Controllers\HomeController#vaccination', 'vaccination');
+$router->map('GET', '/deworming', 'App\Controllers\HomeController#deworming', 'deworming');
+$router->map('GET', '/antiparasitic', 'App\Controllers\HomeController#antiparasitic', 'antiparasitic');
+$router->map('GET', '/surgeries', 'App\Controllers\HomeController#surgeries', 'surgeries');
+$router->map('GET', '/grooming', 'App\Controllers\HomeController#grooming', 'grooming');
+$router->map('GET', '/treatment', 'App\Controllers\HomeController#treatment', 'treatment');
+$router->map('GET', '/confinement', 'App\Controllers\HomeController#confinement', 'confinement');
+
+
 
 // Admin routes
 $router->map('GET', '/index', 'App\Controllers\AdminController#index', 'index');

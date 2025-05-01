@@ -40,28 +40,31 @@
             <?php 
             // Updated services array with titles for overlay text
             $services = [
-                ["title" => "Vaccinations", "image" => "/assets/images/vaccination.png", "text" => "Vaccinations"],
-                ["title" => "Deworming", "image" => "/assets/images/deworming.png", "text" => "Deworming"],
-                ["title" => "Anti Parasitic Program", "image" => "/assets/images/anti parasitic program.png", "text" => "Anti Parasitic Program"],
-                ["title" => "Surgeries", "image" => "/assets/images/surgery.png", "text" => "Surgeries"],
-                ["title" => "Grooming", "image" => "/assets/images/grooming.png", "text" => "Grooming"],
-                ["title" => "Treatment", "image" => "/assets/images/treatment.png", "text" => "Treatment"],
-                ["title" => "Confinement", "image" => "/assets/images/confinement.png", "text" => "Confinement"]
+                ["title" => "Vaccinations", "image" => "/assets/images/vaccination.png", "text" => "Vaccinations", "link" => "/vaccination"],
+                ["title" => "Deworming", "image" => "/assets/images/deworming.png", "text" => "Deworming", "link" => "/deworming"],
+                ["title" => "Anti Parasitic Program", "image" => "/assets/images/anti parasitic program.png", "text" => "Anti Parasitic Program", "link" => "/antiparasitic"],
+                ["title" => "Surgeries", "image" => "/assets/images/surgery.png", "text" => "Surgeries", "link" => "/surgeries"],
+                ["title" => "Grooming", "image" => "/assets/images/grooming.png", "text" => "Grooming", "link" => "/grooming"],
+                ["title" => "Treatment", "image" => "/assets/images/treatment.png", "text" => "Treatment", "link" => "/treatment"],
+                ["title" => "Confinement", "image" => "/assets/images/confinement.png", "text" => "Confinement", "link" => "/confinement"]
 
             ];
             ?>
             <?php foreach($services as $service): ?>
             <div class="col-md-3">
-                <div class="card h-100 position-relative service-card">
-                    <img src="<?php echo htmlspecialchars($service['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($service['title']); ?>">
-                    <div class="overlay position-absolute top-50 start-50 translate-middle text-center">
-                        <h5 class="text-white"><?php echo htmlspecialchars($service['text']); ?></h5>
+                <a href="<?php echo htmlspecialchars($service['link']); ?>" class="text-decoration-none">
+                    <div class="card h-100 position-relative service-card">
+                        <img src="<?php echo htmlspecialchars($service['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($service['title']); ?>">
+                        <div class="overlay position-absolute top-50 start-50 translate-middle text-center">
+                            <h5 class="text-white"><?php echo htmlspecialchars($service['text']); ?></h5>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
-            <?php endforeach; ?>
+        <?php endforeach; ?>
+
         </div>
-    </div>
+        </div>
 </section>
 
 
