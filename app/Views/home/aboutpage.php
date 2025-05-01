@@ -56,22 +56,24 @@ $hours = [
             <?php 
             // Updated services array with titles for overlay text
             $services = [
-                ["title" => "Vaccinations", "image" => "/assets/images/home_vaccinations.png", "text" => "Vaccinations"],
-                ["title" => "Deworming", "image" => "/assets/images/home_grooming.png", "text" => "Grooming"],
-                ["title" => "Grooming", "image" => "/assets/images/home_foods.png", "text" => "Foods"],
-                ["title" => "Surgeries", "image" => "/assets/images/home_medicine.png", "text" => "Medicines"]
+                ["title" => "Vaccinations", "image" => "/assets/images/home_vaccinations.png", "text" => "Vaccinations", "link" => "/vaccination"],
+                ["title" => "Deworming", "image" => "/assets/images/home_grooming.png", "text" => "Grooming", "link" => "/grooming"],
+                ["title" => "Grooming", "image" => "/assets/images/home_foods.png", "text" => "Foods", "link" => "/products"],
+                ["title" => "Surgeries", "image" => "/assets/images/home_medicine.png", "text" => "Medicines", "link" => "/products"]
             ];
             ?>
             <?php foreach($services as $service): ?>
             <div class="col-md-3">
-                <div class="card h-100 position-relative service-card">
-                    <img src="<?php echo htmlspecialchars($service['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($service['title']); ?>">
-                    <div class="overlay position-absolute top-50 start-50 translate-middle text-center">
-                        <h5 class="text-white"><?php echo htmlspecialchars($service['text']); ?></h5>
+                <a href="<?php echo htmlspecialchars($service['link']); ?>" class="text-decoration-none">
+                    <div class="card h-100 position-relative service-card">
+                        <img src="<?php echo htmlspecialchars($service['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($service['title']); ?>">
+                        <div class="overlay position-absolute top-50 start-50 translate-middle text-center">
+                            <h5 class="text-white"><?php echo htmlspecialchars($service['text']); ?></h5>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
-            <?php endforeach; ?>
+        <?php endforeach; ?>
         </div>
     </div>
 </section>
