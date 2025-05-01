@@ -52,9 +52,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
 <?php include_once '../app/views/includes/header.php'; ?>
 
+<section id="booking-header">
+    <div class="booking-content">
+        <div class="booking-text">
+            <p class="welcome-text">Welcome to <span class="clinic-name">MaVetCare</span></p>
+            <h1>BOOK YOUR PET'S APPOINTMENT</h1>
+            <p class="tagline">Quick, Easy, Hassle-Free.</p>
+            <a href="#appointment-section" class="book-now-btn">Book Now!</a>
+        </div>
+        <div class="booking-image">
+            <img src="../assets/images/services_dog&cat.png" alt="Pet Appointment" />
+        </div>
+    </div>
+</section>
+
     <!-- Appointment Booking Section -->
     <section id="appointment-section">
-        <h1>Book an Appointment</h1>
+        <div class="appointment-header">
+            <span class="paw-icon">🐾</span>
+            <h1>Appointment Booking Form</h1>
+            <span class="paw-icon">🐾</span>
+        </div>
+
 
         <?php if (isset($confirmation_message)): ?>
             <div id="confirmation-message">
