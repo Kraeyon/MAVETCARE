@@ -24,7 +24,7 @@
 </h1>
 
         <p class="lead fade-in-up" style="animation-delay: 0.2s;">
-          At MavetCare, we treat your pets like family. From preventive care to advanced treatments, we’re dedicated to keeping them healthy, happy, and safe.
+          At MaVetCare, we treat your pets like family. From preventive care to advanced treatments, we’re dedicated to keeping them healthy, happy, and safe.
         </p>
         <a href="#" class="btn btn-primary mt-3 fade-in-up" style="animation-delay: 0.4s;">Read More</a>
       </div>
@@ -71,7 +71,7 @@
         <div class="card h-100 shadow-sm rounded-4 card-hover">
           <div class="card-body">
             <h3 class="card-title">Address</h3>
-            <p><strong>MavetCare Veterinary Medical Clinic</strong><br>
+            <p><strong>MaVetCare Veterinary Medical Clinic</strong><br>
               Juan Luna Ave, Mabolo,<br>
               Cebu City, Philippines.</p>
 

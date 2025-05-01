@@ -43,7 +43,7 @@ $current_page = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         </div>    
 
         <div class="nav-buttons">
-            <a href="#">Book an appointment</a>
+            <a href="/appointment" class="<?= ($current_page == '/appointment') ? 'active' : '' ?>">Book an Appointment</a>
             <a href="/login" class="<?= ($current_page == '/login') ? 'active' : '' ?>">Log in</a>
         </div>
     </div>
