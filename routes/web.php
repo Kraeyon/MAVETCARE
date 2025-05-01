@@ -9,6 +9,7 @@ $router->map('GET', '/about', 'App\Controllers\HomeController#aboutpage', 'about
 $router->map('GET', '/reviews', 'App\Controllers\HomeController#reviews', 'reviews');
 $router->map('GET', '/services', 'App\Controllers\HomeController#services', 'services');
 $router->map('GET', '/products', 'App\Controllers\HomeController#products', 'products');
+$router->map('GET', '/vaccination', 'App\Controllers\HomeController#vaccination', 'vaccination');
 
 // Auth routes
 $router->map('GET', '/login', 'App\Controllers\AuthController#renderLogin', 'render-login');

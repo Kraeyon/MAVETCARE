@@ -22,4 +22,8 @@ class HomeController extends BaseController {
     public function products() {
         $this->render('home/products');
     }
+    // vaccination page
+    public function vaccination() {
+        $this->render('home/vaccination');
+    }
 }

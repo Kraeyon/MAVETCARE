@@ -29,7 +29,7 @@ $current_page = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
             <div class="dropdown">
                 <a href="/services" class="<?= (strpos($current_page, '/services') === 0) ? 'active' : '' ?>">Services ▼</a>
                 <div class="dropdown-content">
-                    <a href="#">Vaccination</a>
+                    <a href="/vaccination">Vaccination</a>
                     <a href="#">Deworming</a>
                     <a href="#">Anti-Parasitic Program</a>
                     <a href="#">Surgeries</a>
