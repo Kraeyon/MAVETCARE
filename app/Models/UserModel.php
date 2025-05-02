@@ -52,4 +52,19 @@ class UserModel
             die("Registration failed: " . $e->getMessage());
         }
     }
+
+    public function findByEmail($email)
+{
+    $stmt = $this->db->prepare("
+        SELECT su.*, su.username AS email, su.client_code AS id
+        FROM sys_user su
+        WHERE su.username = :email
+    ");
+    $stmt->execute(['email' => $email]);
+    return $stmt->fetch(\PDO::FETCH_ASSOC);
+}
+
+
+
+
 }

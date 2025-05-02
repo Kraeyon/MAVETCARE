@@ -11,6 +11,11 @@ date_default_timezone_set('Asia/Manila');
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+
 $router = new Router();
 
 require_once __DIR__ . '/../routes/web.php';

@@ -1,10 +1,18 @@
-<!-- Bootstrap CSS (make sure this is included in your project) -->
+<!-- Bootstrap CSS (already included) -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <section class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
   <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
     <h2 class="text-center mb-4">Login to System</h2>
-    <form method="POST" action="#">
+
+    <!-- Error Alert -->
+    <?php if (!empty($error)): ?>
+      <div class="alert alert-danger" role="alert">
+        <?= htmlspecialchars($error) ?>
+      </div>
+    <?php endif; ?>
+
+    <form method="POST" action="/login">
       <div class="mb-3">
         <label for="email" class="form-label">Username or Email Address</label>
         <input type="text" class="form-control" id="email" name="email" required>

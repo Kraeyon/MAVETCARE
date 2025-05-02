@@ -25,5 +25,7 @@ $router->map('GET', '/confinement', 'App\Controllers\HomeController#confinement'
 $router->map('GET', '/index', 'App\Controllers\AdminController#index', 'index');
 // Auth routes
 $router->map('GET', '/login', 'App\Controllers\AuthController#renderLogin', 'render-login');
+$router->map('POST', '/login', 'App\Controllers\AuthController#login', 'login');
+$router->map('POST', '/logout', 'App\Controllers\AuthController#logout', 'logout');
 $router->map('GET', '/register', 'App\Controllers\AuthController#renderRegister', 'render-register');
 $router->map('POST', '/register', 'App\Controllers\AuthController#register', 'register');
