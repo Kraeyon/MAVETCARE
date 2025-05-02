@@ -26,3 +26,4 @@ $router->map('GET', '/index', 'App\Controllers\AdminController#index', 'index');
 // Auth routes
 $router->map('GET', '/login', 'App\Controllers\AuthController#renderLogin', 'render-login');
 $router->map('GET', '/register', 'App\Controllers\AuthController#renderRegister', 'render-register');
+$router->map('POST', '/register', 'App\Controllers\AuthController#register', 'register');

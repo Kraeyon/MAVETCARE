@@ -4,7 +4,7 @@
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
   <div class="card p-4 shadow" style="width: 100%; max-width: 500px;">
     <h2 class="text-center mb-4">Create an Account</h2>
-    <form method="POST" action="#">
+    <form method="POST" action="/register">
       <div class="mb-3">
         <input type="text" class="form-control" name="first_name" placeholder="First Name" required>
       </div>
