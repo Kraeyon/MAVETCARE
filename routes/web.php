@@ -8,6 +8,13 @@ $router->map('GET', '/', 'App\Controllers\HomeController#homepage', 'home');
 
 $router->map('GET', '/about', 'App\Controllers\HomeController#aboutpage', 'about');
 $router->map('GET', '/reviews', 'App\Controllers\HomeController#reviews', 'reviews');
+// Reviews JSON API
+$router->map('GET', '/api/reviews', 'App\Controllers\ReviewController#getAll', 'api_reviews_all');
+$router->map('GET', '/api/reviews/average', 'App\Controllers\ReviewController#getAverage', 'api_reviews_average');
+$router->map('GET', '/api/reviews/distribution', 'App\Controllers\ReviewController#getDistribution', 'api_reviews_distribution');
+$router->map('POST', '/api/reviews', 'App\Controllers\ReviewController#submit', 'api_reviews_submit');
+
+
 $router->map('GET', '/services', 'App\Controllers\HomeController#services', 'services');
 $router->map('GET', '/products', 'App\Controllers\HomeController#products', 'products');
 $router->map('GET', '/appointment', 'App\Controllers\HomeController#appointment', 'appointmentpage');
