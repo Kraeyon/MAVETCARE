@@ -36,7 +36,8 @@ class AuthController extends BaseController {
                 'id' => $user['id'],
                 'email' => $user['email'],
                 'role' => $user['role'],
-                'client_code' => $user['client_code']
+                'client_code' => $user['client_code'],
+                'name' => $user['client_name']
             ];
 
             // Redirect to the homepage or dashboard

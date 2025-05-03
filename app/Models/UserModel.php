@@ -61,8 +61,10 @@ class UserModel
             su.username AS email, 
             su.password,                 
             su.role, 
-            su.client_code 
+            su.client_code,
+            CONCAT(c.clt_fname, ' ', c.clt_lname) AS client_name
         FROM sys_user su
+        LEFT JOIN client c ON su.client_code = c.clt_code
         WHERE su.username = :email
     ");
     $stmt->execute(['email' => $email]);

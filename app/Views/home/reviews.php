@@ -73,9 +73,13 @@ include_once '../app/views/includes/header.php';
 
   <!-- Average Rating -->
   <div class="text-center mb-5 fade-in">
-    <div class="mb-2">
-      <img src="/api/placeholder/70/70" alt="User Avatar" class="rounded-circle">
-    </div>
+  <div class="mb-3 d-flex flex-column align-items-center">
+  <img src="https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['user']['name'] ?? 'User') ?>&size=70&background=random" alt="User Avatar" class="rounded-circle mb-2">
+  <strong><?= htmlspecialchars($_SESSION['user']['name'] ?? 'User') ?></strong>
+</div>
+
+
+
     <h3>What do you think?</h3>
     <div id="average-stars" class="mb-3"></div>
     <?php if ($client_code): ?>
