@@ -220,30 +220,31 @@ function getPetTypes() {
         <?php endif; ?>
 
         <form id="appointment-form" method="POST" action="appointment.php">
-            <!-- Name -->
-            <label for="name">Full Name:</label>
-            <input type="text" id="name" name="name" required>
+            <!-- Owner's Name -->
+            <label for="owner_name">Full Name:</label>
+            <input type="text" id="owner_name" name="owner_name" required>
 
             <!-- Contact Number -->
-            <label for="contact-number">Contact Number:</label>
-            <input type="tel" id="contact-number" name="contact-number" required>
+            <label for="contact_number">Contact Number:</label>
+            <input type="tel" id="contact_number" name="contact_number" required>
 
             <!-- Email -->
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
 
-            <!-- Pet Name & Type -->
-            <label for="pet-name">Pet Name:</label>
-            <input type="text" id="pet-name" name="pet-name" required>
-            
-            <label for="pet-type">Pet Type:</label>
-            <select id="pet-type" name="pet-type" required>
+            <!-- Pet Name -->
+            <label for="pet_name">Pet Name:</label>
+            <input type="text" id="pet_name" name="pet_name" required>
+
+            <!-- Pet Type -->
+            <label for="pet_type">Pet Type:</label>
+            <select id="pet_type" name="pet_type" required>
                 <option value="dog">Dog</option>
                 <option value="cat">Cat</option>
                 <option value="other">Other</option>
             </select>
 
-            <!-- Service Selection -->
+            <!-- Service -->
             <label for="service">Select Service:</label>
             <select id="service" name="service" required>
                 <option value="vaccination">Vaccination</option>
@@ -253,31 +254,35 @@ function getPetTypes() {
                 <option value="grooming">Grooming</option>
                 <option value="treatment">Treatment</option>
                 <option value="confinement">Confinement</option>
-
-                <!-- Add other services as needed -->
             </select>
-            <!-- Type of Appointment -->
-                <label for="appointment-type">Type of Appointment:</label>
-                <select id="appointment-type" name="appointment-type" required>
-                    <option value="walk-in">Walk-in</option>
-                    <option value="service-on-call">Service-on-call</option>
-                </select>
 
-            <!-- Preferred Date & Time -->
-            <label for="appointment-time">Preferred Date & Time:</label>
-            <input type="datetime-local" id="appointment-time" name="appointment-time" required>
+            <!-- Appointment Type -->
+            <label for="appointment_type">Type of Appointment:</label>
+            <select id="appointment_type" name="appointment_type" required>
+                <option value="walk-in">Walk-in</option>
+                <option value="service-on-call">Service-on-call</option>
+            </select>
+
+            <!-- Preferred Date -->
+            <label for="preferred_date">Preferred Date:</label>
+            <input type="date" id="preferred_date" name="preferred_date" required>
+
+            <!-- Preferred Time -->
+            <label for="preferred_time">Preferred Time:</label>
+            <input type="time" id="preferred_time" name="preferred_time" required>
 
             <!-- Additional Notes -->
-            <label for="notes">Additional Notes:</label>
-            <textarea id="notes" name="notes"></textarea>
+            <label for="additional_notes">Additional Notes:</label>
+            <textarea id="additional_notes" name="additional_notes"></textarea>
 
-            <!-- Reminder Option -->
+            <!-- Reminder (optional, not handled in PHP yet) -->
             <label for="reminder">Receive appointment reminder via SMS/email</label>
             <input type="checkbox" id="reminder" name="reminder">
 
             <!-- Submit Button -->
             <button type="submit">Book Appointment</button>
         </form>
+
     </section>
 
     <!-- FAQs Section (Optional) -->
