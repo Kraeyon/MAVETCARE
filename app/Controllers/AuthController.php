@@ -35,7 +35,9 @@ class AuthController extends BaseController {
             $_SESSION['user'] = [
                 'id' => $user['id'],
                 'email' => $user['email'],
-                'role' => $user['role']
+                'role' => $user['role'],
+                'client_code' => $user['client_code'],
+                'name' => $user['client_name']
             ];
 
             // Redirect to the homepage or dashboard

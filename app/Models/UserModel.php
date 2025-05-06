@@ -56,14 +56,20 @@ class UserModel
     public function findByEmail($email)
 {
     $stmt = $this->db->prepare("
-        SELECT su.*, su.username AS email, su.client_code AS id
+        SELECT 
+            su.user_code AS id, 
+            su.username AS email, 
+            su.password,                 
+            su.role, 
+            su.client_code,
+            CONCAT(c.clt_fname, ' ', c.clt_lname) AS client_name
         FROM sys_user su
+        LEFT JOIN client c ON su.client_code = c.clt_code
         WHERE su.username = :email
     ");
     $stmt->execute(['email' => $email]);
     return $stmt->fetch(\PDO::FETCH_ASSOC);
 }
-
 
 
 

@@ -41,7 +41,7 @@ $hours = [
       <div class="col-md-6" data-aos="fade-left" data-aos-delay="100">
         <h1 class="display-4">Get to Know MaVetCare</h1>
         <p class="lead">Learn about our story, values, and the team behind your pet’s care.</p>
-        <a href="#" class="btn btn-primary mt-3" data-aos="zoom-in" data-aos-delay="200">Book an Appointment</a>
+        <a href="/appointment" class="btn btn-primary mt-3" data-aos="zoom-in" data-aos-delay="200">Book an Appointment</a>
       </div>
     </div>
   </div>
