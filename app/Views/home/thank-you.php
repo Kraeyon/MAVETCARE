@@ -1,12 +1,12 @@
 <?php 
 // Start session to check for success
 session_start();
-
 // Check if the appointment was successful and the appointment ID is stored
 if (!isset($_SESSION['appointment_success']) || !isset($_SESSION['appointment_id'])) {
-    header("Location: appointment.php"); // Redirect back to appointment page if session is invalid
+    header("Location: appointmentpage.php"); // <-- this should match your file name
     exit();
 }
+
 
 // Get appointment details
 $appointment_id = $_SESSION['appointment_id'];
