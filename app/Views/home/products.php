@@ -52,72 +52,66 @@ include_once '../app/views/includes/header.php';
       
       <div class="row">
         <!-- Sample product cards - In a real app, these would be loaded from a database -->
-        <div class="col-md-2 mb-2" data-aos="fade-up" data-aos-delay="100" data-category="shampoo">
-          <div class="card h-100 product-card">
+        <div class="col-md-2 mb-1" data-aos="fade-up" data-aos-delay="100" data-category="shampoo">
+          <div class="card h-85 product-card">
             <img src="/assets/images/novapink.png" class="card-img-top" alt="Pet Shampoo">
             <div class="card-body">
               <h5 class="card-title">Premium Pet Shampoo</h5>
-              <p class="card-text">Gentle formula for sensitive skin. Perfect for all breeds.</p>
               <p class="price">$14.99</p>
               <a href="#" class="btn btn-primary">View Details</a>
             </div>
           </div>
         </div>
         
-        <div class="col-md-2 mb-2" data-aos="fade-up" data-aos-delay="100" data-category="food-accessories">
-          <div class="card h-100 product-card">
+        <div class="col-md-2 mb-1" data-aos="fade-up" data-aos-delay="100" data-category="food-accessories">
+          <div class="card h-85 product-card">
             <img src="/assets/images/premium dog food.png" class="card-img-top" alt="Premium Dog Food">
             <div class="card-body">
-              <h5 class="card-title">Premium Dog Food</h5>
-              <p class="card-text">High-quality nutrition with real ingredients for adult dogs.</p>
+              <h5 class="card-title">Affordable Premium Dog Food </h5>
               <p class="price">$29.99</p>
               <a href="#" class="btn btn-primary">View Details</a>
             </div>
           </div>
         </div>
         
-        <div class="col-md-2 mb-2" data-aos="fade-up" data-aos-delay="200" data-category="vaccines">
-          <div class="card h-100 product-card">
+        <div class="col-md-2 mb-1" data-aos="fade-up" data-aos-delay="200" data-category="vaccines">
+          <div class="card h-85 product-card">
             <img src="/assets/images/vaccine.png" class="card-img-top" alt="Pet Vaccine">
             <div class="card-body">
               <h5 class="card-title">Core Vaccine Package</h5>
-              <p class="card-text">Essential vaccines for your pet's health and protection.</p>
               <p class="price">$45.99</p>
               <a href="#" class="btn btn-primary">View Details</a>
             </div>
           </div>
         </div>
 
-        <div class="col-md-2 mb-2" data-aos="fade-up" data-aos-delay="200" data-category="injectables">
-          <div class="card h-100 product-card">
+        <div class="col-md-2 mb-1" data-aos="fade-up" data-aos-delay="200" data-category="injectables">
+          <div class="card h-85 product-card">
             <img src="/assets/images/injectables.png" class="card-img-top" alt="Pet Injectables">
             <div class="card-body">
               <h5 class="card-title">Injectables Medication</h5>
-              <p class="card-text">Essential vaccines for your pet's health and protection.</p>
               <p class="price">$80.99</p>
               <a href="#" class="btn btn-primary">View Details</a>
             </div>
           </div>
         </div>
 
-        <div class="col-md-2 mb-2" data-aos="fade-up" data-aos-delay="200" data-category="anesthetics">
-          <div class="card h-100 product-card">
+        <div class="col-md-2 mb-1" data-aos="fade-up" data-aos-delay="200" data-category="anesthetics">
+          <div class="card h-85 product-card">
             <img src="/assets/images/anesthetics.png" class="card-img-top" alt="Pet Anesthetics">
             <div class="card-body">
               <h5 class="card-title">Inhalation Anesthetic</h5>
-              <p class="card-text">Essential vaccines for your pet's health and protection.</p>
               <p class="price">$100.99</p>
               <a href="#" class="btn btn-primary">View Details</a>
             </div>
           </div>
         </div>
 
-        <div class="col-md-2 mb-2" data-aos="fade-up" data-aos-delay="200" data-category="cabinet-stocks">
-          <div class="card h-100 product-card">
+        <div class="col-md-2 mb-1" data-aos="fade-up" data-aos-delay="200" data-category="cabinet-stocks">
+          <div class="card h-85 product-card">
             <img src="/assets/images/cabinet stocks.png" class="card-img-top" alt="Pet Cabinet Stocks">
             <div class="card-body">
-              <h5 class="card-title">Insecticide Soap</h5>
-              <p class="card-text">Essential vaccines for your pet's health and protection.</p>
+              <h5 class="card-title">Insecticide Dog Soap</h5>
               <p class="price">$108.99</p>
               <a href="#" class="btn btn-primary">View Details</a>
             </div>
