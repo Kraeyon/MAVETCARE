@@ -30,6 +30,7 @@ $router->map('GET', '/confinement', 'App\Controllers\HomeController#confinement'
 
 // Admin routes
 $router->map('GET', '/index', 'App\Controllers\AdminController#index', 'index');
+$router->map('GET', '/admin/appointment', 'App\Controllers\AdminController#appointment', 'appointment');
 // Auth routes
 $router->map('GET', '/login', 'App\Controllers\AuthController#renderLogin', 'render-login');
 $router->map('POST', '/login', 'App\Controllers\AuthController#login', 'login');

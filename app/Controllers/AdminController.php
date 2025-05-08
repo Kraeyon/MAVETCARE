@@ -7,4 +7,7 @@ class AdminController extends BaseController{
     public function index() {
         $this->render('admin/index');
     }
+    public function appointment() {
+        $this->render('admin/appointment');
+    }
 }
