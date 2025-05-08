@@ -19,7 +19,7 @@
 
     <form method="POST" action="/login">
       <div class="mb-3">
-        <label for="email" class="form-label">Username or Email Address</label>
+        <label for="email" class="form-label">Email Address</label>
         <input type="text" class="form-control" id="email" name="email" required>
       </div>
       <div class="mb-3">

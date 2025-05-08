@@ -62,27 +62,46 @@ class AuthController extends BaseController {
     public function register()
 {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $data = [
-            'first_name' => $_POST['first_name'],
-            'last_name' => $_POST['last_name'],
-            'email' => $_POST['email'],
-            'password' => $_POST['password'],
-            'confirm_password' => $_POST['confirm_password']
-        ];
+        // Sanitize and validate input
+        $firstName = trim($_POST['first_name']);
+        $lastName = trim($_POST['last_name']);
+        $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
+        $password = trim($_POST['password']);
+        $confirmPassword = trim($_POST['confirm_password']);
 
-        // Basic validation
-        if ($data['password'] !== $data['confirm_password']) {
-            die('Passwords do not match.');
+        // Validation
+        if (!$firstName || !$lastName || !$email || !$password || !$confirmPassword) {
+            $this->render('auth/register', ['error' => 'Please fill in all fields.']);
+            return;
         }
 
+        // Validate email format
+        if (!$email) {
+            $this->render('auth/register', ['error' => 'Please enter a valid email address.']);
+            return;
+        }
+
+        // Password mismatch check
+        if ($password !== $confirmPassword) {
+            $this->render('auth/register', ['error' => 'Passwords do not match.', 'old' => $_POST]);
+            return;
+        }
+
+        // Proceed with registration
         $userModel = new UserModel();
-        $userModel->registerClient($data);
+        $userModel->registerClient([
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $email,
+            'password' => password_hash($password, PASSWORD_BCRYPT),
+        ]);
 
         // Redirect to login page
         header("Location: /login");
         exit;
     }
 }
+
 
 // In AuthController.php, logout method
 public function logout()
