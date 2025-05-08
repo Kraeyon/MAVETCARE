@@ -62,45 +62,42 @@ class AuthController extends BaseController {
     public function register()
 {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Sanitize and validate input
         $firstName = trim($_POST['first_name']);
+        $middleInitial = trim($_POST['middle_initial']);
         $lastName = trim($_POST['last_name']);
+        $contact = trim($_POST['contact']);
+        $address = trim($_POST['address']);
         $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
         $password = trim($_POST['password']);
         $confirmPassword = trim($_POST['confirm_password']);
 
-        // Validation
-        if (!$firstName || !$lastName || !$email || !$password || !$confirmPassword) {
-            $this->render('auth/register', ['error' => 'Please fill in all fields.']);
+        // Basic validation
+        if (!$firstName || !$lastName || !$email || !$password || !$confirmPassword || !$contact || !$address) {
+            $this->render('auth/register', ['error' => 'Please fill in all required fields.', 'old' => $_POST]);
             return;
         }
 
-        // Validate email format
-        if (!$email) {
-            $this->render('auth/register', ['error' => 'Please enter a valid email address.']);
-            return;
-        }
-
-        // Password mismatch check
         if ($password !== $confirmPassword) {
             $this->render('auth/register', ['error' => 'Passwords do not match.', 'old' => $_POST]);
             return;
         }
 
-        // Proceed with registration
         $userModel = new UserModel();
         $userModel->registerClient([
             'first_name' => $firstName,
+            'middle_initial' => $middleInitial,
             'last_name' => $lastName,
             'email' => $email,
-            'password' => password_hash($password, PASSWORD_BCRYPT),
+            'contact' => $contact,
+            'address' => $address,
+            'password' => $password,  
         ]);
 
-        // Redirect to login page
         header("Location: /login");
         exit;
     }
 }
+
 
 
 // In AuthController.php, logout method
