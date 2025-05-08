@@ -62,27 +62,43 @@ class AuthController extends BaseController {
     public function register()
 {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $data = [
-            'first_name' => $_POST['first_name'],
-            'last_name' => $_POST['last_name'],
-            'email' => $_POST['email'],
-            'password' => $_POST['password'],
-            'confirm_password' => $_POST['confirm_password']
-        ];
+        $firstName = trim($_POST['first_name']);
+        $middleInitial = trim($_POST['middle_initial']);
+        $lastName = trim($_POST['last_name']);
+        $contact = trim($_POST['contact']);
+        $address = trim($_POST['address']);
+        $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
+        $password = trim($_POST['password']);
+        $confirmPassword = trim($_POST['confirm_password']);
 
         // Basic validation
-        if ($data['password'] !== $data['confirm_password']) {
-            die('Passwords do not match.');
+        if (!$firstName || !$lastName || !$email || !$password || !$confirmPassword || !$contact || !$address) {
+            $this->render('auth/register', ['error' => 'Please fill in all required fields.', 'old' => $_POST]);
+            return;
+        }
+
+        if ($password !== $confirmPassword) {
+            $this->render('auth/register', ['error' => 'Passwords do not match.', 'old' => $_POST]);
+            return;
         }
 
         $userModel = new UserModel();
-        $userModel->registerClient($data);
+        $userModel->registerClient([
+            'first_name' => $firstName,
+            'middle_initial' => $middleInitial,
+            'last_name' => $lastName,
+            'email' => $email,
+            'contact' => $contact,
+            'address' => $address,
+            'password' => $password,  
+        ]);
 
-        // Redirect to login page
         header("Location: /login");
         exit;
     }
 }
+
+
 
 // In AuthController.php, logout method
 public function logout()

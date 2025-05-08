@@ -28,7 +28,7 @@
         <p class="lead fade-in-up" style="animation-delay: 0.2s;">
           At MaVetCare, we treat your pets like family. From preventive care to advanced treatments, we’re dedicated to keeping them healthy, happy, and safe.
         </p>
-        <a href="#" class="btn btn-primary mt-3 fade-in-up" style="animation-delay: 0.4s;">Read More</a>
+        <a href="/about" class="btn btn-primary mt-3 fade-in-up" style="animation-delay: 0.4s;">Read More</a>
       </div>
 
       <!-- Image -->

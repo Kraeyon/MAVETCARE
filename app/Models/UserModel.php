@@ -21,14 +21,19 @@ class UserModel
         try {
             // Insert into client table
             $stmt1 = $this->db->prepare("
-                INSERT INTO client (clt_fname, clt_lname, clt_email_address)
-                VALUES (:fname, :lname, :email)
+                INSERT INTO client (clt_fname, clt_initial, clt_lname, clt_contact, clt_home_address, clt_email_address)
+                VALUES (:fname, :initial, :lname, :contact, :address, :email)
+
             ");
             $stmt1->execute([
                 ':fname' => $data['first_name'],
+                ':initial' => $data['middle_initial'],
                 ':lname' => $data['last_name'],
+                ':contact' => $data['contact'],
+                ':address' => $data['address'],
                 ':email' => $data['email']
             ]);
+
 
             // Get the inserted client_code
             $clientId = $this->db->lastInsertId('client_clt_code_seq');
