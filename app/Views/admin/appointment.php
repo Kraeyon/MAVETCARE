@@ -1,6 +1,6 @@
 <?php
 // Include database connection
-require_once "config/db_connect.php";
+include _DIR_ . '/../../config/db_connect.php';
 
 // Initialize variables
 $message = "";
@@ -10,84 +10,88 @@ $error = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Add new appointment
     if (isset($_POST['add_appointment'])) {
-        $client_code = mysqli_real_escape_string($conn, $_POST['client_code']);
-        $pet_code = mysqli_real_escape_string($conn, $_POST['pet_code']);
-        $service_code = mysqli_real_escape_string($conn, $_POST['service_code']);
-        $appt_datetime = mysqli_real_escape_string($conn, $_POST['appt_date'] . ' ' . $_POST['appt_time']);
-        $appt_type = mysqli_real_escape_string($conn, $_POST['appt_type']);
-        $appt_status = mysqli_real_escape_string($conn, $_POST['appt_status']);
-        $additional_notes = mysqli_real_escape_string($conn, $_POST['additional_notes']);
+        $client_code = pg_escape_string($conn, $_POST['client_code']);
+        $pet_code = pg_escape_string($conn, $_POST['pet_code']);
+        $service_code = pg_escape_string($conn, $_POST['service_code']);
+        $appt_datetime = pg_escape_string($conn, $_POST['appt_date'] . ' ' . $_POST['appt_time']);
+        $appt_type = pg_escape_string($conn, $_POST['appt_type']);
+        $appt_status = pg_escape_string($conn, $_POST['appt_status']);
+        $additional_notes = pg_escape_string($conn, $_POST['additional_notes']);
         
         $query = "INSERT INTO appointment (client_code, pet_code, service_code, appt_datetime, appt_type, appt_status, additional_notes) 
-                  VALUES ('$client_code', '$pet_code', '$service_code', '$appt_datetime', '$appt_type', '$appt_status', '$additional_notes')";
-        
-        if (mysqli_query($conn, $query)) {
-            $message = "Appointment added successfully!";
-        } else {
-            $error = "Error: " . mysqli_error($conn);
-        }
+                    VALUES ('$client_code', '$pet_code', '$service_code', '$appt_datetime', '$appt_type', '$appt_status', '$additional_notes')";
+            
+                    $result = pg_query($conn, $query);
+                    if ($result) {
+                        $message = "Appointment added successfully!";
+                    } else {
+                        $error = "Error: " . pg_last_error($conn);
+                    }
     }
     
     // Update existing appointment
     if (isset($_POST['update_appointment'])) {
-        $appt_code = mysqli_real_escape_string($conn, $_POST['appt_code']);
-        $client_code = mysqli_real_escape_string($conn, $_POST['client_code']);
-        $pet_code = mysqli_real_escape_string($conn, $_POST['pet_code']);
-        $service_code = mysqli_real_escape_string($conn, $_POST['service_code']);
-        $appt_datetime = mysqli_real_escape_string($conn, $_POST['appt_date'] . ' ' . $_POST['appt_time']);
-        $appt_type = mysqli_real_escape_string($conn, $_POST['appt_type']);
-        $appt_status = mysqli_real_escape_string($conn, $_POST['appt_status']);
-        $additional_notes = mysqli_real_escape_string($conn, $_POST['additional_notes']);
+        $appt_code = pg_escape_string($conn, $_POST['appt_code']);
+        $client_code = pg_escape_string($conn, $_POST['client_code']);
+        $pet_code = pg_escape_string($conn, $_POST['pet_code']);
+        $service_code = pg_escape_string($conn, $_POST['service_code']);
+        $appt_datetime = pg_escape_string($conn, $_POST['appt_date'] . ' ' . $_POST['appt_time']);
+        $appt_type = pg_escape_string($conn, $_POST['appt_type']);
+        $appt_status = pg_escape_string($conn, $_POST['appt_status']);
+        $additional_notes = pg_escape_string($conn, $_POST['additional_notes']);
         
         $query = "UPDATE appointment 
-                  SET client_code='$client_code', pet_code='$pet_code', service_code='$service_code', 
-                      appt_datetime='$appt_datetime', appt_type='$appt_type', appt_status='$appt_status', 
-                      additional_notes='$additional_notes' 
-                  WHERE appt_code='$appt_code'";
-        
-        if (mysqli_query($conn, $query)) {
+                    SET client_code='$client_code', pet_code='$pet_code', service_code='$service_code', 
+                        appt_datetime='$appt_datetime', appt_type='$appt_type', appt_status='$appt_status', 
+                        additional_notes='$additional_notes' 
+                    WHERE appt_code='$appt_code'";
+            
+        $result = pg_query($conn, $query);
+        if ($result) {
             $message = "Appointment updated successfully!";
         } else {
-            $error = "Error: " . mysqli_error($conn);
+            $error = "Error: " . pg_last_error($conn);
         }
     }
     
     // Delete appointment
     if (isset($_POST['delete_appointment'])) {
-        $appt_code = mysqli_real_escape_string($conn, $_POST['appt_code']);
+        $appt_code = pg_escape_string($conn, $_POST['appt_code']);
         
         $query = "DELETE FROM appointment WHERE appt_code='$appt_code'";
         
-        if (mysqli_query($conn, $query)) {
+        $result = pg_query($conn, $query);
+        if ($result) {
             $message = "Appointment deleted successfully!";
         } else {
-            $error = "Error: " . mysqli_error($conn);
+            $error = "Error: " . pg_last_error($conn);
         }
     }
 }
 
 // Get all appointments with related data
 $query = "SELECT a.*, c.clt_fname, c.clt_lname, p.pet_name, p.pet_type, p.pet_breed, s.service_name, s.service_fee 
-          FROM appointment a
-          JOIN client c ON a.client_code = c.clt_code
-          JOIN pet p ON a.pet_code = p.pet_code
-          JOIN service s ON a.service_code = s.service_code
-          ORDER BY a.appt_datetime";
-$result = mysqli_query($conn, $query);
-$appointments = mysqli_fetch_all($result, MYSQLI_ASSOC);
-
-// Get all clients for dropdown
-$query = "SELECT clt_code, clt_fname, clt_lname, clt_contact FROM client ORDER BY clt_lname, clt_fname";
-$clients_result = mysqli_query($conn, $query);
-$clients = mysqli_fetch_all($clients_result, MYSQLI_ASSOC);
+            FROM appointment a
+            JOIN client c ON a.client_code = c.clt_code
+            JOIN pet p ON a.pet_code = p.pet_code
+            JOIN service s ON a.service_code = s.service_code
+            ORDER BY a.appt_datetime";
+            $result = pg_query($conn, $query);
+            $appointments = [];
+            while ($row = pg_fetch_assoc($result)) {
+                $appointments[] = $row;
+            }
 
 // Get all services for dropdown
 $query = "SELECT service_code, service_name, service_fee FROM service ORDER BY service_name";
-$services_result = mysqli_query($conn, $query);
-$services = mysqli_fetch_all($services_result, MYSQLI_ASSOC);
+$services_result = pg_query($conn, $query);
+$services = [];
+while ($row = pg_fetch_assoc($services_result)) {
+    $services[] = $row;
+}
 
 // Close database connection
-mysqli_close($conn);
+pg_close($conn);
 ?>
 
 <!DOCTYPE html>
