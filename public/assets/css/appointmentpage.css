@@ -35,9 +35,9 @@
 }
 
 .book-now-btn:hover {
-    background-color: #FFA500;
+    background-color: #0d6efd;
     color: white;
-    border: 1px solid #FFA500;
+    border: 1px solid #0d6efd;
 }
 
 /* Smooth scrolling behavior */
@@ -120,7 +120,7 @@ button {
 }
 
 button:hover {
-    background-color: #FFA500; /* orange hover */
+    background-color: #0d6efd; /* orange hover */
 }
 
 #confirmation-message {
@@ -255,8 +255,8 @@ section.py-5.bg-light .btn-primary {
 }
 
 section.py-5.bg-light .btn-primary:hover {
-    background-color: #FFA500;
-    border-color: #FFA500;
+    background-color: #0d62e2;
+    border-color: #0d6efd;
 }
 
 /* Hero image styling */
