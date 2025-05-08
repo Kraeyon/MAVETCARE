@@ -2,16 +2,16 @@
 
 <?php
 /**
- * MaVetCare Appointment Booking Form Handler (Optimized)
+ * MaVetCare Appointment Booking Form Handler (Optimized & PostgreSQL-friendly)
  */
 
 if (session_status() == PHP_SESSION_NONE) session_start();
 
 // Database credentials
 define('DB_HOST', 'localhost');
-define('DB_USER', 'mavetcare_admin');
+define('DB_USER', 'postgres');
 define('DB_PASS', 'YOUR_PASSWORD_HERE');  // Change this in production
-define('DB_NAME', 'mavetcare_appointments');
+define('DB_NAME', 'MaVetCare');
 
 // Initialize
 $errors = [];
@@ -21,7 +21,7 @@ $conn = null;
 // Simple database connection function (DRY)
 function getDBConnection() {
     try {
-        $conn = new PDO("mysql:host=".DB_HOST.";dbname=".DB_NAME, DB_USER, DB_PASS);
+        $conn = new PDO("pgsql:host=".DB_HOST.";dbname=".DB_NAME, DB_USER, DB_PASS);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $conn;
     } catch(PDOException $e) {
@@ -29,19 +29,16 @@ function getDBConnection() {
     }
 }
 
-// Validate and sanitize helper
-function sanitize($field, $type = 'string') {
-    switch ($type) {
-        case 'email': return filter_input(INPUT_POST, $field, FILTER_SANITIZE_EMAIL);
-        case 'string': default: return filter_input(INPUT_POST, $field, FILTER_SANITIZE_STRING);
-    }
+// Simpler sanitize helper (new)
+function sanitize($field) {
+    return htmlspecialchars(trim($_POST[$field] ?? ''), ENT_QUOTES, 'UTF-8');
 }
 
 // Process form
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $owner_name = sanitize('owner_name');
     $contact_number = sanitize('contact_number');
-    $email = sanitize('email', 'email');
+    $email = sanitize('email');
     $pet_name = sanitize('pet_name');
     $pet_type = sanitize('pet_type');
     $service = sanitize('service');
@@ -66,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conn = getDBConnection();
 
         // Check availability first (server-side)
-        $stmt = $conn->prepare("SELECT COUNT(*) FROM appointments WHERE preferred_date = :date AND preferred_time = :time");
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM appointment WHERE preferred_date = :date AND preferred_time = :time");
         $stmt->execute([':date' => $preferred_date, ':time' => $preferred_time]);
         $count = $stmt->fetchColumn();
 
@@ -74,11 +71,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($count >= $max_appointments) {
             $errors[] = "Sorry, the selected time slot is already full. Please choose another.";
         } else {
-            // Save appointment
-            $stmt = $conn->prepare("INSERT INTO appointments 
+            // Save appointment & get ID (PostgreSQL RETURNING id)
+            $stmt = $conn->prepare("INSERT INTO appointment 
                 (owner_name, contact_number, email, pet_name, pet_type, service, preferred_date, preferred_time, appointment_type, additional_notes, created_at) 
-                VALUES (:owner_name, :contact_number, :email, :pet_name, :pet_type, :service, :preferred_date, :preferred_time, :appointment_type, :additional_notes, NOW())");
-            
+                VALUES (:owner_name, :contact_number, :email, :pet_name, :pet_type, :service, :preferred_date, :preferred_time, :appointment_type, :additional_notes, NOW())
+                RETURNING id");
+
             $stmt->execute([
                 ':owner_name' => $owner_name,
                 ':contact_number' => $contact_number,
@@ -92,13 +90,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ':additional_notes' => $additional_notes
             ]);
 
-            $appointment_id = $conn->lastInsertId();
+            $appointment_id = $stmt->fetchColumn();
 
             // Send confirmation email (client + admin)
             function sendEmail($to, $subject, $message) {
                 $headers = "MIME-Version: 1.0\r\n";
                 $headers .= "Content-type: text/html; charset=UTF-8\r\n";
-                $headers .= "From: appointments@mavetcare.com\r\n";
+                $headers .= "From: oliverecta13@gmail.com\r\n";
                 mail($to, $subject, $message, $headers);
             }
 
@@ -129,13 +127,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ";
 
             sendEmail($email, $user_subject, $user_message);
-            sendEmail("mavetcare@email.com", $admin_subject, $admin_message);
+            sendEmail("oliverecta13@email.com", $admin_subject, $admin_message);
 
             // Redirect
             $_SESSION['appointment_success'] = true;
-            $_SESSION['appointment_id'] = $appointment_id;
-            header("Location: thank-you.php");
-            exit();
+$_SESSION['appointment_id'] = $appointment_id;
+
+
+
         }
     }
 }
@@ -156,6 +155,21 @@ function getPetTypes() {
     return ['Dog', 'Cat', 'Bird', 'Rabbit', 'Hamster/Guinea Pig', 'Reptile', 'Fish', 'Other'];
 }
 ?>
+
+<?php
+session_start();
+$showThankYou = false;
+
+if (isset($_SESSION['appointment_success']) && $_SESSION['appointment_success'] === true) {
+    $showThankYou = true;
+    $appointment_id = $_SESSION['appointment_id'];
+
+    // Clear session variable so popup doesn’t show again on refresh
+    unset($_SESSION['appointment_success']);
+    unset($_SESSION['appointment_id']);
+}
+?>
+
 
 
 <!DOCTYPE html>
@@ -219,7 +233,7 @@ function getPetTypes() {
             </div>
         <?php endif; ?>
 
-        <form id="appointment-form" method="POST" action="appointment.php">
+        <form id="appointment-form" method="POST" action="appointmentpage.php">
             <!-- Owner's Name -->
             <label for="owner_name">Full Name:</label>
             <input type="text" id="owner_name" name="owner_name" required>
@@ -278,7 +292,7 @@ function getPetTypes() {
             <!-- Reminder (optional, not handled in PHP yet) -->
             <label for="reminder">Receive appointment reminder via SMS/email</label>
             <input type="checkbox" id="reminder" name="reminder">
-
+<!-- type, age, med_history -->
             <!-- Submit Button -->
             <button type="submit">Book Appointment</button>
         </form>
@@ -293,6 +307,36 @@ function getPetTypes() {
             <li><strong>What are your clinic hours?</strong> Our clinic is open Monday to Saturday, from 9 AM to 5 PM.</li>
         </ul>
     </section>
+
+        <?php if ($showThankYou): ?>
+    <div id="thankYouModal" style="
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center;
+    z-index: 9999;
+    ">
+    <div style="
+        background: white; padding: 30px; border-radius: 12px; text-align: center;
+        max-width: 400px; box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    ">
+        <h2 style="color: #3183FF;">🎉 Appointment Booked!</h2>
+        <p>Thank you for booking with MaVetCare.</p>
+        <p><strong>Your Appointment ID:</strong> #<?php echo htmlspecialchars($appointment_id); ?></p>
+        <button onclick="closeThankYou()" style="
+        margin-top: 15px; padding: 10px 20px; background: #3183FF;
+        color: white; border: none; border-radius: 6px; cursor: pointer;
+        ">OK</button>
+    </div>
+    </div>
+
+    <<script>
+    function closeThankYou() {
+        document.getElementById('thankYouModal').style.display = 'none';
+        // Redirect after the modal closes
+        window.location.href = 'appointmentpage.php'; 
+    }
+</script>
+
+    <?php endif; ?>
 
     <!-- Footer Section (Same as Home Page) -->
     <?php include_once '../app/views/includes/footer.php'; ?>
