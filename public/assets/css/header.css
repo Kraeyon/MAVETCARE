@@ -39,12 +39,12 @@
         border-radius: 5px;
     }
     .nav-links a.active {
-        background-color: #cba46b;
+        background-color: #0d6efd;
         color: white;
         border-radius: 5px;
     }
     .nav-links a:hover {
-        background-color: #cba46b;
+        background-color: #0d6efd;
         color: white;
     }
     .nav-buttons {
