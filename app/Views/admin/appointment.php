@@ -4,9 +4,12 @@ $controller = new AdminAppointmentController();
 
 $appointments = $controller->appointments;
 $services = $controller->services;
+$clients = $controller->clients;
+$pets = $controller->pets;
 $message = $controller->message;
 $error = $controller->error;
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -91,18 +94,27 @@ $error = $controller->error;
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('addAppointmentModal').style.display='none'">&times;</span>
             <h2>Add New Appointment</h2>
-            <form method="POST" action="">
-                <div class="form-group">
-                    <label for="client_code">Client:</label>
-                    <select name="client_code" id="client_code" class="form-control" required onchange="loadClientPets(this.value)">
-                        <option value="">Select Client</option>
-                        <?php foreach($clients as $client): ?>
-                            <option value="<?php echo $client['clt_code']; ?>">
-                                <?php echo $client['clt_fname'] . ' ' . $client['clt_lname'] . ' (' . $client['clt_contact'] . ')'; ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+            <form method="POST">
+                <label>Select Client:</label>
+                <select name="selected_client_id" onchange="this.form.submit()">
+                    <option value="">-- Select Client --</option>
+                    <?php foreach ($clients as $client): ?>
+                        <option value="<?= $client['client_id'] ?>"
+                            <?= (isset($_POST['selected_client_id']) && $_POST['selected_client_id'] == $client['client_id']) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($client['full_name']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+
+                <label>Select Pet:</label>
+                <select name="pet_id">
+                    <option value="">-- Select Pet --</option>
+                    <?php foreach ($pets as $pet): ?>
+                        <option value="<?= $pet['pet_id'] ?>">
+                            <?= htmlspecialchars($pet['pet_name']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
                 
                 <div class="form-group">
                     <label for="pet_code">Pet:</label>

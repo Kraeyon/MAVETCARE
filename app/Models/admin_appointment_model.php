@@ -49,4 +49,25 @@ function deleteAppointment($conn, $appt_code) {
     $query = "DELETE FROM appointment WHERE appt_code='$appt_code'";
     return pg_query($conn, $query);
 }
+
+function getClients($conn) {
+    $query = "SELECT client_id, full_name FROM clients";
+    $result = pg_query($conn, $query);
+    $clients = [];
+    while ($row = pg_fetch_assoc($result)) {
+        $clients[] = $row;
+    }
+    return $clients;
+}
+
+function getPetsByClient($conn, $client_id) {
+    $client_id = pg_escape_string($conn, $client_id);
+    $query = "SELECT pet_id, pet_name FROM pets WHERE client_id = '$client_id'";
+    $result = pg_query($conn, $query);
+    $pets = [];
+    while ($row = pg_fetch_assoc($result)) {
+        $pets[] = $row;
+    }
+    return $pets;
+}
 ?>

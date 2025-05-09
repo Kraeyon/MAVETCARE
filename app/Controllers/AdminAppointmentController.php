@@ -4,13 +4,16 @@ include __DIR__ . '/../Models/admin_appointment_model.php';
 class AdminAppointmentController {
     public $appointments;
     public $services;
+    public $clients;
+    public $pets = [];
     public $message = "";
     public $error = "";
 
     public function __construct() {
-        global $conn; // If $conn is global in your project
+        global $conn;
         $this->appointments = getAppointments($conn);
         $this->services = getServices($conn);
+        $this->clients = getClients($conn);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (isset($_POST['add_appointment'])) {
@@ -29,9 +32,15 @@ class AdminAppointmentController {
                 $this->message = $result ? "Appointment deleted successfully!" : "Error: " . pg_last_error($conn);
             }
 
-            // Refresh after form actions
+            // If user selected a client to load pets
+            if (isset($_POST['selected_client_id'])) {
+                $client_id = $_POST['selected_client_id'];
+                $this->pets = getPetsByClient($conn, $client_id);
+            }
+
             $this->appointments = getAppointments($conn);
             $this->services = getServices($conn);
+            $this->clients = getClients($conn);
         }
     }
 }
