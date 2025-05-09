@@ -6,6 +6,9 @@ $page = basename($_SERVER['PHP_SELF'], ".php");
 if ($page == '') {
     $page = 'index';
 }
+
+// Update the active check to consider the full URL path or specific page names
+$pageUrl = $_SERVER['REQUEST_URI']; // Get the full URL
 ?>
 
 <!-- sidebar.php -->
@@ -22,7 +25,7 @@ if ($page == '') {
             </li>
 
             <li class="nav-item">
-                <a class="nav-link <?php echo ($page == 'doctors') ? 'active' : ''; ?>" href="doctors.php">
+                <a class="nav-link <?php echo (strpos($pageUrl, '/admin/doctor') !== false) ? 'active' : ''; ?>" href="/admin/doctor">
                     <i class="bi bi-people-fill me-2"></i>Doctors
                 </a>
             </li>

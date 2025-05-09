@@ -10,4 +10,7 @@ class AdminController extends BaseController{
     public function appointment() {
         $this->render('admin/appointment');
     }
+    public function doctor(){
+        $this->render('admin/doctor');
+    }
 }
