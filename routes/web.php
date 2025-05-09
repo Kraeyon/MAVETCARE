@@ -32,6 +32,13 @@ $router->map('GET', '/confinement', 'App\Controllers\HomeController#confinement'
 $router->map('GET', '/index', 'App\Controllers\AdminController#index', 'index');
 $router->map('GET', '/admin/appointment', 'App\Controllers\AdminController#appointment', 'appointment');
 $router->map('GET', '/admin/doctor', 'App\Controllers\AdminController#doctor', 'doctor');
+$router->map('GET', '/doctors', 'App\Controllers\AdminController#doctors', 'doctors');
+$router->map('GET', '/patients', 'App\Controllers\AdminController#patients', 'patients');
+$router->map('GET', '/appointment', 'App\Controllers\AdminController#appointment', 'appointment');
+$router->map('GET', '/schedule', 'App\Controllers\AdminController#schedule', 'schedule');
+$router->map('GET', '/inventory', 'App\Controllers\AdminController#inventory', 'inventory');
+$router->map('GET', '/employees', 'App\Controllers\AdminController#employees', 'employees');
+
 // Auth routes
 $router->map('GET', '/login', 'App\Controllers\AuthController#renderLogin', 'render-login');
 $router->map('POST', '/login', 'App\Controllers\AuthController#login', 'login');
