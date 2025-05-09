@@ -22,37 +22,37 @@ if ($page == '') {
             </li>
 
             <li class="nav-item">
-                <a class="nav-link <?php echo ($page == 'doctors') ? 'active' : ''; ?>" href="doctors.php">
+                <a class="nav-link <?php echo ($page == 'doctors') ? 'active' : ''; ?>" href="/doctors">
                     <i class="bi bi-people-fill me-2"></i>Doctors
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link <?php echo ($page == 'patients') ? 'active' : ''; ?>" href="patients.php">
+                <a class="nav-link <?php echo ($page == 'patients') ? 'active' : ''; ?>" href="/patients">
                     <i class="bi bi-person-fill me-2"></i>Patients
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link <?php echo ($page == 'appointments') ? 'active' : ''; ?>" href="appointments.php">
+                <a class="nav-link <?php echo ($page == 'appointment') ? 'active' : ''; ?>" href="/appointment">
                     <i class="bi bi-calendar-check-fill me-2"></i>Appointments
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link <?php echo ($page == 'schedule') ? 'active' : ''; ?>" href="schedule.php">
+                <a class="nav-link <?php echo ($page == 'schedule') ? 'active' : ''; ?>" href="/schedule">
                     <i class="bi bi-calendar-range-fill me-2"></i>Doctor Schedule
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link <?php echo ($page == 'inventory') ? 'active' : ''; ?>" href="inventory.php">
+                <a class="nav-link <?php echo ($page == 'inventory') ? 'active' : ''; ?>" href="/inventory">
                     <i class="bi bi-box-seam me-2"></i>Inventory
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link <?php echo ($page == 'employees') ? 'active' : ''; ?>" href="employees.php">
+                <a class="nav-link <?php echo ($page == 'employees') ? 'active' : ''; ?>" href="/employees">
                     <i class="bi bi-people me-2"></i>Employees
                 </a>
             </li>
