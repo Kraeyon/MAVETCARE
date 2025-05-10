@@ -1,7 +1,7 @@
 <?php
-// These would be set from your session or controller in the future
-$userName = 'Admin'; // Replace with $_SESSION['user_name'] later
-$notificationCount = 3; // Fetch from DB later
+
+$userName = 'Admin';
+$notificationCount = 3; 
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-3 shadow-sm" style="background: linear-gradient(180deg, #2c3e50, #34495e);">
