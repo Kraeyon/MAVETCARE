@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\DoctorModel;
 
 class DoctorController {
+    
     private $doctorModel;
 
     public function __construct() {
