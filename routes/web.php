@@ -32,6 +32,7 @@ $router->map('GET', '/confinement', 'App\Controllers\HomeController#confinement'
 $router->map('GET', '/index', 'App\Controllers\AdminController#index', 'index');
 $router->map('GET', '/admin/appointment', 'App\Controllers\AdminController#appointment', 'appointment');
 $router->map('GET', '/admin/doctor', 'App\Controllers\AdminController#doctor', 'doctor');
+$router->map('POST', '/admin/doctor/edit/[i:staffCode]', 'App\Controllers\AdminController#editDoctorSchedule', 'edit-doctor-schedule');
 $router->map('GET', '/admin/patients', 'App\Controllers\AdminController#patients', 'patients');
 $router->map('GET', '/admin/schedule', 'App\Controllers\AdminController#schedule', 'schedule');
 $router->map('GET', '/admin/inventory', 'App\Controllers\AdminController#inventory', 'inventory');
