@@ -6,7 +6,8 @@ $notificationCount = 3;
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-3 shadow-sm" style="background: linear-gradient(180deg, #2c3e50, #34495e);">
     <a class="navbar-brand fw-bold text-white" href="#">
-        <i class="bi bi-plus-circle me-2"></i>MavetCare
+        <img src="/assets/images/paw.png" alt="Logo" class="me-2" style="height: 24px;">
+        MavetCare
     </a>
 
     <div class="ms-auto d-flex align-items-center">
