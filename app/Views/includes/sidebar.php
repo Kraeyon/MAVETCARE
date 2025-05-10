@@ -25,8 +25,7 @@ $pageUrl = $_SERVER['REQUEST_URI']; // Get the full URL
             </li>
 
             <li class="nav-item">
-                <a class="nav-link <?php echo (strpos($pageUrl, '/admin/doctor') !== false) ? 'active' : ''; ?>" href="/admin/doctor">
-                <a class="nav-link <?php echo ($page == 'doctors') ? 'active' : ''; ?>" href="/doctors">
+                <a class="nav-link <?php echo ($page == 'doctor') ? 'active' : ''; ?>" href="/admin/doctor">
                     <i class="bi bi-people-fill me-2"></i>Doctors
                 </a>
             </li>
