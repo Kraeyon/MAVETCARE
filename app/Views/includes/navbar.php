@@ -1,7 +1,6 @@
 <?php
 
 $userName = 'Admin';
-$notificationCount = 3; 
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-3 shadow-sm" style="background: linear-gradient(180deg, #2c3e50, #34495e);">
@@ -11,16 +10,6 @@ $notificationCount = 3;
     </a>
 
     <div class="ms-auto d-flex align-items-center">
-        <!-- Notifications -->
-        <div class="position-relative me-3">
-            <i class="bi bi-bell-fill fs-5 text-white"></i>
-            <?php if ($notificationCount > 0): ?>
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    <?= $notificationCount ?>
-                </span>
-            <?php endif; ?>
-        </div>
-
         <!-- Admin Dropdown -->
         <div class="dropdown">
             <a class="text-white dropdown-toggle text-decoration-none" href="#" id="adminMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
