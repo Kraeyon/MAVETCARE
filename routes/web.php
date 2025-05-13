@@ -17,7 +17,13 @@ $router->map('POST', '/api/reviews', 'App\Controllers\ReviewController#submit', 
 
 $router->map('GET', '/services', 'App\Controllers\HomeController#services', 'services');
 $router->map('GET', '/products', 'App\Controllers\HomeController#products', 'products');
-$router->map('GET', '/appointment', 'App\Controllers\HomeController#appointment', 'appointmentpage');
+$router->map('GET', '/appointment', 'App\Controllers\HomeController#appointment', 'appointment');
+$router->map('POST', '/appointment', 'App\Controllers\HomeController#submitAppointment', 'submit-appointment');
+
+// Pet management for logged-in clients
+$router->map('GET', '/add-pet', 'App\Controllers\HomeController#showAddPetForm', 'show-add-pet');
+$router->map('POST', '/add-pet', 'App\Controllers\HomeController#addPet', 'add-pet');
+
 $router->map('GET', '/vaccination', 'App\Controllers\HomeController#vaccination', 'vaccination');
 $router->map('GET', '/deworming', 'App\Controllers\HomeController#deworming', 'deworming');
 $router->map('GET', '/antiparasitic', 'App\Controllers\HomeController#antiparasitic', 'antiparasitic');
@@ -30,7 +36,7 @@ $router->map('GET', '/confinement', 'App\Controllers\HomeController#confinement'
 
 // Admin routes
 $router->map('GET', '/index', 'App\Controllers\AdminController#index', 'index');
-$router->map('GET', '/admin/appointment', 'App\Controllers\AdminController#appointment', 'appointment');
+$router->map('GET', '/admin/appointment', 'App\Controllers\AdminController#appointment', 'admin-appointment');
 $router->map('GET', '/admin/doctor', 'App\Controllers\AdminController#doctor', 'doctor');
 $router->map('POST', '/admin/doctor/edit/[i:staffCode]', 'App\Controllers\AdminController#editDoctorSchedule', 'edit-doctor-schedule');
 $router->map('GET', '/admin/patients', 'App\Controllers\AdminController#patients', 'patients');
