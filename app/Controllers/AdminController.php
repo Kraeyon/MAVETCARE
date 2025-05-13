@@ -18,13 +18,22 @@ class AdminController extends BaseController{
 
         // Instantiate the PatientModel and pass the connection
         $model = new PatientModel($pdo);
-
-        // Get the patients and clients data
-        $pets = $model->getAllPatients();
+        
+        if (isset($_GET['search']) && !empty($_GET['search'])) {
+            // Search functionality
+            $patients = $model->searchPatients($_GET['search']);
+        } else if (isset($_GET['sort']) && isset($_GET['order'])) {
+            // Sorting functionality
+            $patients = $model->getSortedPatients($_GET['sort'], $_GET['order']);
+        } else {
+            // Default view
+            $patients = $model->getAllPatients();
+        }
+        
         $clients = $model->getAllClients();
-
+        
         // Render the view and pass data
-        $this->render('admin/patients', ['patients' => $pets, 'clients' => $clients]);
+        $this->render('admin/patients', ['patients' => $patients, 'clients' => $clients]);
     }
 
 

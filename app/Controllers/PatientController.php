@@ -27,7 +27,13 @@ class PatientController {
                 );
             }
 
-            $this->model->addPatient(
+            // Check if a pet with the same name, owner, and type already exists
+            if ($this->model->isDuplicatePet($clientCode, $_POST['pet_name'], $_POST['pet_type'])) {
+                header('Location: /admin/patients?error=duplicate_pet');
+                exit();
+            }
+
+            $result = $this->model->addPatient(
                 $clientCode,
                 $_POST['pet_name'],
                 $_POST['pet_type'],
@@ -36,7 +42,7 @@ class PatientController {
                 $_POST['pet_med_history']
             );
 
-            header('Location: /admin/patients');
+            header('Location: /admin/patients' . ($result ? '?success=added' : '?error=add_failed'));
             exit();
         }
     }
@@ -44,16 +50,32 @@ class PatientController {
     // Update existing patient (from POST /admin/patients/update)
     public function updatePatient() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->model->updatePatient(
+            // Make sure we have all required fields
+            if (!isset($_POST['pet_code']) || !isset($_POST['pet_age'])) {
+                // Log the error and redirect
+                error_log("Missing required fields for pet update");
+                header('Location: /admin/patients?error=missing_fields');
+                exit();
+            }
+            
+            // Get medical history (might be empty)
+            $medHistory = isset($_POST['pet_med_history']) ? $_POST['pet_med_history'] : '';
+            
+            // Log the values we're using for debugging
+            error_log("Updating pet: " . $_POST['pet_code'] . " - Age: " . $_POST['pet_age']);
+            
+            // Perform the update - only update age and medical history
+            $result = $this->model->updatePatientAgeAndHistory(
                 $_POST['pet_code'],
-                $_POST['pet_name'],
-                $_POST['pet_type'],
-                $_POST['pet_breed'],
                 $_POST['pet_age'],
-                $_POST['pet_med_history']
+                $medHistory
             );
+            
+            // Log the result
+            error_log("Update result: " . ($result ? 'success' : 'failed'));
 
-            header('Location: /admin/patients');
+            // Redirect back to the patients page
+            header('Location: /admin/patients' . ($result ? '?success=updated' : '?error=update_failed'));
             exit();
         }
     }
