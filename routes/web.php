@@ -43,7 +43,6 @@ $router->map('POST', '/admin/patients/update', 'App\Controllers\PatientControlle
 // Add route for deleting a patient
 $router->map('GET', '/admin/patients/delete/[i:id]', 'App\Controllers\PatientController#deletePatient', 'delete-patient');
 
-$router->map('GET', '/admin/schedule', 'App\Controllers\AdminController#schedule', 'schedule');
 $router->map('GET', '/admin/inventory', 'App\Controllers\AdminController#inventory', 'inventory');
 $router->map('GET', '/admin/employees', 'App\Controllers\AdminController#employees', 'employees');
 

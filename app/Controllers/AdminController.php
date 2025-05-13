@@ -69,11 +69,6 @@ class AdminController extends BaseController{
         }
     }
 
-
-    public function schedule() {
-        $this->render('admin/schedule');
-    }
-
     public function inventory() {
         $this->render('admin/inventory');
     }

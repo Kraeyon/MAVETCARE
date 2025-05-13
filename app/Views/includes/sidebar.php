@@ -43,12 +43,6 @@ $pageUrl = $_SERVER['REQUEST_URI']; // Get the full URL
             </li>
 
             <li class="nav-item">
-                <a class="nav-link <?php echo ($page == 'schedule') ? 'active' : ''; ?>" href="/admin/schedule">
-                    <i class="bi bi-calendar-range-fill me-2"></i>Doctor Schedule
-                </a>
-            </li>
-
-            <li class="nav-item">
                 <a class="nav-link <?php echo ($page == 'inventory') ? 'active' : ''; ?>" href="/admin/inventory">
                     <i class="bi bi-box-seam me-2"></i>Inventory
                 </a>
