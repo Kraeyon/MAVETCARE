@@ -34,6 +34,15 @@ $router->map('GET', '/admin/appointment', 'App\Controllers\AdminController#appoi
 $router->map('GET', '/admin/doctor', 'App\Controllers\AdminController#doctor', 'doctor');
 $router->map('POST', '/admin/doctor/edit/[i:staffCode]', 'App\Controllers\AdminController#editDoctorSchedule', 'edit-doctor-schedule');
 $router->map('GET', '/admin/patients', 'App\Controllers\AdminController#patients', 'patients');
+// Add route for adding a new patient
+$router->map('POST', '/admin/patients/add', 'App\Controllers\PatientController#addPatient', 'add-patient');
+
+// Add route for updating an existing patient
+$router->map('POST', '/admin/patients/update', 'App\Controllers\PatientController#updatePatient', 'update-patient');
+
+// Add route for deleting a patient
+$router->map('GET', '/admin/patients/delete/[i:id]', 'App\Controllers\PatientController#deletePatient', 'delete-patient');
+
 $router->map('GET', '/admin/schedule', 'App\Controllers\AdminController#schedule', 'schedule');
 $router->map('GET', '/admin/inventory', 'App\Controllers\AdminController#inventory', 'inventory');
 $router->map('GET', '/admin/employees', 'App\Controllers\AdminController#employees', 'employees');

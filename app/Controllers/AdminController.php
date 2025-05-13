@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Models\DoctorModel;
+use App\Models\PatientModel;
+use Config\Database;
 
 class AdminController extends BaseController{
     // para rani makakita sa sidebar og navbar
@@ -11,8 +13,20 @@ class AdminController extends BaseController{
     }
 
     public function patients() {
-        $this->render('admin/patients');
-    }   
+        // Get the PDO connection
+        $pdo = Database::getInstance()->getConnection();
+
+        // Instantiate the PatientModel and pass the connection
+        $model = new PatientModel($pdo);
+
+        // Get the patients and clients data
+        $pets = $model->getAllPatients();
+        $clients = $model->getAllClients();
+
+        // Render the view and pass data
+        $this->render('admin/patients', ['patients' => $pets, 'clients' => $clients]);
+    }
+
 
     public function appointment() {
         $this->render('admin/appointment');
