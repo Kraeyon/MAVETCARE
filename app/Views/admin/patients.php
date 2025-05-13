@@ -3,12 +3,13 @@
 <head>
     <title>Patients</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
 <?php include_once '../app/views/includes/navbar.php'; ?>
 <div class="d-flex">
 <?php include_once '../app/views/includes/sidebar.php'; ?>
-<div class="container mt-5">
+<div class="flex-grow-1 p-4 mt-5">
     <h2 class="mb-4">Patient Records</h2>
 
     <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addPetModal">Add New Pet</button>
