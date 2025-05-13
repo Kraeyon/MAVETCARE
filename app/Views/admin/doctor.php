@@ -73,6 +73,20 @@
             margin-right: 10px;
             font-size: 1.2rem;
         }
+        .search-box {
+            position: relative;
+            max-width: 300px;
+        }
+        .search-box .form-control {
+            padding-left: 35px;
+            border-radius: 20px;
+        }
+        .search-box .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 10px;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -83,20 +97,33 @@
     <?php include_once '../app/views/includes/sidebar.php'; ?>
     
     <div class="flex-grow-1 p-4">
-        <div class="dashboard-header d-flex justify-content-between align-items-center">
+        <div class="dashboard-header d-flex justify-content-between align-items-center flex-wrap">
             <div>
                 <h2 class="mb-0">Doctor Staff Management</h2>
                 <p class="text-muted mb-0">View and manage doctor schedules</p>
             </div>
-            <div class="doctor-count">
+            <div class="search-box mt-2 mt-md-0">
+                <form action="/admin/doctor" method="GET" class="d-flex">
+                    <div class="position-relative">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" name="search" id="searchDoctor" class="form-control" 
+                               placeholder="Search doctors..." value="<?= isset($search_term) ? htmlspecialchars($search_term) : '' ?>">
+                    </div>
+                    <button type="submit" class="btn btn-primary ms-2">Search</button>
+                    <?php if (isset($search_term) && !empty($search_term)): ?>
+                        <a href="/admin/doctor" class="btn btn-secondary ms-2">Clear</a>
+                    <?php endif; ?>
+                </form>
+            </div>
+            <div class="doctor-count mt-2 mt-md-0">
                 <i class="bi bi-people-fill"></i> Total Doctors: <span class="badge bg-primary"><?= count($doctors) ?></span>
             </div>
         </div>
 
         <?php if (!empty($doctors)) : ?>
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="doctorsContainer">
                 <?php foreach ($doctors as $doc) : ?>
-                    <div class="col">
+                    <div class="col doctor-item" data-name="<?= strtolower(htmlspecialchars($doc->staff_name)) ?>" data-position="<?= strtolower(htmlspecialchars($doc->staff_position)) ?>">
                         <div class="card doctor-card">
                             <div class="card-header bg-primary text-white">
                                 <i class="bi bi-person-circle"></i> <span class="fw-bold"><?= htmlspecialchars($doc->staff_name) ?></span>
@@ -148,6 +175,27 @@
         updateButton.classList.add('d-none');
         saveButton.classList.remove('d-none');
     }
+
+    // Client-side search functionality (filters displayed cards)
+    document.getElementById('searchDoctor').addEventListener('input', function() {
+        const searchValue = this.value.toLowerCase().trim();
+        
+        // Only do client-side filtering if we're not submitting the form
+        if (searchValue.length < 3) {
+            const doctorItems = document.querySelectorAll('.doctor-item');
+            
+            doctorItems.forEach(item => {
+                const doctorName = item.getAttribute('data-name');
+                const doctorPosition = item.getAttribute('data-position');
+                
+                if (doctorName.includes(searchValue) || doctorPosition.includes(searchValue)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    });
 </script>
 
 </body>

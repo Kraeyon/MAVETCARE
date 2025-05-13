@@ -18,5 +18,18 @@ class DoctorModel extends BaseModel
         $stmt->bindParam(':staffCode', $staffCode, \PDO::PARAM_INT);
         $stmt->execute();
     }
+    
+    // Search for doctors by name or position
+    public function searchDoctors($searchTerm) {
+        $searchPattern = '%' . $searchTerm . '%';
+        $stmt = $this->db->prepare("SELECT staff_code, staff_name, staff_position, staff_schedule 
+                                   FROM veterinary_staff 
+                                   WHERE (LOWER(staff_name) LIKE :search 
+                                   OR LOWER(staff_position) LIKE :search)
+                                   AND LOWER(staff_position) LIKE '%doctor%'");
+        $stmt->bindParam(':search', $searchPattern, \PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_OBJ);
+    }
 }
 

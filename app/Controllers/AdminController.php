@@ -42,7 +42,16 @@ class AdminController extends BaseController{
     }
     public function doctor() {
         $doctorModel = new DoctorModel();
-        $data['doctors'] = $doctorModel->getDoctors();
+        
+        if (isset($_GET['search']) && !empty($_GET['search'])) {
+            // Search functionality
+            $data['doctors'] = $doctorModel->searchDoctors($_GET['search']);
+            $data['search_term'] = $_GET['search'];
+        } else {
+            // Default view
+            $data['doctors'] = $doctorModel->getDoctors();
+        }
+        
         $this->render('admin/doctor', $data);
     }
     
