@@ -19,8 +19,8 @@ class AppointmentController extends BaseController {
      */
     public function index() {
         // Check if user is logged in
-        session_start();
-        if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
+        $user = $this->getUser();
+        if (!$user) {
             // Redirect to login page if not logged in
             $_SESSION['redirect_after_login'] = '/appointment';
             header('Location: /login');
@@ -28,7 +28,6 @@ class AppointmentController extends BaseController {
         }
         
         // User is logged in, get their pets
-        $user = $_SESSION['user'];
         $userData = [
             'user' => $user,
             'pets' => []
@@ -37,7 +36,7 @@ class AppointmentController extends BaseController {
         // If it's a regular client (not admin), get their pets
         if ($user['role'] !== 'admin' && !empty($user['client_code'])) {
             // Get all pets for this client
-            $pdo = Database::getInstance()->getConnection();
+            $pdo = $this->getPDO();
             $sql = "SELECT * FROM pet WHERE client_code = ?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$user['client_code']]);
@@ -57,9 +56,21 @@ class AppointmentController extends BaseController {
         error_log("SUBMIT APPOINTMENT METHOD CALLED IN APPOINTMENTCONTROLLER");
         error_log("***********************");
         
+        // Debug database connection
+        try {
+            $testDb = $this->getPDO();
+            error_log("Database connection test: " . ($testDb ? "Success" : "Failed"));
+            
+            // Test simple query
+            $testQuery = $testDb->query("SELECT 1");
+            error_log("Test query result: " . ($testQuery ? "Success" : "Failed"));
+        } catch (\Exception $e) {
+            error_log("Database connection exception: " . $e->getMessage());
+        }
+        
         // Check if user is logged in
-        session_start();
-        if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
+        $user = $this->getUser();
+        if (!$user) {
             header('Location: /login');
             exit;
         }
@@ -71,7 +82,6 @@ class AppointmentController extends BaseController {
             
             // Initialize
             $errors = [];
-            $user = $_SESSION['user'];
             $client_code = $user['client_code'];
             
             // First check if the appointment table structure is valid
@@ -196,7 +206,7 @@ class AppointmentController extends BaseController {
             }
             
             // Validate time is within business hours (9AM-5PM)
-            $hour = (int)substr($preferred_time, 0, 2);
+            $hour = (int)date('G', strtotime($preferred_time));
             if ($hour < 9 || $hour > 16) {
                 $errors[] = "Appointment time must be between 9:00 AM and 5:00 PM.";
             }
@@ -214,22 +224,55 @@ class AppointmentController extends BaseController {
                         error_log("Saving appointment for pet_code: $pet_code");
                         
                         // Look up service code based on service name
-                        $service_name = $sanitize('service');
-                        $service_code = $this->getServiceCode($service_name);
+                        $service_code = $this->getServiceCode($service);
                         
-                        $appointmentData = [
-                            ':client_code' => $client_code,
-                            ':pet_code' => $pet_code,
-                            ':service_code' => $service_code,
-                            ':preferred_date' => $preferred_date,
-                            ':preferred_time' => $preferred_time,
-                            ':appointment_type' => $appointment_type,
-                        ];
-                        
-                        error_log("Appointment params: " . print_r($appointmentData, true));
+                        // Get pet details to include pet name and type
+                        $petData = $this->appointmentModel->getPetById($pet_code);
                         
                         try {
-                            $appointment_id = $this->appointmentModel->createAppointment($appointmentData);
+                            // Get client information for contact details
+                            $clientData = $this->appointmentModel->getClientInfo($client_code);
+                            $contact_number = $clientData['clt_contact'] ?? '';
+                            $email = $clientData['clt_email_address'] ?? '';
+                            
+                            // Prepare owner name from client data
+                            $owner_name = '';
+                            if (!empty($clientData['clt_fname'])) {
+                                $owner_name .= trim($clientData['clt_fname']) . ' ';
+                            }
+                            if (!empty($clientData['clt_initial'])) {
+                                $owner_name .= trim($clientData['clt_initial']) . ' ';
+                            }
+                            if (!empty($clientData['clt_lname'])) {
+                                $owner_name .= trim($clientData['clt_lname']);
+                            }
+                            $owner_name = trim($owner_name);
+                            
+                            // Log the values being sent
+                            error_log("APPOINTMENT DATA - owner_name: " . $owner_name);
+                            error_log("APPOINTMENT DATA - contact_number: " . $contact_number);
+                            error_log("APPOINTMENT DATA - email: " . $email);
+                            error_log("APPOINTMENT DATA - additional_notes: " . $additional_notes);
+                        
+                            // More focused approach - create a simple appointment first
+                            $minimalData = [
+                                ':client_code' => $client_code,
+                                ':pet_code' => $pet_code,
+                                ':service_code' => $service_code,
+                                ':preferred_date' => $preferred_date,
+                                ':preferred_time' => $preferred_time,
+                                ':appointment_type' => $appointment_type,
+                                ':additional_notes' => $additional_notes,
+                                ':contact_number' => $contact_number,
+                                ':owner_name' => $owner_name,
+                                ':email' => $email
+                            ];
+                            
+                            error_log("Submitting appointment with minimal data: " . print_r($minimalData, true));
+                            
+                            $appointment_id = $this->appointmentModel->createAppointment($minimalData);
+                            
+                            error_log("APPOINTMENT CREATION RESULT: " . ($appointment_id ? "SUCCESS with ID: $appointment_id" : "FAILED - no ID returned"));
                             
                             if ($appointment_id) {
                                 error_log("Appointment created with ID: $appointment_id");
@@ -237,9 +280,20 @@ class AppointmentController extends BaseController {
                                 // Send confirmation email (client + admin)
                                 $this->sendConfirmationEmails($user['name'], $pet_name, $service, $preferred_date, $preferred_time, $appointment_id, $email);
                                 
-                                // Set success session
+                                // Set success session - with extra debug info
+                                error_log("Setting session variables for success message");
                                 $_SESSION['appointment_success'] = true;
                                 $_SESSION['appointment_id'] = $appointment_id;
+                                
+                                error_log("SESSION VALUES SET: appointment_success=" . 
+                                    (isset($_SESSION['appointment_success']) ? $_SESSION['appointment_success'] : 'not set') . 
+                                    ", appointment_id=" . (isset($_SESSION['appointment_id']) ? $_SESSION['appointment_id'] : 'not set'));
+                                
+                                // Debug the redirect - Are we actually hitting this code?
+                                error_log("About to redirect to /appointment with success");
+                                
+                                // Add a flush to make sure logs are written
+                                flush();
                             } else {
                                 error_log("Failed to create appointment: No ID returned");
                                 $errors[] = "Failed to create appointment. Please try again.";
@@ -260,7 +314,7 @@ class AppointmentController extends BaseController {
                 error_log("Returning to form with errors: " . print_r($errors, true));
                 
                 // Get all pets for this client
-                $pdo = Database::getInstance()->getConnection();
+                $pdo = $this->getPDO();
                 $sql = "SELECT * FROM pet WHERE client_code = ?";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([$client_code]);
@@ -276,7 +330,21 @@ class AppointmentController extends BaseController {
                 return;
             }
             
-            // Redirect back to appointment page
+            // Success! Redirect back to appointment page
+            error_log("SUCCESS! No errors, redirecting to /appointment with session vars set");
+            
+            // Make sure headers haven't been sent yet
+            if (!headers_sent()) {
+                header('Location: /appointment');
+                exit;
+            } else {
+                error_log("WARNING: Headers already sent, cannot redirect. Using JavaScript instead.");
+                echo '<script>window.location.href = "/appointment";</script>';
+                exit;
+            }
+        } else {
+            // Not a POST request
+            error_log("Not a POST request, redirecting to appointment page");
             header('Location: /appointment');
             exit;
         }
@@ -310,10 +378,13 @@ class AppointmentController extends BaseController {
             </ul>
         ";
         
+        // Get admin email from environment variable or use default
+        $admin_email = $_ENV['ADMIN_EMAIL'] ?? 'admin@mavetcare.com';
+        
         // Attempt to send emails, but continue if they fail
         try {
             $this->sendEmail($email, $user_subject, $user_message);
-            $this->sendEmail("oliverecta13@gmail.com", $admin_subject, $admin_message);
+            $this->sendEmail($admin_email, $admin_subject, $admin_message);
         } catch (\Exception $e) {
             error_log("Error sending email: " . $e->getMessage());
         }
@@ -325,7 +396,8 @@ class AppointmentController extends BaseController {
     private function sendEmail($to, $subject, $message) {
         $headers = "MIME-Version: 1.0\r\n";
         $headers .= "Content-type: text/html; charset=UTF-8\r\n";
-        $headers .= "From: oliverecta13@gmail.com\r\n";
+        $sender_email = $_ENV['SENDER_EMAIL'] ?? 'noreply@mavetcare.com';
+        $headers .= "From: $sender_email\r\n";
         mail($to, $subject, $message, $headers);
     }
     
@@ -334,8 +406,8 @@ class AppointmentController extends BaseController {
      */
     public function viewAppointments() {
         // Check if user is admin
-        session_start();
-        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+        $user = $this->getUser();
+        if (!$user || $user['role'] !== 'admin') {
             header('Location: /login');
             exit;
         }
@@ -358,16 +430,13 @@ class AppointmentController extends BaseController {
      */
     public function showAddPetForm() {
         // Check if user is logged in
-        session_start();
-        if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
+        $user = $this->getUser();
+        if (!$user) {
             // Redirect to login page if not logged in
             $_SESSION['redirect_after_login'] = '/add-pet';
             header('Location: /login');
             exit;
         }
-        
-        // Get user data
-        $user = $_SESSION['user'];
         
         // Only clients can add pets
         if ($user['role'] === 'admin') {
@@ -383,14 +452,11 @@ class AppointmentController extends BaseController {
      */
     public function addPet() {
         // Check if user is logged in
-        session_start();
-        if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
+        $user = $this->getUser();
+        if (!$user) {
             header('Location: /login');
             exit;
         }
-        
-        // Get user data
-        $user = $_SESSION['user'];
         
         // Only clients can add pets
         if ($user['role'] === 'admin') {

@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use Config\Database;
+
 class BaseController {
 
     protected function getViewPath(string $relativePath): string {
@@ -27,5 +29,26 @@ class BaseController {
         $content = ob_get_clean();
 
         echo $content;
+    }
+    
+    /**
+     * Get the current user from session
+     * 
+     * @return array|null User data or null if not logged in
+     */
+    protected function getUser() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        return $_SESSION['user'] ?? null;
+    }
+    
+    /**
+     * Get database connection
+     * 
+     * @return \PDO Database connection
+     */
+    protected function getPDO() {
+        return Database::getInstance()->getConnection();
     }
 }

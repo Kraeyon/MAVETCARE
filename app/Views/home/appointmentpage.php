@@ -7,15 +7,24 @@
 
 // Only keep session handling for the thank you modal
 if (session_status() == PHP_SESSION_NONE) session_start();
+
+// Debug session variables for appointment success
+error_log("APPOINTMENT PAGE SESSION CHECK: appointment_success=" . 
+    (isset($_SESSION['appointment_success']) ? $_SESSION['appointment_success'] : 'not set') . 
+    ", appointment_id=" . (isset($_SESSION['appointment_id']) ? $_SESSION['appointment_id'] : 'not set'));
+
 $showThankYou = false;
 
 if (isset($_SESSION['appointment_success']) && $_SESSION['appointment_success'] === true) {
     $showThankYou = true;
     $appointment_id = $_SESSION['appointment_id'];
+    error_log("SHOWING THANK YOU MODAL: true, appointment_id=" . $appointment_id);
 
     // Clear session variable so popup doesn't show again on refresh
     unset($_SESSION['appointment_success']);
     unset($_SESSION['appointment_id']);
+} else {
+    error_log("SHOWING THANK YOU MODAL: false, condition not met");
 }
 
 // Today's date for date input min attribute
@@ -352,12 +361,11 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            backdrop-filter: blur(5px);
         }
         
         .modal-content {
@@ -366,9 +374,10 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
             border-radius: 15px;
             text-align: center;
             max-width: 450px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
             transform: scale(0.9);
             animation: pop 0.3s forwards;
+            border-top: 4px solid #3183FF;
         }
         
         @keyframes pop {
@@ -388,12 +397,13 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
         
         .modal-content .appointment-id {
             background-color: #f0f7ff;
-            padding: 12px;
+            padding: 15px;
             border-radius: 8px;
             margin: 20px 0;
             font-weight: 600;
             color: #3183FF;
             font-size: 1.1rem;
+            border-left: 3px solid #3183FF;
         }
         
         .modal-button {
@@ -738,6 +748,7 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
         </ul>
     </section>
 
+    <!-- Thank You Modal -->
     <?php if ($showThankYou): ?>
     <div id="thankYouModal">
         <div class="modal-content">
@@ -754,8 +765,7 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
     <?php if ($showThankYou): ?>
     function closeThankYou() {
         document.getElementById('thankYouModal').style.display = 'none';
-        // Redirect after the modal closes
-        window.location.href = '/appointment'; 
+        window.location.href = '/appointment';
     }
     <?php endif; ?>
     
