@@ -18,7 +18,7 @@ $userName = 'Admin';
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminMenu">
                 <li>
                     <form action="/logout" method="POST" style="margin: 0;">
-                        <button type="submit" class="dropdown-item">Logout</button>
+                        <button type="submit" class="dropdown-item text-dark">Logout</button>
                     </form>
                 </li>
             </ul>

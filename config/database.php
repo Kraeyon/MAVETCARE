@@ -18,6 +18,10 @@ class Database
         $user = $_ENV['DB_USER'];
         $password = $_ENV['DB_PASSWORD'];
 
+        // Log connection attempt
+        error_log("Attempting database connection to: $host:$port, database: $dbname");
+        error_log("Database credentials - User: $user, Password present: " . (!empty($password) ? "Yes" : "No"));
+        
         $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
 
         try {
@@ -26,7 +30,9 @@ class Database
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
             ]); 
+            error_log("Database connection successful");
         } catch (PDOException $e) {
+            error_log("Database connection failed: " . $e->getMessage());
             die("Connection failed: ") . $e->getMessage();
         }
     }

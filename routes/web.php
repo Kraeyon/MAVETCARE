@@ -17,20 +17,24 @@ $router->map('POST', '/api/reviews', 'App\Controllers\ReviewController#submit', 
 
 $router->map('GET', '/services', 'App\Controllers\HomeController#services', 'services');
 $router->map('GET', '/products', 'App\Controllers\HomeController#products', 'products');
-$router->map('GET', '/appointment', 'App\Controllers\HomeController#appointment', 'appointment');
-$router->map('POST', '/appointment', 'App\Controllers\HomeController#submitAppointment', 'submit-appointment');
 
-// Pet management for logged-in clients
-$router->map('GET', '/add-pet', 'App\Controllers\HomeController#showAddPetForm', 'show-add-pet');
-$router->map('POST', '/add-pet', 'App\Controllers\HomeController#addPet', 'add-pet');
+// Appointment and pet-related routes (using AppointmentController)
+$router->map('GET', '/appointment', 'App\Controllers\AppointmentController#index', 'appointment');
+$router->map('POST', '/appointment', 'App\Controllers\AppointmentController#submitAppointment', 'submit-appointment');
+$router->map('GET', '/admin/appointments', 'App\Controllers\AppointmentController#viewAppointments', 'admin-appointments');
 
-$router->map('GET', '/vaccination', 'App\Controllers\HomeController#vaccination', 'vaccination');
-$router->map('GET', '/deworming', 'App\Controllers\HomeController#deworming', 'deworming');
-$router->map('GET', '/antiparasitic', 'App\Controllers\HomeController#antiparasitic', 'antiparasitic');
-$router->map('GET', '/surgeries', 'App\Controllers\HomeController#surgeries', 'surgeries');
-$router->map('GET', '/grooming', 'App\Controllers\HomeController#grooming', 'grooming');
-$router->map('GET', '/treatment', 'App\Controllers\HomeController#treatment', 'treatment');
-$router->map('GET', '/confinement', 'App\Controllers\HomeController#confinement', 'confinement');
+// Pet management
+$router->map('GET', '/add-pet', 'App\Controllers\AppointmentController#showAddPetForm', 'show-add-pet');
+$router->map('POST', '/add-pet', 'App\Controllers\AppointmentController#addPet', 'add-pet');
+
+// Service-specific pages
+$router->map('GET', '/vaccination', 'App\Controllers\AppointmentController#vaccination', 'vaccination');
+$router->map('GET', '/deworming', 'App\Controllers\AppointmentController#deworming', 'deworming');
+$router->map('GET', '/antiparasitic', 'App\Controllers\AppointmentController#antiparasitic', 'antiparasitic');
+$router->map('GET', '/surgeries', 'App\Controllers\AppointmentController#surgeries', 'surgeries');
+$router->map('GET', '/grooming', 'App\Controllers\AppointmentController#grooming', 'grooming');
+$router->map('GET', '/treatment', 'App\Controllers\AppointmentController#treatment', 'treatment');
+$router->map('GET', '/confinement', 'App\Controllers\AppointmentController#confinement', 'confinement');
 
 
 

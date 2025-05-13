@@ -230,7 +230,7 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
         }
         
         /* Button styling */
-        button[type="submit"] {
+        #appointment-section button[type="submit"] {
             background-color: #3183FF;
             color: white;
             border: none;
@@ -245,7 +245,7 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
             width: 100%;
         }
         
-        button[type="submit"]:hover {
+        #appointment-section button[type="submit"]:hover {
             background-color: #2468d9;
             transform: translateY(-2px);
             box-shadow: 0 6px 18px rgba(49, 131, 255, 0.35);
@@ -429,7 +429,7 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
                 padding: 20px 15px;
             }
             
-            button[type="submit"] {
+            #appointment-section button[type="submit"] {
                 padding: 12px 20px;
             }
         }
