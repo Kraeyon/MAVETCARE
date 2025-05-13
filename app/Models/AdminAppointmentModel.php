@@ -27,21 +27,21 @@ class AdminAppointmentModel extends BaseModel {
         return $stmt->fetchAll();
     }
 
-    public function addAppointment($client_code, $pet_code, $service_code, $appt_datetime, $appt_type, $appt_status, $additional_notes) {
+    public function addAppointment($client_code, $pet_code, $service_code, $appt_datetime, $appointment_type, $status, $additional_notes) {
         $stmt = $this->db->prepare('
-            INSERT INTO appointment (client_code, pet_code, service_code, appt_datetime, appt_type, appt_status, additional_notes)
+            INSERT INTO appointment (client_code, pet_code, service_code, appt_datetime, appointment_type, status, additional_notes)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ');
-        return $stmt->execute([$client_code, $pet_code, $service_code, $appt_datetime, $appt_type, $appt_status, $additional_notes]);
+        return $stmt->execute([$client_code, $pet_code, $service_code, $appt_datetime, $appointment_type, $status, $additional_notes]);
     }
 
-    public function updateAppointment($appt_code, $client_code, $pet_code, $service_code, $appt_datetime, $appt_type, $appt_status, $additional_notes) {
+    public function updateAppointment($appt_code, $client_code, $pet_code, $service_code, $appt_datetime, $appointment_type, $status, $additional_notes) {
         $stmt = $this->db->prepare('
             UPDATE appointment 
-            SET client_code = ?, pet_code = ?, service_code = ?, appt_datetime = ?, appt_type = ?, appt_status = ?, additional_notes = ?
+            SET client_code = ?, pet_code = ?, service_code = ?, appt_datetime = ?, appointment_type = ?, status = ?, additional_notes = ?
             WHERE appt_code = ?
         ');
-        return $stmt->execute([$client_code, $pet_code, $service_code, $appt_datetime, $appt_type, $appt_status, $additional_notes, $appt_code]);
+        return $stmt->execute([$client_code, $pet_code, $service_code, $appt_datetime, $appointment_type, $status, $additional_notes, $appt_code]);
     }
 
     public function deleteAppointment($appt_code) {

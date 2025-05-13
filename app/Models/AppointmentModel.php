@@ -29,15 +29,8 @@ class AppointmentModel extends BaseModel {
             $clientData = $this->getClientInfo($data[':client_code']);
             $petData = $this->getPetById($data[':pet_code']);
             
-            // Prepare client contact number - ensure non-null with empty string default
-            $contactNumber = (!empty($clientData['clt_contact'])) ? $clientData['clt_contact'] : '';
-            
             // Ensure additional_notes is not null
             $additionalNotes = (!empty($data[':additional_notes'])) ? $data[':additional_notes'] : '';
-            
-            // Log the values for debugging
-            error_log("Before INSERT - Contact Number: '" . $contactNumber . "'");
-            error_log("Before INSERT - Additional Notes: '" . $additionalNotes . "'");
             
             // SIMPLEST POSSIBLE INSERT - focus on the core fields only
             $sql = "
@@ -48,30 +41,28 @@ class AppointmentModel extends BaseModel {
                     preferred_time,
                     status,
                     additional_notes,
-                    contact_number,
-                    owner_name,
-                    email,
-                    appt_status
+                    service_code
                 ) VALUES (
-                    ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?
+                    ?, ?, ?, ?, 'pending', ?, ?
                 )
             ";
             
-            // Prepare owner name from client data
-            $ownerName = '';
-            if (!empty($clientData['clt_fname'])) {
-                $ownerName .= trim($clientData['clt_fname']) . ' ';
+            // Try to get a valid service code first
+            $serviceCode = $data[':service_code'] ?? null;
+            if (!$serviceCode) {
+                // Try to find a service by name if provided
+                if (!empty($data[':appointment_type'])) {
+                    $serviceStmt = $this->db->prepare("SELECT service_code FROM service WHERE LOWER(service_name) LIKE ?");
+                    $serviceStmt->execute(['%' . strtolower($data[':appointment_type']) . '%']);
+                    $serviceCode = $serviceStmt->fetchColumn();
+                }
+                
+                // If still not found, use our General Checkup service or the first service
+                if (!$serviceCode) {
+                    $serviceStmt = $this->db->query("SELECT service_code FROM service ORDER BY service_code LIMIT 1");
+                    $serviceCode = $serviceStmt->fetchColumn();
+                }
             }
-            if (!empty($clientData['clt_initial'])) {
-                $ownerName .= trim($clientData['clt_initial']) . ' ';
-            }
-            if (!empty($clientData['clt_lname'])) {
-                $ownerName .= trim($clientData['clt_lname']);
-            }
-            $ownerName = trim($ownerName);
-            
-            // Ensure email is not null
-            $email = !empty($clientData['clt_email_address']) ? $clientData['clt_email_address'] : '';
             
             $values = [
                 $data[':client_code'],
@@ -79,10 +70,7 @@ class AppointmentModel extends BaseModel {
                 $data[':preferred_date'],
                 $data[':preferred_time'],
                 $additionalNotes,
-                $contactNumber,
-                $ownerName,
-                $email,
-                'PENDING'  // Last value for appt_status
+                $serviceCode
             ];
             
             // Debug the SQL and values
@@ -118,56 +106,19 @@ class AppointmentModel extends BaseModel {
             // Format appointment datetime
             $apptDatetime = date('Y-m-d H:i:s', strtotime($data[':preferred_date'] . ' ' . $data[':preferred_time']));
             
-            // Debug log for troubleshooting
-            error_log("Client contact: " . $contactNumber);
-            error_log("Additional notes: " . $additionalNotes);
-            
             // Update the appointment with additional fields
             $updateSql = "
                 UPDATE appointment SET
                 appt_datetime = ?,
-                appt_type = ?,
-                appt_status = ?,
-                service_code = ?,
-                pet_name = ?,
-                pet_type = ?,
                 additional_notes = ?,
-                appointment_type = ?,
-                owner_name = ?,
-                contact_number = ?,
-                email = ?
+                appointment_type = ?
                 WHERE appt_code = ?
             ";
             
-            // Try to get a valid service code first
-            $serviceCode = $data[':service_code'] ?? null;
-            if (!$serviceCode) {
-                // Try to find a service by name if provided
-                if (!empty($data[':appointment_type'])) {
-                    $serviceStmt = $this->db->prepare("SELECT service_code FROM service WHERE LOWER(service_name) LIKE ?");
-                    $serviceStmt->execute(['%' . strtolower($data[':appointment_type']) . '%']);
-                    $serviceCode = $serviceStmt->fetchColumn();
-                }
-                
-                // If still not found, use our General Checkup service or the first service
-                if (!$serviceCode) {
-                    $serviceStmt = $this->db->query("SELECT service_code FROM service ORDER BY service_code LIMIT 1");
-                    $serviceCode = $serviceStmt->fetchColumn();
-                }
-            }
-            
             $updateValues = [
                 $apptDatetime,
-                strtoupper($data[':appointment_type'] ?? 'WALK-IN'),
-                'PENDING', // Explicit value for appt_status
-                $serviceCode, // Using our validated service code
-                $petData['pet_name'] ?? '',
-                $petData['pet_type'] ?? '',
                 $additionalNotes,
                 $data[':appointment_type'] ?? 'walk-in',
-                $ownerName, // Add owner name
-                $contactNumber, // Add contact number
-                $email, // Add email
                 $newId
             ];
             
@@ -318,9 +269,11 @@ class AppointmentModel extends BaseModel {
      */
     public function getClientAppointments($clientCode) {
         $stmt = $this->db->prepare("
-            SELECT * FROM appointment
-            WHERE client_code = :client_code
-            ORDER BY preferred_date DESC, preferred_time DESC
+            SELECT a.*, p.pet_name, p.pet_type 
+            FROM appointment a
+            JOIN pet p ON a.pet_code = p.pet_code
+            WHERE a.client_code = :client_code
+            ORDER BY a.preferred_date DESC, a.preferred_time DESC
         ");
         
         $stmt->execute([':client_code' => $clientCode]);
@@ -335,9 +288,13 @@ class AppointmentModel extends BaseModel {
      */
     public function getAppointmentsByDate($date) {
         $stmt = $this->db->prepare("
-            SELECT * FROM appointment
-            WHERE preferred_date = :date
-            ORDER BY preferred_time ASC
+            SELECT a.*, c.clt_fname, c.clt_lname, c.clt_contact, c.clt_email_address,
+                   p.pet_name, p.pet_type 
+            FROM appointment a
+            JOIN client c ON a.client_code = c.clt_code
+            JOIN pet p ON a.pet_code = p.pet_code
+            WHERE a.preferred_date = :date
+            ORDER BY a.preferred_time ASC
         ");
         
         $stmt->execute([':date' => $date]);
@@ -376,11 +333,11 @@ class AppointmentModel extends BaseModel {
             
             error_log("Appointment table columns: " . print_r($columns, true));
             
-            // Check if necessary columns exist based on the actual schema
+            // Check if necessary columns exist based on the updated schema
             $required_columns = [
                 'appt_code', 'client_code', 'pet_code', 'service_code',
-                'appt_datetime', 'appt_type', 'appt_status',
-                'additional_notes', 'preferred_date', 'preferred_time'
+                'appt_datetime', 'additional_notes', 'preferred_date', 'preferred_time',
+                'appointment_type', 'status'
             ];
             
             $missing_columns = [];

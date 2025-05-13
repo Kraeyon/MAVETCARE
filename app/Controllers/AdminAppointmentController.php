@@ -56,8 +56,8 @@ class AdminAppointmentController {
             $data['pet_code'],
             $data['service_code'],
             $appt_datetime,
-            $data['appt_type'],
-            $data['appt_status'],
+            $data['appointment_type'],
+            $data['status'],
             $data['additional_notes']
         );
     }
@@ -70,8 +70,8 @@ class AdminAppointmentController {
             $data['pet_code'],
             $data['service_code'],
             $appt_datetime,
-            $data['appt_type'],
-            $data['appt_status'],
+            $data['appointment_type'],
+            $data['status'],
             $data['additional_notes']
         );
     }

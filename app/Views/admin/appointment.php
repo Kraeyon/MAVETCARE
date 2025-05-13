@@ -66,10 +66,10 @@ $error = $controller->error;
                                 <td><?php echo $appointment['pet_name'] . ' (' . $appointment['pet_breed'] . ')'; ?></td>
                                 <td><?php echo $appointment['service_name'] . ' - ₱' . number_format($appointment['service_fee'], 2); ?></td>
                                 <td><?php echo date('M d, Y h:i A', strtotime($appointment['appt_datetime'])); ?></td>
-                                <td><?php echo $appointment['appt_type']; ?></td>
+                                <td><?php echo $appointment['appointment_type']; ?></td>
                                 <td>
-                                    <span class="status-<?php echo strtolower($appointment['appt_status']); ?>">
-                                        <?php echo $appointment['appt_status']; ?>
+                                    <span class="status-<?php echo strtolower($appointment['status']); ?>">
+                                        <?php echo $appointment['status']; ?>
                                     </span>
                                 </td>
                                 <td><?php echo substr($appointment['additional_notes'], 0, 30) . (strlen($appointment['additional_notes']) > 30 ? '...' : ''); ?></td>
@@ -147,7 +147,7 @@ $error = $controller->error;
                 
                 <div class="form-group">
                     <label for="appt_type">Appointment Type:</label>
-                    <select name="appt_type" id="appt_type" class="form-control" required>
+                    <select name="appointment_type" id="appt_type" class="form-control" required>
                         <option value="WALK-IN">WALK-IN</option>
                         <option value="SERVICE-ON-CALL">SERVICE-ON-CALL</option>
                     </select>
@@ -155,7 +155,7 @@ $error = $controller->error;
                 
                 <div class="form-group">
                     <label for="appt_status">Status:</label>
-                    <select name="appt_status" id="appt_status" class="form-control" required>
+                    <select name="status" id="appt_status" class="form-control" required>
                         <option value="PENDING">PENDING</option>
                         <option value="CONFIRMED">CONFIRMED</option>
                         <option value="COMPLETED">COMPLETED</option>
@@ -224,7 +224,7 @@ $error = $controller->error;
                 
                 <div class="form-group">
                     <label for="edit_appt_type">Appointment Type:</label>
-                    <select name="appt_type" id="edit_appt_type" class="form-control" required>
+                    <select name="appointment_type" id="edit_appt_type" class="form-control" required>
                         <option value="WALK-IN">WALK-IN</option>
                         <option value="SERVICE-ON-CALL">SERVICE-ON-CALL</option>
                     </select>
@@ -232,7 +232,7 @@ $error = $controller->error;
                 
                 <div class="form-group">
                     <label for="edit_appt_status">Status:</label>
-                    <select name="appt_status" id="edit_appt_status" class="form-control" required>
+                    <select name="status" id="edit_appt_status" class="form-control" required>
                         <option value="PENDING">PENDING</option>
                         <option value="CONFIRMED">CONFIRMED</option>
                         <option value="COMPLETED">COMPLETED</option>
@@ -328,8 +328,8 @@ $error = $controller->error;
             document.getElementById('edit_appt_date').value = dateStr;
             document.getElementById('edit_appt_time').value = timeStr;
             
-            document.getElementById('edit_appt_type').value = appointment.appt_type;
-            document.getElementById('edit_appt_status').value = appointment.appt_status;
+            document.getElementById('edit_appt_type').value = appointment.appointment_type;
+            document.getElementById('edit_appt_status').value = appointment.status;
             document.getElementById('edit_additional_notes').value = appointment.additional_notes;
             
             document.getElementById('editAppointmentModal').style.display = 'block';
