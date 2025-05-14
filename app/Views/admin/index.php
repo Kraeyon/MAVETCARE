@@ -1,3 +1,72 @@
+<?php
+// Database connection and queries
+require_once '../config/Database.php';
+$db = \Config\Database::getInstance()->getConnection();
+
+// Get today's date in Y-m-d format
+$today = date('Y-m-d');
+$currentMonth = date('Y-m');
+
+// Get count of today's appointments
+$apptStmt = $db->prepare("
+    SELECT COUNT(*) FROM appointment 
+    WHERE DATE(preferred_date) = ?
+");
+$apptStmt->execute([$today]);
+$todayAppointmentsCount = $apptStmt->fetchColumn();
+
+// Get total clients count
+$clientStmt = $db->query("SELECT COUNT(*) FROM client");
+$totalClients = $clientStmt->fetchColumn();
+
+// Get total pets count
+$petStmt = $db->query("SELECT COUNT(*) FROM pet");
+$totalPets = $petStmt->fetchColumn();
+
+// Get revenue for current month from sales_transaction
+$revenueStmt = $db->prepare("
+    SELECT COALESCE(SUM(transaction_total_amount), 0) 
+    FROM sales_transaction
+    WHERE TO_CHAR(transaction_datetime, 'YYYY-MM') = ?
+");
+$revenueStmt->execute([$currentMonth]);
+$monthlyRevenue = $revenueStmt->fetchColumn();
+
+// Handle sorting for appointments
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'preferred_time';
+$order = isset($_GET['order']) ? $_GET['order'] : 'ASC';
+
+// Validate sort column (security)
+$validSortColumns = [
+    'pet_name' => 'p.pet_name',
+    'clt_name' => 'CONCAT(c.clt_fname, \' \', c.clt_lname)',
+    'preferred_time' => 'a.preferred_time',
+    'service_name' => 's.service_name',
+    'status' => 'a.status'
+];
+
+// Default sort if not valid
+$sortColumn = isset($validSortColumns[$sort]) ? $validSortColumns[$sort] : 'a.preferred_time';
+$orderDirection = ($order === 'DESC') ? 'DESC' : 'ASC';
+
+// Get today's appointments with details
+$todayApptsQuery = "
+    SELECT a.appt_code, a.preferred_time, a.status, a.additional_notes,
+           c.clt_fname, c.clt_lname, c.clt_contact,
+           p.pet_name, p.pet_type, p.pet_breed,
+           s.service_name
+    FROM appointment a
+    JOIN client c ON a.client_code = c.clt_code
+    JOIN pet p ON a.pet_code = p.pet_code
+    LEFT JOIN service s ON a.service_code = s.service_code
+    WHERE DATE(a.preferred_date) = ?
+    ORDER BY " . $sortColumn . " " . $orderDirection;
+
+$todayApptsStmt = $db->prepare($todayApptsQuery);
+$todayApptsStmt->execute([$today]);
+$todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,20 +77,20 @@
 </head>
 <body>
     
-<?php include_once '../app/views/includes/navbar.php'; ?>
+<?php include_once '../app/Views/includes/navbar.php'; ?>
 
     <div class="d-flex">
-    <?php include_once '../app/views/includes/sidebar.php'; ?>
+    <?php include_once '../app/Views/includes/sidebar.php'; ?>
 
-        <div class="flex-grow-1 p-4">
+        <div class="flex-grow-1 p-4" style="margin-top: 0;">
 
         <h4 class="mb-4">Quick Stats</h4>
 <div class="row row-cols-1 row-cols-md-4 g-4 mb-4">
     <div class="col">
         <div class="card text-white bg-primary h-100">
             <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-calendar-check me-2"></i>Today’s Appointments</h5>
-                <p class="card-text fs-4">12</p> <!-- Replace 12 with dynamic PHP data -->
+                <h5 class="card-title"><i class="bi bi-calendar-check me-2"></i>Today's Appointments</h5>
+                <p class="card-text fs-4"><?php echo $todayAppointmentsCount; ?></p>
             </div>
         </div>
     </div>
@@ -29,7 +98,7 @@
         <div class="card text-white bg-success h-100">
             <div class="card-body">
                 <h5 class="card-title"><i class="bi bi-people me-2"></i>Total Clients</h5>
-                <p class="card-text fs-4">86</p> <!-- Replace 86 with dynamic PHP data -->
+                <p class="card-text fs-4"><?php echo $totalClients; ?></p>
             </div>
         </div>
     </div>
@@ -37,7 +106,7 @@
         <div class="card text-white bg-warning h-100">
             <div class="card-body">
                 <h5 class="card-title"><i class="bi bi-paw me-2"></i>Pets in System</h5>
-                <p class="card-text fs-4">134</p> <!-- Replace 134 with dynamic PHP data -->
+                <p class="card-text fs-4"><?php echo $totalPets; ?></p>
             </div>
         </div>
     </div>
@@ -45,50 +114,68 @@
         <div class="card text-white bg-danger h-100">
             <div class="card-body">
                 <h5 class="card-title"><i class="bi bi-cash-coin me-2"></i>Revenue This Month</h5>
-                <p class="card-text fs-4">₱45,000</p> <!-- Replace ₱45,000 with dynamic PHP data -->
+                <p class="card-text fs-4">₱<?php echo number_format($monthlyRevenue, 2); ?></p>
             </div>
         </div>
     </div>
 </div>
 
             <!-- Today's Appointments Table -->
-<h4 class="mb-3 mt-5">Today’s Appointments</h4>
+<h4 class="mb-3 mt-5">Today's Appointments</h4>
 <div class="table-responsive mb-4">
-    <table class="table table-bordered table-hover align-middle">
+    <table class="table table-bordered table-hover align-middle" id="appointmentsTable">
         <thead class="table-light">
             <tr>
-                <th>Pet Name</th>
-                <th>Owner</th>
-                <th>Time</th>
-                <th>Status</th>
+                <th class="sortable" data-sort="pet">Pet Name <span class="sort-icon"></span></th>
+                <th class="sortable" data-sort="owner">Owner <span class="sort-icon"></span></th>
+                <th class="sortable" data-sort="time">Time <span class="sort-icon"></span></th>
+                <th class="sortable" data-sort="service">Service <span class="sort-icon"></span></th>
+                <th class="sortable" data-sort="status">Status <span class="sort-icon"></span></th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            <!-- Example rows, replace with dynamic PHP data -->
-            <tr>
-                <td>Buddy</td>
-                <td>Maria Lopez</td>
-                <td>10:00 AM</td>
-                <td><span class="badge bg-warning">Pending</span></td>
-                <td>
-                    <button class="btn btn-sm btn-success me-1">Approve</button>
-                    <button class="btn btn-sm btn-secondary me-1">Reschedule</button>
-                    <button class="btn btn-sm btn-danger">Cancel</button>
-                </td>
-            </tr>
-            <tr>
-                <td>Luna</td>
-                <td>John Cruz</td>
-                <td>11:30 AM</td>
-                <td><span class="badge bg-success">Approved</span></td>
-                <td>
-                    <button class="btn btn-sm btn-success me-1">Approve</button>
-                    <button class="btn btn-sm btn-secondary me-1">Reschedule</button>
-                    <button class="btn btn-sm btn-danger">Cancel</button>
-                </td>
-            </tr>
-            <!-- Add more rows dynamically -->
+            <?php if (count($todayAppointments) > 0): ?>
+                <?php foreach ($todayAppointments as $appt): ?>
+                    <tr>
+                        <td data-value="<?php echo htmlspecialchars($appt['pet_name']); ?>"><?php echo htmlspecialchars($appt['pet_name']); ?> (<?php echo htmlspecialchars($appt['pet_type']); ?>)</td>
+                        <td data-value="<?php echo htmlspecialchars($appt['clt_fname'] . ' ' . $appt['clt_lname']); ?>"><?php echo htmlspecialchars($appt['clt_fname'] . ' ' . $appt['clt_lname']); ?></td>
+                        <td data-value="<?php echo $appt['preferred_time']; ?>"><?php echo date('h:i A', strtotime($appt['preferred_time'])); ?></td>
+                        <td data-value="<?php echo htmlspecialchars($appt['service_name'] ?? ''); ?>"><?php echo htmlspecialchars($appt['service_name'] ?? 'N/A'); ?></td>
+                        <td data-value="<?php echo htmlspecialchars($appt['status']); ?>">
+                            <?php 
+                                $statusClass = '';
+                                switch(strtolower($appt['status'])) {
+                                    case 'pending':
+                                        $statusClass = 'bg-warning';
+                                        break;
+                                    case 'confirmed':
+                                        $statusClass = 'bg-success';
+                                        break;
+                                    case 'completed':
+                                        $statusClass = 'bg-info';
+                                        break;
+                                    case 'cancelled':
+                                        $statusClass = 'bg-danger';
+                                        break;
+                                    default:
+                                        $statusClass = 'bg-secondary';
+                                }
+                            ?>
+                            <span class="badge <?php echo $statusClass; ?>"><?php echo ucfirst(htmlspecialchars($appt['status'])); ?></span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-success me-1" onclick="updateAppointmentStatus(<?php echo $appt['appt_code']; ?>, 'confirmed')">Approve</button>
+                            <button class="btn btn-sm btn-secondary me-1" onclick="location.href='/admin/appointments/edit/<?php echo $appt['appt_code']; ?>'">Reschedule</button>
+                            <button class="btn btn-sm btn-danger" onclick="updateAppointmentStatus(<?php echo $appt['appt_code']; ?>, 'cancelled')">Cancel</button>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="6" class="text-center">No appointments scheduled for today</td>
+                </tr>
+            <?php endif; ?>
         </tbody>
     </table>
 </div>
@@ -96,25 +183,140 @@
 
 <!-- Quick Actions Buttons -->
 <div class="d-flex justify-content-start flex-wrap gap-2 mb-5">
-    <button class="btn btn-outline-primary"><i class="bi bi-calendar-plus me-1"></i> Add Appointment</button>
-    <button class="btn btn-outline-success"><i class="bi bi-plus-circle me-1"></i> Register New Pet</button>
-    <button class="btn btn-outline-warning"><i class="bi bi-credit-card me-1"></i> Add Payment</button>
-    <button class="btn btn-outline-info"><i class="bi bi-gear me-1"></i> Add Service</button>
+    <a href="/admin/appointment" class="btn btn-outline-primary"><i class="bi bi-calendar-plus me-1"></i> Add Appointment</a>
+    <a href="/admin/patients" class="btn btn-outline-success"><i class="bi bi-plus-circle me-1"></i> Register New Pet</a>
+    <a href="/admin/transactions" class="btn btn-outline-warning"><i class="bi bi-credit-card me-1"></i> Add Payment</a>
+    <a href="/admin/inventory" class="btn btn-outline-info"><i class="bi bi-gear me-1"></i> Add Service</a>
 </div>
 
 <!-- Notifications Box -->
-<div class="position-fixed bottom-0 end-0 m-4" style="z-index: 1030; width: 300px;">
+<div class="position-fixed bottom-0 end-0 m-4" style="z-index: 1030; width: 350px;">
     <div class="card shadow">
-        <div class="card-header bg-danger text-white">
-            <i class="bi bi-bell-fill me-2"></i>Notifications / Reminders
+        <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+            <div>
+                <i class="bi bi-bell-fill me-2"></i>Notifications / Reminders
+            </div>
+            <?php
+            // Count total notifications for badge
+            $totalNotifications = 0;
+            
+            // Get unpaid transactions
+            $unpaidStmt = $db->query("
+                SELECT COUNT(*) FROM sales_transaction 
+                WHERE transaction_pay_method = 'pending' OR transaction_pay_method IS NULL
+            ");
+            $unpaidCount = $unpaidStmt->fetchColumn();
+            $totalNotifications += $unpaidCount;
+            
+            // Get pending appointments
+            $pendingStmt = $db->prepare("
+                SELECT COUNT(*) FROM appointment 
+                WHERE status = 'pending' AND DATE(preferred_date) >= ?
+            ");
+            $pendingStmt->execute([$today]);
+            $pendingCount = $pendingStmt->fetchColumn();
+            $totalNotifications += $pendingCount;
+            
+            // Get low stock products (below 10 items)
+            $lowStockStmt = $db->query("
+                SELECT COUNT(*) FROM product 
+                WHERE prod_stock < 10
+            ");
+            $lowStockCount = $lowStockStmt->fetchColumn();
+            $totalNotifications += $lowStockCount;
+            
+            // Get upcoming appointments
+            $nextWeek = date('Y-m-d', strtotime('+7 days'));
+            $upcomingStmt = $db->prepare("
+                SELECT COUNT(*) FROM appointment 
+                WHERE preferred_date BETWEEN ? AND ? AND status = 'confirmed'
+            ");
+            $upcomingStmt->execute([$today, $nextWeek]);
+            $upcomingAppts = $upcomingStmt->fetchColumn();
+            $totalNotifications += $upcomingAppts;
+            
+            // Get recent reviews (last 3 days)
+            $recentReviewsDate = date('Y-m-d', strtotime('-3 days'));
+            $recentReviewsStmt = $db->prepare("
+                SELECT COUNT(*) FROM review 
+                WHERE review_date >= ?
+            ");
+            $recentReviewsStmt->execute([$recentReviewsDate]);
+            $recentReviewsCount = $recentReviewsStmt->fetchColumn();
+            $totalNotifications += $recentReviewsCount;
+            ?>
+            
+            <?php if ($totalNotifications > 0): ?>
+                <span class="badge bg-light text-danger"><?php echo $totalNotifications; ?></span>
+            <?php endif; ?>
         </div>
-        <div class="card-body small">
-            <ul class="mb-0">
-                <li>2 unpaid bills</li>
-                <li>1 appointment needs confirmation</li>
-                <li>3 pet vaccinations due next week</li>
-            </ul>
+        
+        <div class="card-body small p-0">
+            <div class="list-group list-group-flush">
+                <?php if ($unpaidCount > 0): ?>
+                    <a href="/admin/transactions" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="bi bi-cash-coin text-warning me-2"></i>
+                            <strong><?php echo $unpaidCount; ?></strong> unpaid transaction<?php echo $unpaidCount != 1 ? 's' : ''; ?>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+                <?php endif; ?>
+                
+                <?php if ($pendingCount > 0): ?>
+                    <a href="/admin/appointments?status=pending" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="bi bi-clock text-primary me-2"></i>
+                            <strong><?php echo $pendingCount; ?></strong> appointment<?php echo $pendingCount != 1 ? 's' : ''; ?> awaiting confirmation
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+                <?php endif; ?>
+                
+                <?php if ($lowStockCount > 0): ?>
+                    <a href="/admin/inventory?filter=low-stock" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="bi bi-exclamation-triangle text-danger me-2"></i>
+                            <strong><?php echo $lowStockCount; ?></strong> product<?php echo $lowStockCount != 1 ? 's' : ''; ?> low in stock
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+                <?php endif; ?>
+                
+                <?php if ($upcomingAppts > 0): ?>
+                    <a href="/admin/appointments?period=next-week" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="bi bi-calendar-event text-success me-2"></i>
+                            <strong><?php echo $upcomingAppts; ?></strong> upcoming appointment<?php echo $upcomingAppts != 1 ? 's' : ''; ?> next week
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+                <?php endif; ?>
+                
+                <?php if ($recentReviewsCount > 0): ?>
+                    <a href="/admin/reviews" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="bi bi-star text-warning me-2"></i>
+                            <strong><?php echo $recentReviewsCount; ?></strong> new review<?php echo $recentReviewsCount != 1 ? 's' : ''; ?> in the last 3 days
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+                <?php endif; ?>
+                
+                <?php if ($totalNotifications == 0): ?>
+                    <div class="list-group-item text-center text-muted py-3">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        All caught up! No pending notifications.
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
+        
+        <?php if ($totalNotifications > 0): ?>
+        <div class="card-footer bg-light text-center p-2">
+            <a href="/admin/notifications" class="text-decoration-none small">View all notifications</a>
+        </div>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -122,5 +324,145 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <style>
+    /* Sorting styles */
+    .sortable {
+        cursor: pointer;
+        position: relative;
+        user-select: none;
+    }
+    
+    .sortable:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .sort-icon::after {
+        content: '⇅';
+        color: #adb5bd;
+        margin-left: 5px;
+        font-size: 0.8em;
+    }
+    
+    .sortable.asc .sort-icon::after {
+        content: '↑';
+        color: #0d6efd;
+    }
+    
+    .sortable.desc .sort-icon::after {
+        content: '↓';
+        color: #0d6efd;
+    }
+    </style>
+    
+    <script>
+    function updateAppointmentStatus(apptCode, status) {
+        if (confirm("Are you sure you want to mark this appointment as " + status + "?")) {
+            // Create form data
+            const formData = new FormData();
+            formData.append('appt_code', apptCode);
+            formData.append('status', status);
+            
+            // Send fetch request
+            fetch('/admin/appointments/update-status', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Appointment status updated successfully");
+                    // Reload page to reflect changes
+                    window.location.reload();
+                } else {
+                    alert("Failed to update appointment status: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred while updating the appointment status");
+            });
+        }
+    }
+    
+    // Client-side table sorting
+    document.addEventListener('DOMContentLoaded', function() {
+        const table = document.getElementById('appointmentsTable');
+        const headers = table.querySelectorAll('th.sortable');
+        
+        // Add click event to sortable headers
+        headers.forEach(header => {
+            header.addEventListener('click', function() {
+                const dataSort = this.getAttribute('data-sort');
+                const isAsc = !this.classList.contains('asc');
+                
+                // Reset all headers
+                headers.forEach(h => {
+                    h.classList.remove('asc', 'desc');
+                });
+                
+                // Set current sort direction
+                this.classList.add(isAsc ? 'asc' : 'desc');
+                
+                // Get all rows except the header
+                const rows = Array.from(table.querySelectorAll('tbody tr'));
+                
+                // Sort rows
+                rows.sort((a, b) => {
+                    let cellA, cellB;
+                    
+                    switch(dataSort) {
+                        case 'pet':
+                            cellA = a.cells[0].getAttribute('data-value');
+                            cellB = b.cells[0].getAttribute('data-value');
+                            break;
+                        case 'owner':
+                            cellA = a.cells[1].getAttribute('data-value');
+                            cellB = b.cells[1].getAttribute('data-value');
+                            break;
+                        case 'time':
+                            cellA = a.cells[2].getAttribute('data-value');
+                            cellB = b.cells[2].getAttribute('data-value');
+                            break;
+                        case 'service':
+                            cellA = a.cells[3].getAttribute('data-value');
+                            cellB = b.cells[3].getAttribute('data-value');
+                            break;
+                        case 'status':
+                            cellA = a.cells[4].getAttribute('data-value');
+                            cellB = b.cells[4].getAttribute('data-value');
+                            break;
+                        default:
+                            return 0;
+                    }
+                    
+                    // Check if values are dates or numbers
+                    if (dataSort === 'time') {
+                        // Time comparison
+                        return isAsc 
+                            ? new Date('1970/01/01 ' + cellA) - new Date('1970/01/01 ' + cellB) 
+                            : new Date('1970/01/01 ' + cellB) - new Date('1970/01/01 ' + cellA);
+                    } else {
+                        // Default string comparison
+                        return isAsc
+                            ? cellA.localeCompare(cellB)
+                            : cellB.localeCompare(cellA);
+                    }
+                });
+                
+                // Remove existing rows
+                const tbody = table.querySelector('tbody');
+                while (tbody.firstChild) {
+                    tbody.removeChild(tbody.firstChild);
+                }
+                
+                // Add sorted rows
+                rows.forEach(row => {
+                    tbody.appendChild(row);
+                });
+            });
+        });
+    });
+    </script>
 </body>
 </html>

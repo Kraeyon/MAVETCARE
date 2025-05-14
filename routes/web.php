@@ -44,6 +44,14 @@ $router->map('GET', '/admin/appointment', 'App\Controllers\AdminController#appoi
 $router->map('GET', '/admin/doctor', 'App\Controllers\AdminController#doctor', 'doctor');
 $router->map('POST', '/admin/doctor/edit/[i:staffCode]', 'App\Controllers\AdminController#editDoctorSchedule', 'edit-doctor-schedule');
 $router->map('GET', '/admin/patients', 'App\Controllers\AdminController#patients', 'patients');
+
+// Admin notification routes
+$router->map('GET', '/admin/transactions', 'App\Controllers\AdminController#transactions', 'admin-transactions');
+$router->map('GET', '/admin/appointments', 'App\Controllers\AdminController#viewAppointmentsFiltered', 'admin-appointments-filtered');
+$router->map('GET', '/admin/inventory', 'App\Controllers\AdminController#inventoryFiltered', 'admin-inventory-filtered');
+$router->map('GET', '/admin/reviews', 'App\Controllers\AdminController#reviews', 'admin-reviews');
+$router->map('GET', '/admin/notifications', 'App\Controllers\AdminController#allNotifications', 'admin-all-notifications');
+
 // Add route for adding a new patient
 $router->map('POST', '/admin/patients/add', 'App\Controllers\PatientController#addPatient', 'add-patient');
 
@@ -53,7 +61,17 @@ $router->map('POST', '/admin/patients/update', 'App\Controllers\PatientControlle
 // Add route for deleting a patient
 $router->map('GET', '/admin/patients/delete/[i:id]', 'App\Controllers\PatientController#deletePatient', 'delete-patient');
 
-$router->map('GET', '/admin/inventory', 'App\Controllers\AdminController#inventory', 'inventory');
+// Admin dashboard routes
+$router->map('POST', '/admin/appointments/update-status', 'App\Controllers\AdminAppointmentController#updateAppointmentStatus', 'update-appointment-status');
+$router->map('GET', '/admin/appointments/add', 'App\Controllers\AdminAppointmentController#showAddForm', 'show-add-appointment');
+$router->map('GET', '/admin/appointments/edit/[i:id]', 'App\Controllers\AdminAppointmentController#showEditForm', 'show-edit-appointment');
+$router->map('POST', '/admin/appointments/update', 'App\Controllers\AdminAppointmentController#handleAppointmentUpdate', 'update-appointment');
+$router->map('POST', '/admin/appointments/delete', 'App\Controllers\AdminAppointmentController#handleAppointmentDelete', 'delete-appointment');
+$router->map('POST', '/admin/appointments/get-pets', 'App\Controllers\AdminAppointmentController#getPetsByClient', 'get-pets-by-client');
+$router->map('GET', '/admin/pets/add', 'App\Controllers\AdminController#showAddPetForm', 'show-add-pet-admin');
+$router->map('GET', '/admin/transactions/add', 'App\Controllers\AdminController#showAddTransactionForm', 'show-add-transaction');
+$router->map('GET', '/admin/services/add', 'App\Controllers\AdminController#showAddServiceForm', 'show-add-service');
+
 $router->map('GET', '/admin/employees', 'App\Controllers\AdminController#employees', 'employees');
 
 // Auth routes

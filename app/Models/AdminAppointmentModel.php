@@ -50,7 +50,7 @@ class AdminAppointmentModel extends BaseModel {
     }
 
     public function getClients() {
-        $stmt = $this->db->query('SELECT client_id, CONCAT(clt_fname, \' \', clt_lname) AS full_name FROM client');
+        $stmt = $this->db->query('SELECT clt_code, clt_fname, clt_lname FROM client ORDER BY clt_fname, clt_lname');
         return $stmt->fetchAll();
     }
 
@@ -58,6 +58,19 @@ class AdminAppointmentModel extends BaseModel {
         $stmt = $this->db->prepare('SELECT pet_code, pet_name FROM pet WHERE client_code = ?');
         $stmt->execute([$client_code]);
         return $stmt->fetchAll();
+    }
+
+    public function getAppointmentById($appt_code) {
+        $stmt = $this->db->prepare('
+            SELECT a.*, c.clt_fname, c.clt_lname, p.pet_name, p.pet_type, p.pet_breed, s.service_name, s.service_fee
+            FROM appointment a
+            JOIN client c ON a.client_code = c.clt_code
+            JOIN pet p ON a.pet_code = p.pet_code
+            JOIN service s ON a.service_code = s.service_code
+            WHERE a.appt_code = ?
+        ');
+        $stmt->execute([$appt_code]);
+        return $stmt->fetch();
     }
 }
 ?>

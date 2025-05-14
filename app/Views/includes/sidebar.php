@@ -12,7 +12,7 @@ $pageUrl = $_SERVER['REQUEST_URI']; // Get the full URL
 ?>
 
 <!-- sidebar.php -->
-<div class="d-flex flex-column bg-light shadow-sm" style="width: 250px; height: 100vh; background: linear-gradient(180deg, #2c3e50, #34495e);">
+<div class="d-flex flex-column bg-light shadow-sm position-fixed" style="width: 250px; height: calc(100vh - 56px); background: linear-gradient(180deg, #2c3e50, #34495e); margin-top: 0; overflow-y: auto; top: 56px; z-index: 1020;">
 
     <div class="p-3 text-white">
         <h6 class="text-uppercase">Main</h6>
@@ -56,6 +56,9 @@ $pageUrl = $_SERVER['REQUEST_URI']; // Get the full URL
         </ul>
     </div>
 </div>
+
+<!-- Sidebar placeholder to maintain layout -->
+<div style="width: 250px; flex-shrink: 0;"></div>
 
 <!-- Add this to your custom CSS -->
 <style>

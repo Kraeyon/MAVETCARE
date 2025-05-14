@@ -4,6 +4,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use AltoRouter as Router;
 use Dotenv\Dotenv;
+use Config\Database;
 
 date_default_timezone_set('Asia/Manila');
 
@@ -24,7 +25,16 @@ $match = $router->match();
 
 if ($match) {
     list($controller, $method) = explode('#', $match['target']);
-    $controllerInstance = new $controller();
+    
+    // Special handling for controllers that need dependencies
+    if ($controller === 'App\Controllers\AdminAppointmentController') {
+        $db = Database::getInstance()->getConnection();
+        $model = new App\Models\AdminAppointmentModel($db);
+        $controllerInstance = new $controller($model);
+    } else {
+        $controllerInstance = new $controller();
+    }
+    
     call_user_func_array([$controllerInstance, $method], $match['params']);
 } else {
     // Optional: render a 404 view

@@ -358,4 +358,51 @@ class AppointmentModel extends BaseModel {
             return false;
         }
     }
+    
+    /**
+     * Get all appointments with a specific status
+     * 
+     * @param string $status Status to filter by (e.g., 'pending', 'confirmed')
+     * @return array List of appointments
+     */
+    public function getAppointmentsByStatus($status) {
+        $stmt = $this->db->prepare("
+            SELECT a.*, c.clt_fname, c.clt_lname, c.clt_contact, c.clt_email_address,
+                   p.pet_name, p.pet_type, p.pet_breed,
+                   s.service_name 
+            FROM appointment a
+            JOIN client c ON a.client_code = c.clt_code
+            JOIN pet p ON a.pet_code = p.pet_code
+            LEFT JOIN service s ON a.service_code = s.service_code
+            WHERE LOWER(a.status) = LOWER(?)
+            ORDER BY a.preferred_date ASC, a.preferred_time ASC
+        ");
+        
+        $stmt->execute([strtolower($status)]);
+        return $stmt->fetchAll();
+    }
+    
+    /**
+     * Get all appointments within a date range
+     * 
+     * @param string $startDate Start date (Y-m-d format)
+     * @param string $endDate End date (Y-m-d format)
+     * @return array List of appointments
+     */
+    public function getAppointmentsByDateRange($startDate, $endDate) {
+        $stmt = $this->db->prepare("
+            SELECT a.*, c.clt_fname, c.clt_lname, c.clt_contact, c.clt_email_address,
+                   p.pet_name, p.pet_type, p.pet_breed,
+                   s.service_name 
+            FROM appointment a
+            JOIN client c ON a.client_code = c.clt_code
+            JOIN pet p ON a.pet_code = p.pet_code
+            LEFT JOIN service s ON a.service_code = s.service_code
+            WHERE a.preferred_date BETWEEN ? AND ?
+            ORDER BY a.preferred_date ASC, a.preferred_time ASC
+        ");
+        
+        $stmt->execute([$startDate, $endDate]);
+        return $stmt->fetchAll();
+    }
 } 
