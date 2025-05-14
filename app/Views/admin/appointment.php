@@ -1,98 +1,15 @@
 <?php
-// Include database connection
-include _DIR_ . '/../../config/db_connect.php';
+include __DIR__ . '/../../Controllers/AdminAppointmentController.php';
+$controller = new AdminAppointmentController();
 
-// Initialize variables
-$message = "";
-$error = "";
-
-// Handle appointment actions (add, edit, delete)
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Add new appointment
-    if (isset($_POST['add_appointment'])) {
-        $client_code = pg_escape_string($conn, $_POST['client_code']);
-        $pet_code = pg_escape_string($conn, $_POST['pet_code']);
-        $service_code = pg_escape_string($conn, $_POST['service_code']);
-        $appt_datetime = pg_escape_string($conn, $_POST['appt_date'] . ' ' . $_POST['appt_time']);
-        $appt_type = pg_escape_string($conn, $_POST['appt_type']);
-        $appt_status = pg_escape_string($conn, $_POST['appt_status']);
-        $additional_notes = pg_escape_string($conn, $_POST['additional_notes']);
-        
-        $query = "INSERT INTO appointment (client_code, pet_code, service_code, appt_datetime, appt_type, appt_status, additional_notes) 
-                    VALUES ('$client_code', '$pet_code', '$service_code', '$appt_datetime', '$appt_type', '$appt_status', '$additional_notes')";
-            
-                    $result = pg_query($conn, $query);
-                    if ($result) {
-                        $message = "Appointment added successfully!";
-                    } else {
-                        $error = "Error: " . pg_last_error($conn);
-                    }
-    }
-    
-    // Update existing appointment
-    if (isset($_POST['update_appointment'])) {
-        $appt_code = pg_escape_string($conn, $_POST['appt_code']);
-        $client_code = pg_escape_string($conn, $_POST['client_code']);
-        $pet_code = pg_escape_string($conn, $_POST['pet_code']);
-        $service_code = pg_escape_string($conn, $_POST['service_code']);
-        $appt_datetime = pg_escape_string($conn, $_POST['appt_date'] . ' ' . $_POST['appt_time']);
-        $appt_type = pg_escape_string($conn, $_POST['appt_type']);
-        $appt_status = pg_escape_string($conn, $_POST['appt_status']);
-        $additional_notes = pg_escape_string($conn, $_POST['additional_notes']);
-        
-        $query = "UPDATE appointment 
-                    SET client_code='$client_code', pet_code='$pet_code', service_code='$service_code', 
-                        appt_datetime='$appt_datetime', appt_type='$appt_type', appt_status='$appt_status', 
-                        additional_notes='$additional_notes' 
-                    WHERE appt_code='$appt_code'";
-            
-        $result = pg_query($conn, $query);
-        if ($result) {
-            $message = "Appointment updated successfully!";
-        } else {
-            $error = "Error: " . pg_last_error($conn);
-        }
-    }
-    
-    // Delete appointment
-    if (isset($_POST['delete_appointment'])) {
-        $appt_code = pg_escape_string($conn, $_POST['appt_code']);
-        
-        $query = "DELETE FROM appointment WHERE appt_code='$appt_code'";
-        
-        $result = pg_query($conn, $query);
-        if ($result) {
-            $message = "Appointment deleted successfully!";
-        } else {
-            $error = "Error: " . pg_last_error($conn);
-        }
-    }
-}
-
-// Get all appointments with related data
-$query = "SELECT a.*, c.clt_fname, c.clt_lname, p.pet_name, p.pet_type, p.pet_breed, s.service_name, s.service_fee 
-            FROM appointment a
-            JOIN client c ON a.client_code = c.clt_code
-            JOIN pet p ON a.pet_code = p.pet_code
-            JOIN service s ON a.service_code = s.service_code
-            ORDER BY a.appt_datetime";
-            $result = pg_query($conn, $query);
-            $appointments = [];
-            while ($row = pg_fetch_assoc($result)) {
-                $appointments[] = $row;
-            }
-
-// Get all services for dropdown
-$query = "SELECT service_code, service_name, service_fee FROM service ORDER BY service_name";
-$services_result = pg_query($conn, $query);
-$services = [];
-while ($row = pg_fetch_assoc($services_result)) {
-    $services[] = $row;
-}
-
-// Close database connection
-pg_close($conn);
+$appointments = $controller->appointments;
+$services = $controller->services;
+$clients = $controller->clients;
+$pets = $controller->pets;
+$message = $controller->message;
+$error = $controller->error;
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -149,10 +66,10 @@ pg_close($conn);
                                 <td><?php echo $appointment['pet_name'] . ' (' . $appointment['pet_breed'] . ')'; ?></td>
                                 <td><?php echo $appointment['service_name'] . ' - ₱' . number_format($appointment['service_fee'], 2); ?></td>
                                 <td><?php echo date('M d, Y h:i A', strtotime($appointment['appt_datetime'])); ?></td>
-                                <td><?php echo $appointment['appt_type']; ?></td>
+                                <td><?php echo $appointment['appointment_type']; ?></td>
                                 <td>
-                                    <span class="status-<?php echo strtolower($appointment['appt_status']); ?>">
-                                        <?php echo $appointment['appt_status']; ?>
+                                    <span class="status-<?php echo strtolower($appointment['status']); ?>">
+                                        <?php echo $appointment['status']; ?>
                                     </span>
                                 </td>
                                 <td><?php echo substr($appointment['additional_notes'], 0, 30) . (strlen($appointment['additional_notes']) > 30 ? '...' : ''); ?></td>
@@ -177,18 +94,27 @@ pg_close($conn);
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('addAppointmentModal').style.display='none'">&times;</span>
             <h2>Add New Appointment</h2>
-            <form method="POST" action="">
-                <div class="form-group">
-                    <label for="client_code">Client:</label>
-                    <select name="client_code" id="client_code" class="form-control" required onchange="loadClientPets(this.value)">
-                        <option value="">Select Client</option>
-                        <?php foreach($clients as $client): ?>
-                            <option value="<?php echo $client['clt_code']; ?>">
-                                <?php echo $client['clt_fname'] . ' ' . $client['clt_lname'] . ' (' . $client['clt_contact'] . ')'; ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+            <form method="POST">
+                <label>Select Client:</label>
+                <select name="selected_client_id" onchange="this.form.submit()">
+                    <option value="">-- Select Client --</option>
+                    <?php foreach ($clients as $client): ?>
+                        <option value="<?= $client['client_id'] ?>"
+                            <?= (isset($_POST['selected_client_id']) && $_POST['selected_client_id'] == $client['client_id']) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($client['full_name']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+
+                <label>Select Pet:</label>
+                <select name="pet_id">
+                    <option value="">-- Select Pet --</option>
+                    <?php foreach ($pets as $pet): ?>
+                        <option value="<?= $pet['pet_id'] ?>">
+                            <?= htmlspecialchars($pet['pet_name']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
                 
                 <div class="form-group">
                     <label for="pet_code">Pet:</label>
@@ -221,7 +147,7 @@ pg_close($conn);
                 
                 <div class="form-group">
                     <label for="appt_type">Appointment Type:</label>
-                    <select name="appt_type" id="appt_type" class="form-control" required>
+                    <select name="appointment_type" id="appt_type" class="form-control" required>
                         <option value="WALK-IN">WALK-IN</option>
                         <option value="SERVICE-ON-CALL">SERVICE-ON-CALL</option>
                     </select>
@@ -229,7 +155,7 @@ pg_close($conn);
                 
                 <div class="form-group">
                     <label for="appt_status">Status:</label>
-                    <select name="appt_status" id="appt_status" class="form-control" required>
+                    <select name="status" id="appt_status" class="form-control" required>
                         <option value="PENDING">PENDING</option>
                         <option value="CONFIRMED">CONFIRMED</option>
                         <option value="COMPLETED">COMPLETED</option>
@@ -298,7 +224,7 @@ pg_close($conn);
                 
                 <div class="form-group">
                     <label for="edit_appt_type">Appointment Type:</label>
-                    <select name="appt_type" id="edit_appt_type" class="form-control" required>
+                    <select name="appointment_type" id="edit_appt_type" class="form-control" required>
                         <option value="WALK-IN">WALK-IN</option>
                         <option value="SERVICE-ON-CALL">SERVICE-ON-CALL</option>
                     </select>
@@ -306,7 +232,7 @@ pg_close($conn);
                 
                 <div class="form-group">
                     <label for="edit_appt_status">Status:</label>
-                    <select name="appt_status" id="edit_appt_status" class="form-control" required>
+                    <select name="status" id="edit_appt_status" class="form-control" required>
                         <option value="PENDING">PENDING</option>
                         <option value="CONFIRMED">CONFIRMED</option>
                         <option value="COMPLETED">COMPLETED</option>
@@ -402,8 +328,8 @@ pg_close($conn);
             document.getElementById('edit_appt_date').value = dateStr;
             document.getElementById('edit_appt_time').value = timeStr;
             
-            document.getElementById('edit_appt_type').value = appointment.appt_type;
-            document.getElementById('edit_appt_status').value = appointment.appt_status;
+            document.getElementById('edit_appt_type').value = appointment.appointment_type;
+            document.getElementById('edit_appt_status').value = appointment.status;
             document.getElementById('edit_additional_notes').value = appointment.additional_notes;
             
             document.getElementById('editAppointmentModal').style.display = 'block';

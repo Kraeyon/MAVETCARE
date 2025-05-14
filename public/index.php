@@ -32,7 +32,7 @@ if ($match) {
     echo "404 Not Found";
 }
 
-if ($_GET['page'] == 'appointment') {
+if (isset($_GET['page']) && $_GET['page'] == 'appointment') {
     $controller = new HomeController();
     $controller->appointment();
 }
