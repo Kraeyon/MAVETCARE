@@ -93,6 +93,7 @@
     </table>
 </div>
 
+
 <!-- Quick Actions Buttons -->
 <div class="d-flex justify-content-start flex-wrap gap-2 mb-5">
     <button class="btn btn-outline-primary"><i class="bi bi-calendar-plus me-1"></i> Add Appointment</button>
