@@ -417,6 +417,13 @@ if (!isset($controller)) {
                     <i class="bi bi-info-circle-fill me-2"></i>
                     This calendar displays only confirmed and completed appointments. Pending and cancelled appointments are not shown.
                 </div>
+
+                <?php if (empty($appointments)): ?>
+                <div class="alert alert-warning mb-3">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    No appointments are currently available to display in the calendar. Add some appointments first.
+                </div>
+                <?php endif; ?>
                 
                 <div class="calendar-container">
                     <table class="table table-bordered calendar-table">
@@ -868,8 +875,20 @@ if (!isset($controller)) {
                 });
             });
             
-            // Initialize calendar if we have appointments
-            if (appointmentsData && appointmentsData.length > 0) {
+            // Initialize calendar
+            try {
+                // Safely check if appointmentsData exists and has items before initializing
+                if (typeof appointmentsData !== 'undefined' && appointmentsData && appointmentsData.length > 0) {
+                    console.log("Appointments data available, initializing calendar");
+                    updateCalendar();
+                } else {
+                    console.log("No appointments data available for calendar");
+                    // Still initialize calendar (it will now handle empty data gracefully)
+                    updateCalendar();
+                }
+            } catch (e) {
+                console.error("Error initializing calendar:", e);
+                // Try to initialize anyway, our updateCalendar function is now more robust
                 updateCalendar();
             }
         });
@@ -952,25 +971,32 @@ if (!isset($controller)) {
                         const dateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                         
                         // Get appointments for this day - only CONFIRMED and COMPLETED ones
-                        const dayAppointments = appointmentsData.filter(appt => {
-                            const apptDate = appt.appt_datetime.split(' ')[0]; // Get just the date part
-                            const status = appt.status.toUpperCase();
-                            // Only include confirmed and completed appointments (exclude pending and cancelled)
-                            return apptDate === dateStr && (status === 'CONFIRMED' || status === 'COMPLETED');
-                        });
-                        
-                        // Create appointment items for the cell
                         let appointmentsHTML = '';
-                        dayAppointments.forEach(appt => {
-                            const time = new Date(appt.appt_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                            const statusClass = `appointment-${appt.status.toLowerCase()}`;
-                            appointmentsHTML += `
-                                <div class="appointment-item ${statusClass}" 
-                                     onclick="openEditModal(${JSON.stringify(appt).replace(/"/g, '&quot;')})">
-                                    ${time} - ${appt.pet_name} (${appt.clt_fname})
-                                </div>
-                            `;
-                        });
+                        
+                        // Check if appointmentsData is defined and not empty
+                        if (typeof appointmentsData !== 'undefined' && appointmentsData && appointmentsData.length > 0) {
+                            const dayAppointments = appointmentsData.filter(appt => {
+                                // Make sure appt and appt.appt_datetime exist
+                                if (!appt || !appt.appt_datetime) return false;
+                                
+                                const apptDate = appt.appt_datetime.split(' ')[0]; // Get just the date part
+                                const status = appt.status ? appt.status.toUpperCase() : '';
+                                // Only include confirmed and completed appointments (exclude pending and cancelled)
+                                return apptDate === dateStr && (status === 'CONFIRMED' || status === 'COMPLETED');
+                            });
+                            
+                            // Create appointment items for the cell
+                            dayAppointments.forEach(appt => {
+                                const time = new Date(appt.appt_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                                const statusClass = `appointment-${appt.status.toLowerCase()}`;
+                                appointmentsHTML += `
+                                    <div class="appointment-item ${statusClass}" 
+                                         onclick="openEditModal(${JSON.stringify(appt).replace(/"/g, '&quot;')})">
+                                        ${time} - ${appt.pet_name} (${appt.clt_fname})
+                                    </div>
+                                `;
+                            });
+                        }
                         
                         calendarHTML += `
                             <td>
