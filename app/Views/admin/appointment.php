@@ -316,17 +316,30 @@ if (!isset($controller)) {
                     </div>
                     <div class="col-md-6">
                         <form action="" method="GET" class="d-flex">
-                            <input type="text" name="search" class="form-control me-2" placeholder="Search appointments..." 
-                                value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-search"></i> Search
-                            </button>
-                            <?php if (isset($_GET['search'])): ?>
-                                <a href="/admin/appointment" class="btn btn-outline-secondary ms-2">
-                                    <i class="bi bi-x-circle"></i> Clear
-                                </a>
-                            <?php endif; ?>
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control" 
+                                    placeholder="Search by name, pet, service, status or ID..." 
+                                    value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>"
+                                    style="height: 38px;">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search"></i> Search
+                                </button>
+                                <?php if (isset($_GET['search']) || isset($_GET['id'])): ?>
+                                    <a href="/admin/appointment" class="btn btn-outline-secondary">
+                                        <i class="bi bi-x-circle"></i> Clear
+                                    </a>
+                                <?php endif; ?>
+                            </div>
                         </form>
+                        <?php if ($error): ?>
+                            <div class="alert alert-warning mt-2 mb-0 p-2 small">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i> <?php echo $error; ?>
+                            </div>
+                        <?php elseif ($message && isset($_GET['search'])): ?>
+                            <div class="alert alert-success mt-2 mb-0 p-2 small">
+                                <i class="bi bi-check-circle-fill me-1"></i> <?php echo $message; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -403,12 +416,12 @@ if (!isset($controller)) {
                     <table class="table table-striped" id="appointmentsTable">
                         <thead class="table-dark">
                             <tr>
-                                <th class="sortable" data-sort="id">ID <span class="sort-icon"></span></th>
-                                <th class="sortable" data-sort="client">Client <span class="sort-icon"></span></th>
-                                <th class="sortable" data-sort="pet">Pet <span class="sort-icon"></span></th>
-                                <th class="sortable" data-sort="service">Service <span class="sort-icon"></span></th>
-                                <th class="sortable" data-sort="datetime">Date & Time <span class="sort-icon"></span></th>
-                                <th class="sortable" data-sort="type">Type <span class="sort-icon"></span></th>
+                                <th class="sortable" data-sort="appt_code">ID <span class="sort-icon"></span></th>
+                                <th class="sortable" data-sort="client_name">Client <span class="sort-icon"></span></th>
+                                <th class="sortable" data-sort="pet_name">Pet <span class="sort-icon"></span></th>
+                                <th class="sortable" data-sort="service_name">Service <span class="sort-icon"></span></th>
+                                <th class="sortable" data-sort="appt_datetime">Date & Time <span class="sort-icon"></span></th>
+                                <th class="sortable" data-sort="appointment_type">Type <span class="sort-icon"></span></th>
                                 <th class="sortable" data-sort="status">Status <span class="sort-icon"></span></th>
                                 <th>Notes</th>
                                 <th>Actions</th>
@@ -742,76 +755,40 @@ if (!isset($controller)) {
             
             const headers = table.querySelectorAll('th.sortable');
             
-            // Add click event to sortable headers
+            // Mark current sort column
+            const currentSort = '<?= isset($_GET['sort']) ? $_GET['sort'] : 'appt_datetime' ?>';
+            const currentOrder = '<?= isset($_GET['order']) ? $_GET['order'] : 'ASC' ?>';
+            
             headers.forEach(header => {
+                const dataSort = header.getAttribute('data-sort');
+                if (dataSort === currentSort) {
+                    header.classList.add(currentOrder.toLowerCase() === 'asc' ? 'asc' : 'desc');
+                }
+                
+                // Add click event to sortable headers
                 header.addEventListener('click', function() {
                     const dataSort = this.getAttribute('data-sort');
-                    const isAsc = !this.classList.contains('asc');
+                    let newOrder = 'ASC';
                     
-                    // Reset all headers
-                    headers.forEach(h => {
-                        h.classList.remove('asc', 'desc');
-                    });
-                    
-                    // Set current sort direction
-                    this.classList.add(isAsc ? 'asc' : 'desc');
-                    
-                    // Get all rows except the header
-                    const tbody = table.querySelector('tbody');
-                    const rows = Array.from(tbody.querySelectorAll('tr'));
-                    
-                    // Skip if there's only one row with "No appointments found"
-                    if (rows.length <= 1 && rows[0].querySelectorAll('td')[0].hasAttribute('colspan')) {
-                        return;
+                    // Toggle order if already sorted by this column
+                    if (dataSort === currentSort) {
+                        newOrder = currentOrder.toUpperCase() === 'ASC' ? 'DESC' : 'ASC';
                     }
                     
-                    // Get column index based on data-sort
-                    let colIndex = 0;
-                    switch(dataSort) {
-                        case 'id': colIndex = 0; break;
-                        case 'client': colIndex = 1; break;
-                        case 'pet': colIndex = 2; break;
-                        case 'service': colIndex = 3; break;
-                        case 'datetime': colIndex = 4; break;
-                        case 'type': colIndex = 5; break;
-                        case 'status': colIndex = 6; break;
-                        case 'notes': colIndex = 7; break;
-                        default: return;
+                    // Redirect with sort parameters
+                    const currentUrl = new URL(window.location.href);
+                    const searchParams = currentUrl.searchParams;
+                    
+                    // Preserve search term if exists
+                    const searchTerm = searchParams.get('search');
+                    
+                    // Create new URL with sort parameters
+                    let url = '?sort=' + dataSort + '&order=' + newOrder;
+                    if (searchTerm) {
+                        url += '&search=' + encodeURIComponent(searchTerm);
                     }
                     
-                    // Sort rows
-                    rows.sort((a, b) => {
-                        const cellA = a.cells[colIndex].getAttribute('data-value') || '';
-                        const cellB = b.cells[colIndex].getAttribute('data-value') || '';
-                        
-                        // Check if values are dates or numbers
-                        if (dataSort === 'datetime') {
-                            // Date comparison
-                            return isAsc 
-                                ? new Date(cellA) - new Date(cellB) 
-                                : new Date(cellB) - new Date(cellA);
-                        } else if (dataSort === 'id') {
-                            // Numeric comparison
-                            return isAsc
-                                ? parseInt(cellA) - parseInt(cellB)
-                                : parseInt(cellB) - parseInt(cellA);
-                        } else {
-                            // Default string comparison
-                            return isAsc
-                                ? cellA.localeCompare(cellB)
-                                : cellB.localeCompare(cellA);
-                        }
-                    });
-                    
-                    // Remove existing rows
-                    while (tbody.firstChild) {
-                        tbody.removeChild(tbody.firstChild);
-                    }
-                    
-                    // Add sorted rows
-                    rows.forEach(row => {
-                        tbody.appendChild(row);
-                    });
+                    window.location.href = url;
                 });
             });
             

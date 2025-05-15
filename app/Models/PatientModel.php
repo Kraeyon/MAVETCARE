@@ -115,6 +115,10 @@ class PatientModel extends BaseModel {
 
     public function searchPatients($searchTerm) {
         $searchTerm = "%$searchTerm%";
+        
+        // For exact pet_code search (without wildcards)
+        $exactTerm = trim($searchTerm, '%');
+        
         $stmt = $this->db->prepare('
             SELECT p.*, CONCAT(c.clt_fname, \' \', c.clt_initial, \'. \', c.clt_lname) AS client_name
             FROM pet p
@@ -123,8 +127,9 @@ class PatientModel extends BaseModel {
                OR p.pet_type LIKE ? 
                OR p.pet_breed LIKE ?
                OR CONCAT(c.clt_fname, \' \', c.clt_initial, \'. \', c.clt_lname) LIKE ?
+               OR p.pet_code = ?
         ');
-        $stmt->execute([$searchTerm, $searchTerm, $searchTerm, $searchTerm]);
+        $stmt->execute([$searchTerm, $searchTerm, $searchTerm, $searchTerm, $exactTerm]);
         return $stmt->fetchAll();
     }
 

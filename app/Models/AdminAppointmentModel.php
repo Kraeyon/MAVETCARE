@@ -10,16 +10,70 @@ class AdminAppointmentModel extends BaseModel {
         $this->db = $db;
     }
 
-    public function getAppointments() {
-        $stmt = $this->db->query('
+    public function getAppointments($searchTerm = null, $sortBy = 'appt_datetime', $orderDirection = 'ASC') {
+        $query = '
             SELECT a.*, c.clt_fname, c.clt_lname, p.pet_name, p.pet_type, p.pet_breed, s.service_name, s.service_fee
             FROM appointment a
             JOIN client c ON a.client_code = c.clt_code
             JOIN pet p ON a.pet_code = p.pet_code
-            JOIN service s ON a.service_code = s.service_code
-            ORDER BY a.appt_datetime
-        ');
+            LEFT JOIN service s ON a.service_code = s.service_code
+            WHERE 1=1';
+        
+        $params = [];
+        
+        // Add search condition if searchTerm is provided
+        if (!empty($searchTerm)) {
+            $query .= " AND (c.clt_fname LIKE ? OR c.clt_lname LIKE ? OR p.pet_name LIKE ? OR s.service_name LIKE ? OR a.status LIKE ? OR a.appt_code = ?)";
+            $params = [
+                "%$searchTerm%", 
+                "%$searchTerm%", 
+                "%$searchTerm%", 
+                "%$searchTerm%", 
+                "%$searchTerm%",
+                $searchTerm // For exact match on ID
+            ];
+        }
+        
+        // Add sorting
+        $validColumns = [
+            'appt_code' => 'a.appt_code',
+            'client_name' => 'CONCAT(c.clt_fname, \' \', c.clt_lname)',
+            'pet_name' => 'p.pet_name',
+            'service_name' => 's.service_name',
+            'appt_datetime' => 'a.appt_datetime',
+            'appointment_type' => 'a.appointment_type',
+            'status' => 'a.status'
+        ];
+        
+        $sortColumn = isset($validColumns[$sortBy]) ? $validColumns[$sortBy] : 'a.appt_datetime';
+        $orderDir = ($orderDirection === 'DESC') ? 'DESC' : 'ASC';
+        
+        $query .= " ORDER BY $sortColumn $orderDir";
+        
+        $stmt = $this->db->prepare($query);
+        $stmt->execute($params);
         return $stmt->fetchAll();
+    }
+
+    public function searchAppointments($searchTerm) {
+        return $this->getAppointments($searchTerm);
+    }
+
+    public function findAppointmentById($id) {
+        if (!is_numeric($id)) {
+            return null;
+        }
+        
+        $stmt = $this->db->prepare('
+            SELECT a.*, c.clt_fname, c.clt_lname, p.pet_name, p.pet_type, p.pet_breed, s.service_name, s.service_fee
+            FROM appointment a
+            JOIN client c ON a.client_code = c.clt_code
+            JOIN pet p ON a.pet_code = p.pet_code
+            LEFT JOIN service s ON a.service_code = s.service_code
+            WHERE a.appt_code = ?
+        ');
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function getServices() {

@@ -84,7 +84,7 @@
         </div>
         <div class="col-md-6">
             <form action="/admin/patients" method="GET" class="d-flex">
-                <input type="text" name="search" class="form-control me-2" placeholder="Search pets or clients..." value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
+                <input type="text" name="search" class="form-control me-2" placeholder="Search by pet code, name, type, breed or client..." value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-search"></i> Search
                 </button>

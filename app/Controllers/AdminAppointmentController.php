@@ -19,7 +19,39 @@ class AdminAppointmentController {
         $this->db = Database::getInstance()->getConnection(); // For direct database operations
         
         // Initialize properties needed by the view
-        $this->appointments = $this->adminAppointmentModel->getAppointments();
+        // Check for search parameters
+        $searchTerm = isset($_GET['search']) ? trim($_GET['search']) : null;
+        $sort = isset($_GET['sort']) ? $_GET['sort'] : 'appt_datetime';
+        $order = isset($_GET['order']) ? $_GET['order'] : 'ASC';
+        
+        // Check if we have search term
+        if (!empty($searchTerm)) {
+            // If search term is numeric and looks like an ID, try exact ID search first
+            if (is_numeric($searchTerm) && $searchTerm > 0) {
+                $appointment = $this->adminAppointmentModel->findAppointmentById($searchTerm);
+                if ($appointment) {
+                    // Found exact match by ID
+                    $this->appointments = [$appointment];
+                    $this->message = "Found appointment #" . $searchTerm;
+                } else {
+                    // No exact match, fall back to regular search
+                    $this->appointments = $this->adminAppointmentModel->getAppointments($searchTerm, $sort, $order);
+                    if (empty($this->appointments)) {
+                        $this->error = "No appointments found matching: " . $searchTerm;
+                    }
+                }
+            } else {
+                // Regular text search
+                $this->appointments = $this->adminAppointmentModel->getAppointments($searchTerm, $sort, $order);
+                if (empty($this->appointments)) {
+                    $this->error = "No appointments found matching: " . $searchTerm;
+                }
+            }
+        } else {
+            // No search term, show all appointments
+            $this->appointments = $this->adminAppointmentModel->getAppointments(null, $sort, $order);
+        }
+        
         $this->services = $this->adminAppointmentModel->getServices();
         $this->clients = $this->adminAppointmentModel->getClients();
 
@@ -56,9 +88,42 @@ class AdminAppointmentController {
         }
 
         // Reload appointments, services, and clients after post
-        $this->appointments = $this->adminAppointmentModel->getAppointments();
+        $searchTerm = isset($_GET['search']) ? trim($_GET['search']) : null;
+        $sort = isset($_GET['sort']) ? $_GET['sort'] : 'appt_datetime';
+        $order = isset($_GET['order']) ? $_GET['order'] : 'ASC';
+        
+        // Same search logic as in constructor
+        if (!empty($searchTerm)) {
+            if (is_numeric($searchTerm) && $searchTerm > 0) {
+                $appointment = $this->adminAppointmentModel->findAppointmentById($searchTerm);
+                if ($appointment) {
+                    $this->appointments = [$appointment];
+                } else {
+                    $this->appointments = $this->adminAppointmentModel->getAppointments($searchTerm, $sort, $order);
+                }
+            } else {
+                $this->appointments = $this->adminAppointmentModel->getAppointments($searchTerm, $sort, $order);
+            }
+        } else {
+            $this->appointments = $this->adminAppointmentModel->getAppointments(null, $sort, $order);
+        }
+        
         $this->services = $this->adminAppointmentModel->getServices();
         $this->clients = $this->adminAppointmentModel->getClients();
+    }
+
+    /**
+     * Search for appointments
+     */
+    public function searchAppointments($searchTerm) {
+        return $this->adminAppointmentModel->searchAppointments($searchTerm);
+    }
+    
+    /**
+     * Find appointment by ID
+     */
+    public function findAppointmentById($id) {
+        return $this->adminAppointmentModel->findAppointmentById($id);
     }
 
     private function addAppointment($data) {
