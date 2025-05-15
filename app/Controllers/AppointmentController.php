@@ -583,4 +583,33 @@ class AppointmentController extends BaseController {
             return 1; // Default to service_code 1 if there's an error
         }
     }
+    
+    /**
+     * Show user's appointments
+     */
+    public function myAppointments() {
+        // Check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            // Redirect to login page if not logged in
+            $_SESSION['redirect_after_login'] = '/my-appointments';
+            header('Location: /login');
+            exit;
+        }
+        
+        // Initialize data array
+        $data = [
+            'user' => $user,
+            'appointments' => []
+        ];
+        
+        // If it's a regular client (not admin), get their appointments
+        if ($user['role'] !== 'admin' && !empty($user['client_code'])) {
+            // Get all appointments for this client
+            $data['appointments'] = $this->appointmentModel->getClientAppointments($user['client_code']);
+        }
+        
+        // Render the page with user data
+        $this->render('home/my-appointments', $data);
+    }
 } 

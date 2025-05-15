@@ -469,9 +469,14 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
             Quick, Easy, Hassle-Free. Secure your slot and get the care your pet deserves — all in just a few clicks.
             </p>
 
-            <a href="#appointment-section" class="btn btn-primary mt-3 fade-in-up" style="animation-delay: 0.8s;">
-            Book Now!
-            </a>
+            <div class="fade-in-up" style="animation-delay: 0.8s;">
+                <a href="#appointment-section" class="btn btn-primary mt-3">
+                    Book Now!
+                </a>
+                <a href="/my-appointments" class="btn btn-outline-primary mt-3 ms-2">
+                    <i class="fas fa-calendar-check me-1"></i> My Appointments
+                </a>
+            </div>
         </div>
 
         <!-- Image -->

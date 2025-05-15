@@ -21,6 +21,7 @@ $router->map('GET', '/products', 'App\Controllers\HomeController#products', 'pro
 // Appointment and pet-related routes (using AppointmentController)
 $router->map('GET', '/appointment', 'App\Controllers\AppointmentController#index', 'appointment');
 $router->map('POST', '/appointment', 'App\Controllers\AppointmentController#submitAppointment', 'submit-appointment');
+$router->map('GET', '/my-appointments', 'App\Controllers\AppointmentController#myAppointments', 'my-appointments');
 $router->map('GET', '/admin/appointments', 'App\Controllers\AppointmentController#viewAppointments', 'admin-appointments');
 
 // Pet management
