@@ -2,6 +2,7 @@
 // Get controller instance from the route handler instead of manual inclusion
 use App\Models\AdminAppointmentModel;
 use Config\Database;
+use App\Utils\StatusHelper;
 
 // Create the model and controller only if they don't exist (to support both direct access and controller rendering)
 if (!isset($controller)) {
@@ -345,6 +346,35 @@ if (!isset($controller)) {
             </div>
         </div>
         
+        <!-- Status Filter Buttons -->
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Filter Appointments</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="/admin/appointment" class="btn btn-outline-dark">
+                        <i class="bi bi-card-list me-1"></i>All Appointments
+                    </a>
+                    <a href="/admin/appointment?filter=pending" class="btn btn-outline-warning" id="btn-filter-pending">
+                        <i class="bi bi-clock me-1"></i>Pending
+                    </a>
+                    <a href="/admin/appointment?filter=confirmed" class="btn btn-outline-success" id="btn-filter-confirmed">
+                        <i class="bi bi-check-circle me-1"></i>Confirmed
+                    </a>
+                    <a href="/admin/appointment?filter=completed" class="btn btn-outline-info" id="btn-filter-completed">
+                        <i class="bi bi-trophy me-1"></i>Completed
+                    </a>
+                    <a href="/admin/appointment?filter=cancelled" class="btn btn-outline-danger" id="btn-filter-cancelled">
+                        <i class="bi bi-x-circle me-1"></i>Cancelled
+                    </a>
+                    <a href="/admin/appointment?filter=upcoming" class="btn btn-outline-primary" id="btn-filter-upcoming">
+                        <i class="bi bi-calendar-event me-1"></i>Upcoming (Next 7 Days)
+                    </a>
+                </div>
+            </div>
+        </div>
+        
         <!-- Calendar View for Scheduled Appointments -->
         <div id="calendarView" class="card mb-4" style="display: none;">
             <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
@@ -438,8 +468,8 @@ if (!isset($controller)) {
                                         <td data-value="<?php echo $appointment['appt_datetime']; ?>"><?php echo date('M d, Y h:i A', strtotime($appointment['appt_datetime'])); ?></td>
                                         <td data-value="<?php echo htmlspecialchars($appointment['appointment_type']); ?>"><?php echo htmlspecialchars($appointment['appointment_type']); ?></td>
                                         <td data-value="<?php echo htmlspecialchars($appointment['status']); ?>">
-                                            <span class="badge bg-<?php echo strtolower($appointment['status']) === 'pending' ? 'warning' : (strtolower($appointment['status']) === 'confirmed' ? 'success' : (strtolower($appointment['status']) === 'completed' ? 'info' : 'danger')); ?>">
-                                                <?php echo $appointment['status']; ?>
+                                            <span class="badge <?php echo StatusHelper::getStatusClass($appointment['status']); ?>">
+                                                <?php echo StatusHelper::getDisplayStatus($appointment['status']); ?>
                                             </span>
                                         </td>
                                         <td data-value="<?php echo htmlspecialchars($appointment['additional_notes'] ?? ''); ?>"><?php echo substr($appointment['additional_notes'], 0, 30) . (strlen($appointment['additional_notes']) > 30 ? '...' : ''); ?></td>
@@ -735,9 +765,55 @@ if (!isset($controller)) {
         // Update appointment status
         function updateStatus(apptCode, status) {
             if (confirm("Are you sure you want to mark this appointment as " + status + "?")) {
-                document.getElementById('status_appt_code').value = apptCode;
-                document.getElementById('status_value').value = status;
-                document.getElementById('statusUpdateForm').submit();
+                // Create form data
+                const formData = new FormData();
+                formData.append('appt_code', apptCode);
+                formData.append('status', status);
+                
+                // Show loading indicator
+                const loadingElement = document.createElement('div');
+                loadingElement.className = 'position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-25';
+                loadingElement.style.zIndex = '9999';
+                loadingElement.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+                document.body.appendChild(loadingElement);
+                
+                // Send fetch request
+                fetch('/admin/appointments/update-status', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Remove loading indicator
+                    document.body.removeChild(loadingElement);
+                    
+                    if (data.success) {
+                        // Show success message
+                        const alertElement = document.createElement('div');
+                        alertElement.className = 'alert alert-success position-fixed top-0 start-50 translate-middle-x mt-3';
+                        alertElement.style.zIndex = '9999';
+                        alertElement.innerHTML = 'Appointment status updated successfully';
+                        document.body.appendChild(alertElement);
+                        
+                        // Auto-dismiss alert after 2 seconds
+                        setTimeout(() => {
+                            document.body.removeChild(alertElement);
+                            // Reload page to reflect changes
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        alert("Failed to update appointment status: " + (data.message || "Unknown error"));
+                    }
+                })
+                .catch(error => {
+                    // Remove loading indicator
+                    if (document.body.contains(loadingElement)) {
+                        document.body.removeChild(loadingElement);
+                    }
+                    
+                    console.error('Error:', error);
+                    alert("An error occurred while updating the appointment status");
+                });
             }
         }
         
@@ -912,6 +988,209 @@ if (!isset($controller)) {
             }
             
             document.getElementById('calendarBody').innerHTML = calendarHTML;
+        }
+        
+        // Filter appointments based on URL parameters
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if we have a filter parameter in the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const filter = urlParams.get('filter');
+            
+            if (filter) {
+                // Clear any existing search
+                const searchInput = document.querySelector('input[name="search"]');
+                if (searchInput) {
+                    searchInput.value = '';
+                }
+                
+                // Highlight the active filter button
+                const filterButton = document.getElementById(`btn-filter-${filter.toLowerCase()}`);
+                if (filterButton) {
+                    // Remove outline classes and add solid color classes
+                    filterButton.classList.remove('btn-outline-warning', 'btn-outline-success', 
+                                              'btn-outline-info', 'btn-outline-danger', 'btn-outline-primary');
+                    
+                    // Add appropriate solid color class based on filter type
+                    switch(filter.toLowerCase()) {
+                        case 'pending':
+                            filterButton.classList.add('btn-warning', 'text-dark');
+                            break;
+                        case 'confirmed':
+                            filterButton.classList.add('btn-success', 'text-white');
+                            break;
+                        case 'completed':
+                            filterButton.classList.add('btn-info', 'text-white');
+                            break;
+                        case 'cancelled':
+                            filterButton.classList.add('btn-danger', 'text-white');
+                            break;
+                        case 'upcoming':
+                            filterButton.classList.add('btn-primary', 'text-white');
+                            break;
+                    }
+                }
+                
+                // Apply appropriate filter based on parameter
+                switch(filter.toLowerCase()) {
+                    case 'pending':
+                        filterAppointmentsByStatus('PENDING');
+                        break;
+                    case 'confirmed':
+                        filterAppointmentsByStatus('CONFIRMED');
+                        break;
+                    case 'completed':
+                        filterAppointmentsByStatus('COMPLETED');
+                        break;
+                    case 'cancelled':
+                        filterAppointmentsByStatus('CANCELLED');
+                        break;
+                    case 'upcoming':
+                        // Show calendar view and focus on upcoming appointments
+                        showCalendarView();
+                        // Also highlight upcoming appointments in the table
+                        filterUpcomingAppointments();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        
+        // Function to filter appointments by status
+        function filterAppointmentsByStatus(status) {
+            const table = document.getElementById('appointmentsTable');
+            if (!table) return;
+            
+            // Highlight the filtered status with a message
+            const filterMessage = document.createElement('div');
+            filterMessage.className = 'alert alert-info mb-3';
+            filterMessage.innerHTML = `<i class="bi bi-funnel-fill me-2"></i>Showing ${status.toLowerCase()} appointments only.`;
+            
+            const cardBody = table.closest('.card-body');
+            if (cardBody) {
+                const existingAlert = cardBody.querySelector('.alert');
+                if (existingAlert) {
+                    cardBody.removeChild(existingAlert);
+                }
+                cardBody.insertBefore(filterMessage, cardBody.firstChild);
+            }
+            
+            // Filter the table rows
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            // Remove any "no results" row that might exist
+            const noResultsRow = tbody.querySelector('tr[data-no-results]');
+            if (noResultsRow) {
+                tbody.removeChild(noResultsRow);
+            }
+            
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const statusCell = row.querySelector('td:nth-child(7)'); // Status column (adjust if needed)
+                
+                if (statusCell) {
+                    const statusValue = statusCell.getAttribute('data-value');
+                    
+                    if (statusValue && statusValue.toUpperCase() === status) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+            
+            // If no matching appointments found, show a message
+            if (visibleCount === 0 && rows.length > 0) {
+                const noResultsRow = document.createElement('tr');
+                noResultsRow.setAttribute('data-no-results', 'true');
+                noResultsRow.innerHTML = `<td colspan="9" class="text-center py-4">
+                    <div class="text-muted">
+                        <i class="bi bi-filter-circle mb-3" style="font-size: 2rem;"></i>
+                        <p>No ${status.toLowerCase()} appointments found</p>
+                    </div>
+                </td>`;
+                tbody.appendChild(noResultsRow);
+            }
+        }
+        
+        // Function to filter upcoming appointments (next 7 days)
+        function filterUpcomingAppointments() {
+            const table = document.getElementById('appointmentsTable');
+            if (!table) return;
+            
+            // Create a date range for the next 7 days
+            const today = new Date();
+            const nextWeek = new Date(today);
+            nextWeek.setDate(today.getDate() + 7);
+            
+            // Format dates for display
+            const todayStr = today.toLocaleDateString();
+            const nextWeekStr = nextWeek.toLocaleDateString();
+            
+            // Highlight the filtered status with a message
+            const filterMessage = document.createElement('div');
+            filterMessage.className = 'alert alert-primary mb-3';
+            filterMessage.innerHTML = `<i class="bi bi-calendar-event me-2"></i>Showing upcoming appointments from ${todayStr} to ${nextWeekStr}.`;
+            
+            const cardBody = table.closest('.card-body');
+            if (cardBody) {
+                const existingAlert = cardBody.querySelector('.alert');
+                if (existingAlert) {
+                    cardBody.removeChild(existingAlert);
+                }
+                cardBody.insertBefore(filterMessage, cardBody.firstChild);
+            }
+            
+            // Filter the table rows
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            // Remove any "no results" row that might exist
+            const noResultsRow = tbody.querySelector('tr[data-no-results]');
+            if (noResultsRow) {
+                tbody.removeChild(noResultsRow);
+            }
+            
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const dateCell = row.querySelector('td:nth-child(5)'); // Date & Time column
+                const statusCell = row.querySelector('td:nth-child(7)'); // Status column
+                
+                if (dateCell && statusCell) {
+                    const dateValue = dateCell.getAttribute('data-value');
+                    const statusValue = statusCell.getAttribute('data-value');
+                    
+                    if (dateValue && statusValue) {
+                        const apptDate = new Date(dateValue);
+                        const isConfirmed = statusValue.toUpperCase() === 'CONFIRMED';
+                        const isUpcoming = apptDate >= today && apptDate <= nextWeek;
+                        
+                        if (isConfirmed && isUpcoming) {
+                            row.style.display = '';
+                            visibleCount++;
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    }
+                }
+            });
+            
+            // If no matching appointments found, show a message
+            if (visibleCount === 0 && rows.length > 0) {
+                const noResultsRow = document.createElement('tr');
+                noResultsRow.setAttribute('data-no-results', 'true');
+                noResultsRow.innerHTML = `<td colspan="9" class="text-center py-4">
+                    <div class="text-muted">
+                        <i class="bi bi-calendar3-week mb-3" style="font-size: 2rem;"></i>
+                        <p>No upcoming appointments in the next 7 days</p>
+                    </div>
+                </td>`;
+                tbody.appendChild(noResultsRow);
+            }
         }
     </script>
 </body>

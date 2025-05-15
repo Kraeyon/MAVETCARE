@@ -1,4 +1,7 @@
 <?php
+// Add StatusHelper at the top of the file
+use App\Utils\StatusHelper;
+
 // Database connection and queries
 require_once '../config/Database.php';
 $db = \Config\Database::getInstance()->getConnection();
@@ -143,31 +146,32 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
                         <td data-value="<?php echo $appt['preferred_time']; ?>"><?php echo date('h:i A', strtotime($appt['preferred_time'])); ?></td>
                         <td data-value="<?php echo htmlspecialchars($appt['service_name'] ?? ''); ?>"><?php echo htmlspecialchars($appt['service_name'] ?? 'N/A'); ?></td>
                         <td data-value="<?php echo htmlspecialchars($appt['status']); ?>">
-                            <?php 
-                                $statusClass = '';
-                                switch(strtolower($appt['status'])) {
-                                    case 'pending':
-                                        $statusClass = 'bg-warning';
-                                        break;
-                                    case 'confirmed':
-                                        $statusClass = 'bg-success';
-                                        break;
-                                    case 'completed':
-                                        $statusClass = 'bg-info';
-                                        break;
-                                    case 'cancelled':
-                                        $statusClass = 'bg-danger';
-                                        break;
-                                    default:
-                                        $statusClass = 'bg-secondary';
-                                }
-                            ?>
-                            <span class="badge <?php echo $statusClass; ?>"><?php echo ucfirst(htmlspecialchars($appt['status'])); ?></span>
+                            <span class="badge <?php echo StatusHelper::getStatusClass($appt['status']); ?>">
+                                <?php echo StatusHelper::getDisplayStatus($appt['status']); ?>
+                            </span>
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-success me-1" onclick="updateAppointmentStatus(<?php echo $appt['appt_code']; ?>, 'confirmed')">Approve</button>
-                            <button class="btn btn-sm btn-secondary me-1" onclick="location.href='/admin/appointments/edit/<?php echo $appt['appt_code']; ?>'">Reschedule</button>
-                            <button class="btn btn-sm btn-danger" onclick="updateAppointmentStatus(<?php echo $appt['appt_code']; ?>, 'cancelled')">Cancel</button>
+                            <div class="btn-group">
+                                <?php if (strtolower($appt['status']) === 'pending'): ?>
+                                    <button class="btn btn-sm btn-success me-1" onclick="updateAppointmentStatus(<?php echo $appt['appt_code']; ?>, 'confirmed')">
+                                        <i class="bi bi-check-lg"></i> Approve
+                                    </button>
+                                <?php elseif (strtolower($appt['status']) === 'confirmed'): ?>
+                                    <button class="btn btn-sm btn-info me-1" onclick="updateAppointmentStatus(<?php echo $appt['appt_code']; ?>, 'completed')">
+                                        <i class="bi bi-check-circle"></i> Complete
+                                    </button>
+                                <?php endif; ?>
+                                
+                                <a href="/admin/appointments/edit/<?php echo $appt['appt_code']; ?>" class="btn btn-sm btn-secondary me-1">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                                
+                                <?php if (strtolower($appt['status']) !== 'cancelled' && strtolower($appt['status']) !== 'completed'): ?>
+                                    <button class="btn btn-sm btn-danger" onclick="updateAppointmentStatus(<?php echo $appt['appt_code']; ?>, 'cancelled')">
+                                        <i class="bi bi-x-lg"></i> Cancel
+                                    </button>
+                                <?php endif; ?>
+                            </div>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -211,7 +215,7 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
             // Get pending appointments
             $pendingStmt = $db->prepare("
                 SELECT COUNT(*) FROM appointment 
-                WHERE status = 'pending' AND DATE(preferred_date) >= ?
+                WHERE UPPER(status) = 'PENDING' AND DATE(preferred_date) >= ?
             ");
             $pendingStmt->execute([$today]);
             $pendingCount = $pendingStmt->fetchColumn();
@@ -229,7 +233,7 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
             $nextWeek = date('Y-m-d', strtotime('+7 days'));
             $upcomingStmt = $db->prepare("
                 SELECT COUNT(*) FROM appointment 
-                WHERE preferred_date BETWEEN ? AND ? AND status = 'confirmed'
+                WHERE preferred_date BETWEEN ? AND ? AND UPPER(status) = 'CONFIRMED'
             ");
             $upcomingStmt->execute([$today, $nextWeek]);
             $upcomingAppts = $upcomingStmt->fetchColumn();
@@ -264,7 +268,7 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
                 <?php endif; ?>
                 
                 <?php if ($pendingCount > 0): ?>
-                    <a href="/admin/appointments?status=pending" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <a href="/admin/appointment?filter=pending" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                         <div>
                             <i class="bi bi-clock text-primary me-2"></i>
                             <strong><?php echo $pendingCount; ?></strong> appointment<?php echo $pendingCount != 1 ? 's' : ''; ?> awaiting confirmation
@@ -284,7 +288,7 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
                 <?php endif; ?>
                 
                 <?php if ($upcomingAppts > 0): ?>
-                    <a href="/admin/appointments?period=next-week" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <a href="/admin/appointment?filter=upcoming" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                         <div>
                             <i class="bi bi-calendar-event text-success me-2"></i>
                             <strong><?php echo $upcomingAppts; ?></strong> upcoming appointment<?php echo $upcomingAppts != 1 ? 's' : ''; ?> next week
@@ -314,7 +318,9 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
         
         <?php if ($totalNotifications > 0): ?>
         <div class="card-footer bg-light text-center p-2">
-            <a href="/admin/notifications" class="text-decoration-none small">View all notifications</a>
+            <a href="/admin/appointment" class="text-decoration-none small">
+                <i class="bi bi-arrow-right-circle me-1"></i>Manage all appointments
+            </a>
         </div>
         <?php endif; ?>
     </div>
@@ -363,6 +369,13 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
             formData.append('appt_code', apptCode);
             formData.append('status', status);
             
+            // Show loading indicator
+            const loadingElement = document.createElement('div');
+            loadingElement.className = 'position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-25';
+            loadingElement.style.zIndex = '9999';
+            loadingElement.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+            document.body.appendChild(loadingElement);
+            
             // Send fetch request
             fetch('/admin/appointments/update-status', {
                 method: 'POST',
@@ -370,15 +383,33 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
             })
             .then(response => response.json())
             .then(data => {
+                // Remove loading indicator
+                document.body.removeChild(loadingElement);
+                
                 if (data.success) {
-                    alert("Appointment status updated successfully");
-                    // Reload page to reflect changes
-                    window.location.reload();
+                    // Show success message
+                    const alertElement = document.createElement('div');
+                    alertElement.className = 'alert alert-success position-fixed top-0 start-50 translate-middle-x mt-3';
+                    alertElement.style.zIndex = '9999';
+                    alertElement.innerHTML = 'Appointment status updated successfully';
+                    document.body.appendChild(alertElement);
+                    
+                    // Auto-dismiss alert after 2 seconds
+                    setTimeout(() => {
+                        document.body.removeChild(alertElement);
+                        // Reload page to reflect changes
+                        window.location.reload();
+                    }, 1500);
                 } else {
-                    alert("Failed to update appointment status: " + data.message);
+                    alert("Failed to update appointment status: " + (data.message || "Unknown error"));
                 }
             })
             .catch(error => {
+                // Remove loading indicator
+                if (document.body.contains(loadingElement)) {
+                    document.body.removeChild(loadingElement);
+                }
+                
                 console.error('Error:', error);
                 alert("An error occurred while updating the appointment status");
             });

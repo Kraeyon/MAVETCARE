@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use PDO;
+use App\Utils\StatusHelper;
 
 class AdminAppointmentModel extends BaseModel {
     protected $db;
@@ -23,7 +24,7 @@ class AdminAppointmentModel extends BaseModel {
         
         // Add search condition if searchTerm is provided
         if (!empty($searchTerm)) {
-            $query .= " AND (c.clt_fname LIKE ? OR c.clt_lname LIKE ? OR p.pet_name LIKE ? OR s.service_name LIKE ? OR a.status LIKE ? OR a.appt_code = ?)";
+            $query .= " AND (c.clt_fname LIKE ? OR c.clt_lname LIKE ? OR p.pet_name LIKE ? OR s.service_name LIKE ? OR UPPER(a.status) LIKE UPPER(?) OR a.appt_code = ?)";
             $params = [
                 "%$searchTerm%", 
                 "%$searchTerm%", 
@@ -82,6 +83,9 @@ class AdminAppointmentModel extends BaseModel {
     }
 
     public function addAppointment($client_code, $pet_code, $service_code, $appt_datetime, $appointment_type, $status, $additional_notes) {
+        // Ensure status is properly formatted for database
+        $status = StatusHelper::getDbStatus($status);
+        
         $stmt = $this->db->prepare('
             INSERT INTO appointment (client_code, pet_code, service_code, appt_datetime, appointment_type, status, additional_notes)
             VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -90,6 +94,9 @@ class AdminAppointmentModel extends BaseModel {
     }
 
     public function updateAppointment($appt_code, $client_code, $pet_code, $service_code, $appt_datetime, $appointment_type, $status, $additional_notes) {
+        // Ensure status is properly formatted for database
+        $status = StatusHelper::getDbStatus($status);
+        
         $stmt = $this->db->prepare('
             UPDATE appointment 
             SET client_code = ?, pet_code = ?, service_code = ?, appt_datetime = ?, appointment_type = ?, status = ?, additional_notes = ?
@@ -120,11 +127,35 @@ class AdminAppointmentModel extends BaseModel {
             FROM appointment a
             JOIN client c ON a.client_code = c.clt_code
             JOIN pet p ON a.pet_code = p.pet_code
-            JOIN service s ON a.service_code = s.service_code
+            LEFT JOIN service s ON a.service_code = s.service_code
             WHERE a.appt_code = ?
         ');
         $stmt->execute([$appt_code]);
         return $stmt->fetch();
+    }
+    
+    /**
+     * Get appointments filtered by status
+     * 
+     * @param string $status Status to filter by
+     * @return array List of appointments with the specified status
+     */
+    public function getAppointmentsByStatus($status) {
+        // Convert to proper database format
+        $dbStatus = StatusHelper::getDbStatus($status);
+        error_log("Getting appointments with status: $dbStatus");
+        
+        $stmt = $this->db->prepare('
+            SELECT a.*, c.clt_fname, c.clt_lname, p.pet_name, p.pet_type, p.pet_breed, s.service_name, s.service_fee
+            FROM appointment a
+            JOIN client c ON a.client_code = c.clt_code
+            JOIN pet p ON a.pet_code = p.pet_code
+            LEFT JOIN service s ON a.service_code = s.service_code
+            WHERE a.status = ?
+            ORDER BY a.appt_datetime ASC
+        ');
+        $stmt->execute([$dbStatus]);
+        return $stmt->fetchAll();
     }
 }
 ?>

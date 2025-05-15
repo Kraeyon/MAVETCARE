@@ -1,12 +1,18 @@
+<?php
+// Add StatusHelper at the top of the file
+use App\Utils\StatusHelper;
+?>
+
 <?php include_once '../app/Views/includes/navbar.php'; ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Appointments - MavetCare</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MavetCare Clinic - Appointments</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body>
     <div class="d-flex">
@@ -22,9 +28,6 @@
                     <?php endif; ?>
                 </h2>
                 <div class="d-flex gap-2">
-                    <a href="/admin/appointments/add" class="btn btn-primary">
-                        <i class="bi bi-plus-circle me-1"></i>Add Appointment
-                    </a>
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-funnel me-1"></i>Filter
@@ -40,6 +43,9 @@
                             <li><a class="dropdown-item" href="/admin/appointments?date=<?php echo date('Y-m-d'); ?>">Today</a></li>
                         </ul>
                     </div>
+                    <a href="/admin/appointment" class="btn btn-primary">
+                        <i class="bi bi-arrow-left me-1"></i>Back to Appointment Dashboard
+                    </a>
                     <button class="btn btn-outline-secondary" onclick="window.location.reload()">
                         <i class="bi bi-arrow-clockwise me-1"></i>Refresh
                     </button>
@@ -85,26 +91,9 @@
                                             </td>
                                             <td><?php echo htmlspecialchars($appt['service_name'] ?? 'N/A'); ?></td>
                                             <td>
-                                                <?php 
-                                                    $statusClass = '';
-                                                    switch(strtolower($appt['status'])) {
-                                                        case 'pending':
-                                                            $statusClass = 'bg-warning';
-                                                            break;
-                                                        case 'confirmed':
-                                                            $statusClass = 'bg-success';
-                                                            break;
-                                                        case 'completed':
-                                                            $statusClass = 'bg-info';
-                                                            break;
-                                                        case 'cancelled':
-                                                            $statusClass = 'bg-danger';
-                                                            break;
-                                                        default:
-                                                            $statusClass = 'bg-secondary';
-                                                    }
-                                                ?>
-                                                <span class="badge <?php echo $statusClass; ?>"><?php echo ucfirst(htmlspecialchars($appt['status'])); ?></span>
+                                                <span class="badge <?php echo StatusHelper::getStatusClass($appt['status']); ?>">
+                                                    <?php echo StatusHelper::getDisplayStatus($appt['status']); ?>
+                                                </span>
                                             </td>
                                             <td>
                                                 <div class="btn-group">
@@ -156,6 +145,13 @@
             formData.append('appt_code', apptCode);
             formData.append('status', status);
             
+            // Show loading indicator
+            const loadingElement = document.createElement('div');
+            loadingElement.className = 'position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-25';
+            loadingElement.style.zIndex = '9999';
+            loadingElement.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+            document.body.appendChild(loadingElement);
+            
             // Send fetch request
             fetch('/admin/appointments/update-status', {
                 method: 'POST',
@@ -163,15 +159,33 @@
             })
             .then(response => response.json())
             .then(data => {
+                // Remove loading indicator
+                document.body.removeChild(loadingElement);
+                
                 if (data.success) {
-                    alert("Appointment status updated successfully");
-                    // Reload page to reflect changes
-                    window.location.reload();
+                    // Show success message
+                    const alertElement = document.createElement('div');
+                    alertElement.className = 'alert alert-success position-fixed top-0 start-50 translate-middle-x mt-3';
+                    alertElement.style.zIndex = '9999';
+                    alertElement.innerHTML = 'Appointment status updated successfully';
+                    document.body.appendChild(alertElement);
+                    
+                    // Auto-dismiss alert after 2 seconds
+                    setTimeout(() => {
+                        document.body.removeChild(alertElement);
+                        // Reload page to reflect changes
+                        window.location.reload();
+                    }, 1500);
                 } else {
-                    alert("Failed to update appointment status: " + data.message);
+                    alert("Failed to update appointment status: " + (data.message || "Unknown error"));
                 }
             })
             .catch(error => {
+                // Remove loading indicator
+                if (document.body.contains(loadingElement)) {
+                    document.body.removeChild(loadingElement);
+                }
+                
                 console.error('Error:', error);
                 alert("An error occurred while updating the appointment status");
             });

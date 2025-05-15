@@ -366,6 +366,11 @@ class AppointmentModel extends BaseModel {
      * @return array List of appointments
      */
     public function getAppointmentsByStatus($status) {
+        error_log("getAppointmentsByStatus called with status: " . $status);
+        
+        // Convert status to uppercase to match database values
+        $upperStatus = strtoupper($status);
+        
         $stmt = $this->db->prepare("
             SELECT a.*, c.clt_fname, c.clt_lname, c.clt_contact, c.clt_email_address,
                    p.pet_name, p.pet_type, p.pet_breed,
@@ -374,12 +379,16 @@ class AppointmentModel extends BaseModel {
             JOIN client c ON a.client_code = c.clt_code
             JOIN pet p ON a.pet_code = p.pet_code
             LEFT JOIN service s ON a.service_code = s.service_code
-            WHERE LOWER(a.status) = LOWER(?)
+            WHERE UPPER(a.status) = ?
             ORDER BY a.preferred_date ASC, a.preferred_time ASC
         ");
         
-        $stmt->execute([strtolower($status)]);
-        return $stmt->fetchAll();
+        $stmt->execute([$upperStatus]);
+        $results = $stmt->fetchAll();
+        
+        error_log("Found " . count($results) . " appointments with status: " . $upperStatus);
+        
+        return $results;
     }
     
     /**

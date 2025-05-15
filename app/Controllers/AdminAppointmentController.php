@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use Config\Database;
 use App\Models\AdminAppointmentModel;
+use App\Utils\StatusHelper;
 
 class AdminAppointmentController {
     public $appointments;
@@ -166,30 +167,61 @@ class AdminAppointmentController {
             $appt_code = $_POST['appt_code'];
             $status = $_POST['status'];
             
-            // Validate the status
-            $validStatuses = ['pending', 'confirmed', 'completed', 'cancelled'];
-            if (!in_array(strtolower($status), $validStatuses)) {
+            error_log("Attempting to update appointment #$appt_code to status: $status");
+            
+            // Validate the status using StatusHelper
+            if (!StatusHelper::isValidStatus($status)) {
+                error_log("Invalid status provided: $status");
                 echo json_encode(['success' => false, 'message' => 'Invalid status']);
                 return;
             }
             
             try {
-                // Use PDO to update the appointment status
-                $sql = "UPDATE appointment SET status = ? WHERE appt_code = ?";
-                $stmt = $this->db->prepare($sql);
-                $result = $stmt->execute([strtoupper($status), $appt_code]);
+                // Get the current appointment data
+                $appointment = $this->adminAppointmentModel->findAppointmentById($appt_code);
+                
+                if (!$appointment) {
+                    error_log("Appointment #$appt_code not found");
+                    echo json_encode(['success' => false, 'message' => 'Appointment not found']);
+                    return;
+                }
+                
+                // Update the status only
+                $result = $this->adminAppointmentModel->updateAppointment(
+                    $appt_code,
+                    $appointment['client_code'],
+                    $appointment['pet_code'],
+                    $appointment['service_code'],
+                    $appointment['appt_datetime'],
+                    $appointment['appointment_type'],
+                    $status, // This will be converted to uppercase in the model
+                    $appointment['additional_notes']
+                );
+                
+                error_log("Update result: " . ($result ? "Success" : "Failed"));
                 
                 if ($result) {
-                    echo json_encode(['success' => true]);
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Status updated successfully',
+                        'new_status' => StatusHelper::getDbStatus($status),
+                        'display_status' => StatusHelper::getDisplayStatus($status),
+                        'status_class' => StatusHelper::getStatusClass($status)
+                    ]);
                 } else {
                     echo json_encode(['success' => false, 'message' => 'Failed to update status']);
                 }
             } catch (\PDOException $e) {
                 // Log the error
                 error_log("Error updating appointment status: " . $e->getMessage());
-                echo json_encode(['success' => false, 'message' => 'Database error']);
+                echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+            } catch (\Exception $e) {
+                // Log any other errors
+                error_log("General error updating appointment status: " . $e->getMessage());
+                echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
             }
         } else {
+            error_log("Invalid updateAppointmentStatus request");
             echo json_encode(['success' => false, 'message' => 'Invalid request']);
         }
     }

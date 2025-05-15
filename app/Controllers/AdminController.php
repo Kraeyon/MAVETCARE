@@ -133,18 +133,52 @@ class AdminController extends BaseController{
         $period = isset($_GET['period']) ? $_GET['period'] : null;
         $date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
         
+        // Debug information
+        error_log("Filtering appointments with status: " . ($status ?? 'none') . ", period: " . ($period ?? 'none') . ", date: " . $date);
+        
         // Build query based on filters
-        if ($status === 'pending') {
-            $appointments = $model->getAppointmentsByStatus('pending');
-            $filterTitle = 'Pending Appointments';
+        if ($status) {
+            // Normalize status parameter and make case-insensitive
+            $normalizedStatus = strtolower(trim($status));
+            error_log("Normalized status filter: " . $normalizedStatus);
+            
+            // Map normalized status to expected database values if needed
+            $statusMap = [
+                'pending' => 'PENDING',
+                'confirmed' => 'CONFIRMED',
+                'completed' => 'COMPLETED',
+                'cancelled' => 'CANCELLED'
+            ];
+            
+            // Use mapped value if available, otherwise use normalized value
+            $dbStatus = isset($statusMap[$normalizedStatus]) ? $statusMap[$normalizedStatus] : strtoupper($normalizedStatus);
+            
+            // Get appointments with the specified status
+            $appointments = $model->getAppointmentsByStatus($dbStatus);
+            $filterTitle = ucfirst($normalizedStatus) . ' Appointments';
+            
+            error_log("Found " . count($appointments) . " appointments with status: " . $dbStatus);
         } else if ($period === 'next-week') {
             $startDate = date('Y-m-d');
             $endDate = date('Y-m-d', strtotime('+7 days'));
             $appointments = $model->getAppointmentsByDateRange($startDate, $endDate);
             $filterTitle = 'Upcoming Appointments (Next 7 Days)';
-        } else {
+        } else if ($date) {
             $appointments = $model->getAppointmentsByDate($date);
             $filterTitle = 'Appointments for ' . date('F j, Y', strtotime($date));
+        } else {
+            // Default to all appointments
+            $stmt = $db->query("
+                SELECT a.*, c.clt_fname, c.clt_lname, c.clt_contact, c.clt_email_address,
+                       p.pet_name, p.pet_type, p.pet_breed, s.service_name
+                FROM appointment a
+                JOIN client c ON a.client_code = c.clt_code
+                JOIN pet p ON a.pet_code = p.pet_code
+                LEFT JOIN service s ON a.service_code = s.service_code
+                ORDER BY a.preferred_date DESC, a.preferred_time DESC
+            ");
+            $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $filterTitle = 'All Appointments';
         }
         
         $this->render('admin/appointments', [
@@ -252,7 +286,7 @@ class AdminController extends BaseController{
             JOIN client c ON a.client_code = c.clt_code
             JOIN pet p ON a.pet_code = p.pet_code
             LEFT JOIN service s ON a.service_code = s.service_code
-            WHERE a.status = 'pending' AND DATE(a.preferred_date) >= ?
+            WHERE UPPER(a.status) = 'PENDING' AND DATE(a.preferred_date) >= ?
             ORDER BY a.preferred_date ASC, a.preferred_time ASC
             LIMIT 10
         ");
@@ -277,7 +311,7 @@ class AdminController extends BaseController{
             JOIN client c ON a.client_code = c.clt_code
             JOIN pet p ON a.pet_code = p.pet_code
             LEFT JOIN service s ON a.service_code = s.service_code
-            WHERE a.preferred_date BETWEEN ? AND ? AND a.status = 'confirmed'
+            WHERE a.preferred_date BETWEEN ? AND ? AND UPPER(a.status) = 'CONFIRMED'
             ORDER BY a.preferred_date ASC, a.preferred_time ASC
             LIMIT 10
         ");
@@ -295,6 +329,10 @@ class AdminController extends BaseController{
         ");
         $reviewsStmt->execute([$recentDate]);
         $recentReviews = $reviewsStmt->fetchAll(\PDO::FETCH_ASSOC);
+        
+        // Debug output
+        error_log("Pending appointments count: " . count($pendingAppointments));
+        error_log("Upcoming appointments count: " . count($upcomingAppointments));
         
         $this->render('admin/all_notifications', [
             'unpaidTransactions' => $unpaidTransactions,
