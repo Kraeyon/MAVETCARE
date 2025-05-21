@@ -18,23 +18,15 @@ class AppointmentController extends BaseController {
      * Show the appointment booking page
      */
     public function index() {
-        // Check if user is logged in
+        // Get user data if logged in
         $user = $this->getUser();
-        if (!$user) {
-            // Redirect to login page if not logged in
-            $_SESSION['redirect_after_login'] = '/appointment';
-            header('Location: /login');
-            exit;
-        }
-        
-        // User is logged in, get their pets
         $userData = [
             'user' => $user,
             'pets' => []
         ];
         
-        // If it's a regular client (not admin), get their pets
-        if ($user['role'] !== 'admin' && !empty($user['client_code'])) {
+        // If user is logged in and is a regular client, get their pets
+        if ($user && $user['role'] !== 'admin' && !empty($user['client_code'])) {
             // Get all pets for this client
             $pdo = $this->getPDO();
             $sql = "SELECT * FROM pet WHERE client_code = ?";
@@ -51,6 +43,15 @@ class AppointmentController extends BaseController {
      * Process appointment form submission
      */
     public function submitAppointment() {
+        // Check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            // Redirect to login page if not logged in
+            $_SESSION['redirect_after_login'] = '/appointment';
+            header('Location: /login');
+            exit;
+        }
+        
         // Add debug message to confirm this method is called
         error_log("***********************");
         error_log("SUBMIT APPOINTMENT METHOD CALLED IN APPOINTMENTCONTROLLER");
@@ -66,13 +67,6 @@ class AppointmentController extends BaseController {
             error_log("Test query result: " . ($testQuery ? "Success" : "Failed"));
         } catch (\Exception $e) {
             error_log("Database connection exception: " . $e->getMessage());
-        }
-        
-        // Check if user is logged in
-        $user = $this->getUser();
-        if (!$user) {
-            header('Location: /login');
-            exit;
         }
         
         // Process form submission
