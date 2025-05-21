@@ -346,4 +346,217 @@ class AdminController extends BaseController{
     public function employees() {
         $this->render('admin/employees');
     }
+
+    // --- STAFF MANAGEMENT ---
+    public function addEmployee() {
+        $pdo = \Config\Database::getInstance()->getConnection();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $staff_name = $_POST['staff_name'];
+            $staff_position = $_POST['staff_position'];
+            $staff_contact = $_POST['staff_contact'];
+            $staff_email = $_POST['staff_email'];
+            $copy_schedule = isset($_POST['copy_schedule']) ? (int)$_POST['copy_schedule'] : null;
+            $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+            try {
+                $pdo->beginTransaction();
+                // Insert staff
+                $stmt = $pdo->prepare("INSERT INTO veterinary_staff (staff_name, staff_position, staff_contact, staff_email_address) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$staff_name, $staff_position, $staff_contact, $staff_email]);
+                $staff_code = $pdo->lastInsertId();
+                // Handle schedule
+                if ($copy_schedule) {
+                    // Copy schedule from another staff
+                    $copyStmt = $pdo->prepare("SELECT day_of_week, start_time, end_time FROM staff_schedule WHERE staff_code = ?");
+                    $copyStmt->execute([$copy_schedule]);
+                    $schedules = $copyStmt->fetchAll(\PDO::FETCH_ASSOC);
+                    foreach ($schedules as $sched) {
+                        $stmt = $pdo->prepare("INSERT INTO staff_schedule (staff_code, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)");
+                        $stmt->execute([$staff_code, $sched['day_of_week'], $sched['start_time'], $sched['end_time']]);
+                    }
+                } else if (isset($_POST['schedule'])) {
+                    // Use provided schedule
+                    foreach ($days as $day) {
+                        if (isset($_POST['schedule'][$day]['active'])) {
+                            $start_time = $_POST['schedule'][$day]['start_time'] ?: '09:00';
+                            $end_time = $_POST['schedule'][$day]['end_time'] ?: '17:00';
+                            $stmt = $pdo->prepare("INSERT INTO staff_schedule (staff_code, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)");
+                            $stmt->execute([$staff_code, $day, $start_time, $end_time]);
+                        }
+                    }
+                } else {
+                    // Default schedule: Mon-Fri 09:00-17:00
+                    foreach (['Monday','Tuesday','Wednesday','Thursday','Friday'] as $day) {
+                        $stmt = $pdo->prepare("INSERT INTO staff_schedule (staff_code, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)");
+                        $stmt->execute([$staff_code, $day, '09:00', '17:00']);
+                    }
+                }
+                $pdo->commit();
+                header("Location: /admin/employees?added=1");
+                exit;
+            } catch (\PDOException $e) {
+                $pdo->rollBack();
+                die("Database error: " . $e->getMessage());
+            }
+        }
+    }
+
+    public function editEmployee() {
+        $pdo = \Config\Database::getInstance()->getConnection();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $staff_code = $_POST['staff_code'];
+            $staff_name = $_POST['staff_name'];
+            $staff_position = $_POST['staff_position'];
+            $staff_contact = $_POST['staff_contact'];
+            $staff_email = $_POST['staff_email'];
+            $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+            try {
+                $pdo->beginTransaction();
+                // Update staff
+                $stmt = $pdo->prepare("UPDATE veterinary_staff SET staff_name=?, staff_position=?, staff_contact=?, staff_email_address=? WHERE staff_code=?");
+                $stmt->execute([$staff_name, $staff_position, $staff_contact, $staff_email, $staff_code]);
+                // Delete old schedule
+                $stmt = $pdo->prepare("DELETE FROM staff_schedule WHERE staff_code=?");
+                $stmt->execute([$staff_code]);
+                // Insert new schedule
+                if (isset($_POST['schedule'])) {
+                    foreach ($days as $day) {
+                        if (isset($_POST['schedule'][$day]['active'])) {
+                            $start_time = $_POST['schedule'][$day]['start_time'] ?: '09:00';
+                            $end_time = $_POST['schedule'][$day]['end_time'] ?: '17:00';
+                            $stmt = $pdo->prepare("INSERT INTO staff_schedule (staff_code, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)");
+                            $stmt->execute([$staff_code, $day, $start_time, $end_time]);
+                        }
+                    }
+                }
+                $pdo->commit();
+                header("Location: /admin/employees?updated=1");
+                exit;
+            } catch (\PDOException $e) {
+                $pdo->rollBack();
+                die("Database error: " . $e->getMessage());
+            }
+        }
+    }
+
+    public function deleteEmployee() {
+        $pdo = \Config\Database::getInstance()->getConnection();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $staff_code = $_POST['staff_code'];
+            try {
+                $pdo->beginTransaction();
+                $stmt = $pdo->prepare("DELETE FROM staff_schedule WHERE staff_code=?");
+                $stmt->execute([$staff_code]);
+                $stmt = $pdo->prepare("DELETE FROM veterinary_staff WHERE staff_code=?");
+                $stmt->execute([$staff_code]);
+                $pdo->commit();
+                header("Location: /admin/employees?deleted=1");
+                exit;
+            } catch (\PDOException $e) {
+                $pdo->rollBack();
+                die("Database error: " . $e->getMessage());
+            }
+        }
+    }
+
+    // --- INVENTORY MANAGEMENT ---
+    public function addProduct() {
+        $pdo = \Config\Database::getInstance()->getConnection();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $prod_name = $_POST['prod_name'];
+            $prod_category = $_POST['prod_category'];
+            $prod_price = $_POST['prod_price'];
+            $prod_stock = $_POST['prod_stock'];
+            $supp_code = $_POST['supp_code'] ?: null;
+
+            // Only process image if one was uploaded
+            if (isset($_FILES['prod_image']) && $_FILES['prod_image']['error'] == 0) {
+                $image = $_FILES['prod_image'];
+                $imageName = time() . '_' . basename($image['name']);
+                $uploadDir = __DIR__ . '/../../public/assets/images/products/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+                $uploadPath = $uploadDir . $imageName;
+                $dbImagePath = '/assets/images/products/' . $imageName;
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!in_array($image['type'], $allowedTypes)) {
+                    die("Invalid image type. Only JPEG, PNG, and GIF are allowed.");
+                }
+                if ($image['size'] > 5 * 1024 * 1024) {
+                    die("Image size too large. Maximum size is 5MB.");
+                }
+                if (!move_uploaded_file($image['tmp_name'], $uploadPath)) {
+                    die("Image upload failed. Check directory permissions.");
+                }
+            } else {
+                $dbImagePath = '/assets/images/products/default.png';
+            }
+            try {
+                $stmt = $pdo->prepare("INSERT INTO product (prod_name, prod_category, prod_price, prod_stock, prod_image, supp_code) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$prod_name, $prod_category, $prod_price, $prod_stock, $dbImagePath, $supp_code]);
+                header("Location: /admin/inventory?added=1");
+                exit;
+            } catch (\PDOException $e) {
+                die("Database error: " . $e->getMessage());
+            }
+        }
+    }
+
+    public function updateProduct() {
+        $pdo = \Config\Database::getInstance()->getConnection();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $prod_code = $_POST['prod_code'];
+            $prod_name = $_POST['prod_name'];
+            $prod_category = $_POST['prod_category'];
+            $prod_price = $_POST['prod_price'];
+            $prod_stock = $_POST['prod_stock'];
+            $supp_code = $_POST['supp_code'] ?: null;
+            // Image update not handled here for simplicity
+            try {
+                $stmt = $pdo->prepare("UPDATE product SET prod_name = ?, prod_category = ?, prod_price = ?, prod_stock = ?, supp_code = ? WHERE prod_code = ?");
+                $stmt->execute([$prod_name, $prod_category, $prod_price, $prod_stock, $supp_code, $prod_code]);
+                header("Location: /admin/inventory?updated=1");
+                exit;
+            } catch (\PDOException $e) {
+                die("Database error: " . $e->getMessage());
+            }
+        }
+    }
+
+    public function deleteProduct() {
+        $pdo = \Config\Database::getInstance()->getConnection();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $prod_code = $_POST['prod_code'] ?? null;
+            if (!$prod_code) {
+                header("Location: /admin/inventory?error=no_product_code");
+                exit;
+            }
+            try {
+                $pdo->beginTransaction();
+                
+                // First check if product exists
+                $checkStmt = $pdo->prepare("SELECT prod_code FROM product WHERE prod_code = ?");
+                $checkStmt->execute([$prod_code]);
+                if (!$checkStmt->fetch()) {
+                    throw new \Exception("Product not found");
+                }
+                
+                // Delete the product
+                $stmt = $pdo->prepare("DELETE FROM product WHERE prod_code = ?");
+                $stmt->execute([$prod_code]);
+                
+                $pdo->commit();
+                header("Location: /admin/inventory?deleted=1");
+                exit;
+            } catch (\Exception $e) {
+                $pdo->rollBack();
+                error_log("Error deleting product: " . $e->getMessage());
+                header("Location: /admin/inventory?error=delete_failed");
+                exit;
+            }
+        } else {
+            header("Location: /admin/inventory?error=invalid_method");
+            exit;
+        }
+    }
 }

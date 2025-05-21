@@ -73,7 +73,7 @@ $router->map('GET', '/admin/pets/add', 'App\Controllers\AdminController#showAddP
 $router->map('GET', '/admin/transactions/add', 'App\Controllers\AdminController#showAddTransactionForm', 'show-add-transaction');
 $router->map('GET', '/admin/services/add', 'App\Controllers\AdminController#showAddServiceForm', 'show-add-service');
 
-$router->map('GET', '/admin/employees', 'App\Controllers\AdminController#employees', 'employees');
+$router->map('GET', '/admin/employees', 'App\\Controllers\\AdminEmployeeController#index', 'employees');
 
 // Auth routes
 $router->map('GET', '/login', 'App\Controllers\AuthController#renderLogin', 'render-login');
@@ -81,3 +81,11 @@ $router->map('POST', '/login', 'App\Controllers\AuthController#login', 'login');
 $router->map('POST', '/logout', 'App\Controllers\AuthController#logout', 'logout');
 $router->map('GET', '/register', 'App\Controllers\AuthController#renderRegister', 'render-register');
 $router->map('POST', '/register', 'App\Controllers\AuthController#register', 'register');
+
+$router->map('POST', '/admin/employees/add', 'App\\Controllers\\AdminEmployeeController#addEmployee', 'add-employee');
+$router->map('POST', '/admin/employees/edit', 'App\\Controllers\\AdminEmployeeController#editEmployee', 'edit-employee');
+$router->map('POST', '/admin/employees/delete', 'App\\Controllers\\AdminEmployeeController#deleteEmployee', 'delete-employee');
+
+$router->map('POST', '/admin/inventory/add', 'App\Controllers\AdminController#addProduct', 'admin-inventory-add');
+$router->map('POST', '/admin/inventory/update', 'App\Controllers\AdminController#updateProduct', 'admin-inventory-update');
+$router->map('POST', '/admin/inventory/delete', 'App\Controllers\AdminController#deleteProduct', 'admin-inventory-delete');
