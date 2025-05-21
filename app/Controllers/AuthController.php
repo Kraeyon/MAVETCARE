@@ -26,7 +26,7 @@ class AuthController extends BaseController {
         }
 
         // Check for the Admin login as a special case
-        if ($email === 'Admin' || $email === 'admin' && $password === '123') {
+        if ($email === 'Admin' || $email === 'admin' && $password === 'password') {
             // Store admin session data
             $_SESSION['user'] = [
                 'id' => 0,
