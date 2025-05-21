@@ -559,4 +559,128 @@ class AdminController extends BaseController{
             exit;
         }
     }
+
+    // --- SUPPLIER MANAGEMENT ---
+    public function suppliers() {
+        $pdo = \Config\Database::getInstance()->getConnection();
+        
+        // Get all suppliers with their product counts
+        $stmt = $pdo->query("
+            SELECT s.*, 
+                   COUNT(p.prod_code) as product_count,
+                   SUM(p.prod_stock) as total_stock
+            FROM supplier s
+            LEFT JOIN product p ON s.supp_code = p.supp_code
+            GROUP BY s.supp_code
+            ORDER BY s.supp_name ASC
+        ");
+        $suppliers = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        
+        $this->render('admin/suppliers', ['suppliers' => $suppliers]);
+    }
+
+    public function addSupplier() {
+        $pdo = \Config\Database::getInstance()->getConnection();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $stmt = $pdo->prepare("
+                    INSERT INTO supplier (
+                        supp_name, 
+                        supp_contact_person, 
+                        supp_contact_number, 
+                        supp_email_address, 
+                        supp_product_supplied
+                    ) VALUES (?, ?, ?, ?, ?)
+                ");
+                
+                $stmt->execute([
+                    $_POST['supp_name'],
+                    $_POST['supp_contact_person'],
+                    $_POST['supp_contact_number'],
+                    $_POST['supp_email_address'],
+                    $_POST['supp_product_supplied']
+                ]);
+                
+                header("Location: /admin/suppliers?added=1");
+                exit;
+            } catch (\PDOException $e) {
+                header("Location: /admin/suppliers?error=add_failed");
+                exit;
+            }
+        }
+    }
+
+    public function updateSupplier() {
+        $pdo = \Config\Database::getInstance()->getConnection();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $stmt = $pdo->prepare("
+                    UPDATE supplier 
+                    SET supp_name = ?,
+                        supp_contact_person = ?,
+                        supp_contact_number = ?,
+                        supp_email_address = ?,
+                        supp_product_supplied = ?
+                    WHERE supp_code = ?
+                ");
+                
+                $stmt->execute([
+                    $_POST['supp_name'],
+                    $_POST['supp_contact_person'],
+                    $_POST['supp_contact_number'],
+                    $_POST['supp_email_address'],
+                    $_POST['supp_product_supplied'],
+                    $_POST['supp_code']
+                ]);
+                
+                header("Location: /admin/suppliers?updated=1");
+                exit;
+            } catch (\PDOException $e) {
+                header("Location: /admin/suppliers?error=update_failed");
+                exit;
+            }
+        }
+    }
+
+    public function deleteSupplier() {
+        $pdo = \Config\Database::getInstance()->getConnection();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $supp_code = $_POST['supp_code'] ?? null;
+            if (!$supp_code) {
+                header("Location: /admin/suppliers?error=no_supplier_code");
+                exit;
+            }
+            
+            try {
+                $pdo->beginTransaction();
+                
+                // First check if supplier exists
+                $checkStmt = $pdo->prepare("SELECT supp_code FROM supplier WHERE supp_code = ?");
+                $checkStmt->execute([$supp_code]);
+                if (!$checkStmt->fetch()) {
+                    throw new \Exception("Supplier not found");
+                }
+                
+                // Check if supplier has any products
+                $checkProductsStmt = $pdo->prepare("SELECT COUNT(*) FROM product WHERE supp_code = ?");
+                $checkProductsStmt->execute([$supp_code]);
+                if ($checkProductsStmt->fetchColumn() > 0) {
+                    throw new \Exception("Cannot delete supplier with associated products");
+                }
+                
+                // Delete the supplier
+                $stmt = $pdo->prepare("DELETE FROM supplier WHERE supp_code = ?");
+                $stmt->execute([$supp_code]);
+                
+                $pdo->commit();
+                header("Location: /admin/suppliers?deleted=1");
+                exit;
+            } catch (\Exception $e) {
+                $pdo->rollBack();
+                error_log("Error deleting supplier: " . $e->getMessage());
+                header("Location: /admin/suppliers?error=delete_failed");
+                exit;
+            }
+        }
+    }
 }

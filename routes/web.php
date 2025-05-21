@@ -89,3 +89,9 @@ $router->map('POST', '/admin/employees/delete', 'App\\Controllers\\AdminEmployee
 $router->map('POST', '/admin/inventory/add', 'App\Controllers\AdminController#addProduct', 'admin-inventory-add');
 $router->map('POST', '/admin/inventory/update', 'App\Controllers\AdminController#updateProduct', 'admin-inventory-update');
 $router->map('POST', '/admin/inventory/delete', 'App\Controllers\AdminController#deleteProduct', 'admin-inventory-delete');
+
+// Supplier management routes
+$router->map('GET', '/admin/suppliers', 'App\Controllers\AdminController#suppliers', 'admin-suppliers');
+$router->map('POST', '/admin/suppliers/add', 'App\Controllers\AdminController#addSupplier', 'admin-suppliers-add');
+$router->map('POST', '/admin/suppliers/update', 'App\Controllers\AdminController#updateSupplier', 'admin-suppliers-update');
+$router->map('POST', '/admin/suppliers/delete', 'App\Controllers\AdminController#deleteSupplier', 'admin-suppliers-delete');
