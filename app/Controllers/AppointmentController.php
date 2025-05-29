@@ -606,4 +606,56 @@ class AppointmentController extends BaseController {
         // Render the page with user data
         $this->render('home/my-appointments', $data);
     }
+    
+    /**
+     * Check slot availability for a specific date
+     */
+    public function checkSlotAvailability() {
+        // Only process AJAX requests
+        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Forbidden']);
+            return;
+        }
+
+        // Get date from request
+        $date = $_GET['date'] ?? date('Y-m-d');
+
+        // Define time slots
+        $timeSlots = [
+            '09:00:00' => '9:00 AM',
+            '10:00:00' => '10:00 AM',
+            '11:00:00' => '11:00 AM',
+            '13:00:00' => '1:00 PM',
+            '14:00:00' => '2:00 PM',
+            '15:00:00' => '3:00 PM',
+            '16:00:00' => '4:00 PM'
+        ];
+
+        $maxAppointments = 3;
+        $availability = [];
+
+        // Check each time slot
+        foreach ($timeSlots as $time => $label) {
+            // Count existing appointments
+            $stmt = $this->db->prepare("SELECT COUNT(*) FROM appointment WHERE preferred_date = ? AND preferred_time = ?");
+            $stmt->execute([$date, $time]);
+            $count = $stmt->fetchColumn();
+            
+            // Calculate remaining slots
+            $remaining = $maxAppointments - $count;
+            
+            $availability[$time] = [
+                'label' => $label,
+                'total' => $maxAppointments,
+                'booked' => $count,
+                'available' => $remaining,
+                'isFull' => ($remaining <= 0)
+            ];
+        }
+
+        // Return JSON response
+        header('Content-Type: application/json');
+        echo json_encode(['date' => $date, 'slots' => $availability]);
+    }
 } 

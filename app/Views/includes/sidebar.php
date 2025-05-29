@@ -53,12 +53,6 @@ $pageUrl = $_SERVER['REQUEST_URI']; // Get the full URL
                     <i class="bi bi-people me-2"></i>Employees
                 </a>
             </li>
-
-            <li class="nav-item">
-                <a class="nav-link <?php echo ($page == 'suppliers') ? 'active' : ''; ?>" href="/admin/suppliers">
-                    <i class="bi bi-truck me-2"></i>Suppliers
-                </a>
-            </li>
         </ul>
     </div>
 </div>

@@ -443,6 +443,63 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
                 padding: 12px 20px;
             }
         }
+
+        /* Add these styles to the existing CSS */
+        .time-slot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .availability-indicator {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 0.8rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .available-3 {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .available-2 {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .available-1 {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .available-0 {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        /* Make the select box wider to accommodate the indicators */
+        #preferred_time, #new_pet_preferred_time {
+            min-width: 200px;
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #09f;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -587,16 +644,20 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
                         <!-- Preferred Time -->
                         <div class="form-group">
                             <label for="preferred_time">Preferred Time:</label>
-                            <select id="preferred_time" name="preferred_time" required>
-                                <option value="">-- Select Time --</option>
-                                <option value="09:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '09:00:00') ? 'selected' : ''; ?>>9:00 AM</option>
-                                <option value="10:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '10:00:00') ? 'selected' : ''; ?>>10:00 AM</option>
-                                <option value="11:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '11:00:00') ? 'selected' : ''; ?>>11:00 AM</option>
-                                <option value="13:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '13:00:00') ? 'selected' : ''; ?>>1:00 PM</option>
-                                <option value="14:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '14:00:00') ? 'selected' : ''; ?>>2:00 PM</option>
-                                <option value="15:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '15:00:00') ? 'selected' : ''; ?>>3:00 PM</option>
-                                <option value="16:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '16:00:00') ? 'selected' : ''; ?>>4:00 PM</option>
-                            </select>
+                            <div class="time-select-container">
+                                <select id="preferred_time" name="preferred_time" required>
+                                    <option value="">-- Select Time --</option>
+                                    <option value="09:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '09:00:00') ? 'selected' : ''; ?>>9:00 AM</option>
+                                    <option value="10:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '10:00:00') ? 'selected' : ''; ?>>10:00 AM</option>
+                                    <option value="11:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '11:00:00') ? 'selected' : ''; ?>>11:00 AM</option>
+                                    <option value="13:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '13:00:00') ? 'selected' : ''; ?>>1:00 PM</option>
+                                    <option value="14:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '14:00:00') ? 'selected' : ''; ?>>2:00 PM</option>
+                                    <option value="15:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '15:00:00') ? 'selected' : ''; ?>>3:00 PM</option>
+                                    <option value="16:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '16:00:00') ? 'selected' : ''; ?>>4:00 PM</option>
+                                </select>
+                                <span id="availability-indicator" class="availability-indicator"></span>
+                            </div>
+                            <small class="form-text text-muted">Maximum 3 appointments per time slot</small>
                         </div>
 
                         <!-- Additional Notes -->
@@ -703,16 +764,20 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
                     <!-- Preferred Time -->
                     <div class="form-group">
                         <label for="new_pet_preferred_time">Preferred Time:</label>
-                        <select id="new_pet_preferred_time" name="preferred_time" required>
-                            <option value="">-- Select Time --</option>
-                            <option value="09:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '09:00:00') ? 'selected' : ''; ?>>9:00 AM</option>
-                            <option value="10:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '10:00:00') ? 'selected' : ''; ?>>10:00 AM</option>
-                            <option value="11:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '11:00:00') ? 'selected' : ''; ?>>11:00 AM</option>
-                            <option value="13:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '13:00:00') ? 'selected' : ''; ?>>1:00 PM</option>
-                            <option value="14:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '14:00:00') ? 'selected' : ''; ?>>2:00 PM</option>
-                            <option value="15:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '15:00:00') ? 'selected' : ''; ?>>3:00 PM</option>
-                            <option value="16:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '16:00:00') ? 'selected' : ''; ?>>4:00 PM</option>
-                        </select>
+                        <div class="time-select-container">
+                            <select id="new_pet_preferred_time" name="preferred_time" required>
+                                <option value="">-- Select Time --</option>
+                                <option value="09:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '09:00:00') ? 'selected' : ''; ?>>9:00 AM</option>
+                                <option value="10:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '10:00:00') ? 'selected' : ''; ?>>10:00 AM</option>
+                                <option value="11:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '11:00:00') ? 'selected' : ''; ?>>11:00 AM</option>
+                                <option value="13:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '13:00:00') ? 'selected' : ''; ?>>1:00 PM</option>
+                                <option value="14:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '14:00:00') ? 'selected' : ''; ?>>2:00 PM</option>
+                                <option value="15:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '15:00:00') ? 'selected' : ''; ?>>3:00 PM</option>
+                                <option value="16:00:00" <?php echo (isset($form_data['preferred_time']) && $form_data['preferred_time'] === '16:00:00') ? 'selected' : ''; ?>>4:00 PM</option>
+                            </select>
+                            <span id="new-pet-availability-indicator" class="availability-indicator"></span>
+                        </div>
+                        <small class="form-text text-muted">Maximum 3 appointments per time slot</small>
                     </div>
 
                     <!-- Additional Notes -->
@@ -785,6 +850,113 @@ function closeThankYou() {
 }
 <?php endif; ?>
 
+// Global variable to store availability data
+let availabilityData = null;
+
+// Function to fetch availability data
+function fetchAvailability(date) {
+    // Show loading indicator
+    document.getElementById('availability-indicator').innerHTML = '<div class="loading-spinner"></div>';
+    document.getElementById('new-pet-availability-indicator').innerHTML = '<div class="loading-spinner"></div>';
+    
+    // Disable time selects while loading
+    document.getElementById('preferred_time').disabled = true;
+    document.getElementById('new_pet_preferred_time').disabled = true;
+    
+    fetch(`/api/appointment/availability?date=${date}`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        availabilityData = data;
+        updateTimeSlots('preferred_time', 'availability-indicator');
+        updateTimeSlots('new_pet_preferred_time', 'new-pet-availability-indicator');
+        
+        // Re-enable time selects
+        document.getElementById('preferred_time').disabled = false;
+        document.getElementById('new_pet_preferred_time').disabled = false;
+    })
+    .catch(error => {
+        console.error('Error fetching availability:', error);
+        document.getElementById('availability-indicator').textContent = '';
+        document.getElementById('new-pet-availability-indicator').textContent = '';
+        
+        // Re-enable time selects
+        document.getElementById('preferred_time').disabled = false;
+        document.getElementById('new_pet_preferred_time').disabled = false;
+    });
+}
+
+// Function to update time slot options with availability info
+function updateTimeSlots(selectId, indicatorId) {
+    const select = document.getElementById(selectId);
+    const indicator = document.getElementById(indicatorId);
+    
+    if (!select || !availabilityData) return;
+    
+    // Update all options to show availability
+    Array.from(select.options).forEach(option => {
+        if (option.value && availabilityData.slots[option.value]) {
+            const slot = availabilityData.slots[option.value];
+            const available = slot.available;
+            
+            // If this option is selected, update the indicator
+            if (option.selected && option.value) {
+                updateAvailabilityIndicator(indicator, available);
+            }
+            
+            // Update the option text to include availability
+            if (available <= 0) {
+                option.text = `${slot.label} (Full)`;
+                option.disabled = true;
+            } else {
+                option.text = `${slot.label} (${available} left)`;
+                option.disabled = false;
+            }
+        }
+    });
+}
+
+// Function to update the availability indicator
+function updateAvailabilityIndicator(indicator, available) {
+    indicator.className = 'availability-indicator';
+    
+    if (available <= 0) {
+        indicator.textContent = 'Full';
+        indicator.classList.add('available-0');
+    } else {
+        indicator.textContent = `${available} slot${available !== 1 ? 's' : ''} left`;
+        indicator.classList.add(`available-${available}`);
+    }
+}
+
+// Handle date change
+function handleDateChange(dateInput, timeSelect, indicatorId) {
+    const date = dateInput.value;
+    if (date) {
+        fetchAvailability(date);
+    } else {
+        // Clear indicators if no date selected
+        document.getElementById(indicatorId).textContent = '';
+    }
+}
+
+// Handle time selection change
+function handleTimeChange(timeSelect, indicatorId) {
+    const selectedTime = timeSelect.value;
+    const indicator = document.getElementById(indicatorId);
+    
+    if (selectedTime && availabilityData && availabilityData.slots[selectedTime]) {
+        const available = availabilityData.slots[selectedTime].available;
+        updateAvailabilityIndicator(indicator, available);
+    } else {
+        indicator.textContent = '';
+    }
+}
+
 function showTab(tabName) {
     console.log("Switching to tab:", tabName); // Debug
     
@@ -850,6 +1022,41 @@ document.addEventListener('DOMContentLoaded', function() {
     <?php else: ?>
     showTab('existing-pet');
     <?php endif; ?>
+    
+    // Set up event listeners for date and time inputs
+    const preferredDate = document.getElementById('preferred_date');
+    const preferredTime = document.getElementById('preferred_time');
+    const newPetPreferredDate = document.getElementById('new_pet_preferred_date');
+    const newPetPreferredTime = document.getElementById('new_pet_preferred_time');
+    
+    if (preferredDate) {
+        preferredDate.addEventListener('change', function() {
+            handleDateChange(this, preferredTime, 'availability-indicator');
+        });
+        
+        // Load initial availability if date is already set
+        if (preferredDate.value) {
+            fetchAvailability(preferredDate.value);
+        }
+    }
+    
+    if (preferredTime) {
+        preferredTime.addEventListener('change', function() {
+            handleTimeChange(this, 'availability-indicator');
+        });
+    }
+    
+    if (newPetPreferredDate) {
+        newPetPreferredDate.addEventListener('change', function() {
+            handleDateChange(this, newPetPreferredTime, 'new-pet-availability-indicator');
+        });
+    }
+    
+    if (newPetPreferredTime) {
+        newPetPreferredTime.addEventListener('change', function() {
+            handleTimeChange(this, 'new-pet-availability-indicator');
+        });
+    }
 });
 </script>
 

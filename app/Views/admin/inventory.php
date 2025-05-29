@@ -10,18 +10,16 @@ $filter = isset($_GET['filter']) ? $_GET['filter'] : null;
 // Query products based on filter
 if ($filter === 'low-stock') {
     $stmt = $pdo->query("
-        SELECT p.*, s.supp_name 
+        SELECT p.*
         FROM product p
-        LEFT JOIN supplier s ON p.supp_code = s.supp_code
         WHERE p.prod_stock < 10
         ORDER BY p.prod_stock ASC
     ");
     $filterTitle = 'Low Stock Products';
 } else {
     $stmt = $pdo->query("
-        SELECT p.*, s.supp_name 
+        SELECT p.*
         FROM product p
-        LEFT JOIN supplier s ON p.supp_code = s.supp_code
         ORDER BY p.prod_name ASC
     ");
     $filterTitle = 'All Products';
@@ -29,8 +27,8 @@ if ($filter === 'low-stock') {
 
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Get all suppliers for dropdown
-$suppliers = $pdo->query("SELECT * FROM supplier ORDER BY supp_name")->fetchAll(PDO::FETCH_ASSOC);
+// No longer needed - removed supplier dropdown
+// $suppliers = $pdo->query("SELECT * FROM supplier ORDER BY supp_name")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -108,7 +106,6 @@ $suppliers = $pdo->query("SELECT * FROM supplier ORDER BY supp_name")->fetchAll(
                                 <th>Category</th>
                                 <th>Stock</th>
                                 <th>Price</th>
-                                <th>Supplier</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -129,7 +126,6 @@ $suppliers = $pdo->query("SELECT * FROM supplier ORDER BY supp_name")->fetchAll(
                                         </span>
                                     </td>
                                     <td>₱<?= number_format($product['prod_price'], 2) ?></td>
-                                    <td><?= htmlspecialchars($product['supp_name'] ?? 'N/A') ?></td>
                                     <td>
                                         <button class="btn btn-sm btn-warning" 
                                                 data-bs-toggle="modal" 
@@ -185,19 +181,6 @@ $suppliers = $pdo->query("SELECT * FROM supplier ORDER BY supp_name")->fetchAll(
                                                         <label class="form-label">Stock</label>
                                                         <input type="number" class="form-control" name="prod_stock" 
                                                                value="<?= $product['prod_stock'] ?>" required>
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Supplier</label>
-                                                        <select class="form-select" name="supp_code">
-                                                            <option value="">Select Supplier</option>
-                                                            <?php foreach ($suppliers as $supplier): ?>
-                                                                <option value="<?= $supplier['supp_code'] ?>" 
-                                                                        <?= $product['supp_code'] == $supplier['supp_code'] ? 'selected' : '' ?>>
-                                                                    <?= htmlspecialchars($supplier['supp_name']) ?>
-                                                                </option>
-                                                            <?php endforeach; ?>
-                                                        </select>
                                                     </div>
 
                                                     <div class="modal-footer">
@@ -258,18 +241,6 @@ $suppliers = $pdo->query("SELECT * FROM supplier ORDER BY supp_name")->fetchAll(
                     <div class="mb-3">
                         <label class="form-label">Product Image</label>
                         <input type="file" class="form-control" name="prod_image" accept="image/*">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Supplier</label>
-                        <select class="form-select" name="supp_code">
-                            <option value="">Select Supplier</option>
-                            <?php foreach ($suppliers as $supplier): ?>
-                                <option value="<?= $supplier['supp_code'] ?>">
-                                    <?= htmlspecialchars($supplier['supp_name']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
                     </div>
 
                     <div class="modal-footer">

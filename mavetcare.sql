@@ -5,7 +5,7 @@
 -- Dumped from database version 17.4
 -- Dumped by pg_dump version 17.4
 
--- Started on 2025-05-21 11:31:42
+-- Started on 2025-05-29 15:17:45
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -24,7 +24,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 230 (class 1259 OID 17233)
+-- TOC entry 228 (class 1259 OID 17233)
 -- Name: appointment; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -46,7 +46,7 @@ CREATE TABLE public.appointment (
 ALTER TABLE public.appointment OWNER TO postgres;
 
 --
--- TOC entry 229 (class 1259 OID 17232)
+-- TOC entry 227 (class 1259 OID 17232)
 -- Name: appointment_appt_code_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -62,8 +62,8 @@ CREATE SEQUENCE public.appointment_appt_code_seq
 ALTER SEQUENCE public.appointment_appt_code_seq OWNER TO postgres;
 
 --
--- TOC entry 4985 (class 0 OID 0)
--- Dependencies: 229
+-- TOC entry 4974 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: appointment_appt_code_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -105,7 +105,7 @@ CREATE SEQUENCE public.client_clt_code_seq
 ALTER SEQUENCE public.client_clt_code_seq OWNER TO postgres;
 
 --
--- TOC entry 4986 (class 0 OID 0)
+-- TOC entry 4975 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: client_clt_code_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -148,7 +148,7 @@ CREATE SEQUENCE public.pet_pet_code_seq
 ALTER SEQUENCE public.pet_pet_code_seq OWNER TO postgres;
 
 --
--- TOC entry 4987 (class 0 OID 0)
+-- TOC entry 4976 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: pet_pet_code_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -157,7 +157,7 @@ ALTER SEQUENCE public.pet_pet_code_seq OWNED BY public.pet.pet_code;
 
 
 --
--- TOC entry 228 (class 1259 OID 17221)
+-- TOC entry 226 (class 1259 OID 17221)
 -- Name: product; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -175,7 +175,7 @@ CREATE TABLE public.product (
 ALTER TABLE public.product OWNER TO postgres;
 
 --
--- TOC entry 227 (class 1259 OID 17220)
+-- TOC entry 225 (class 1259 OID 17220)
 -- Name: product_prod_code_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -191,8 +191,8 @@ CREATE SEQUENCE public.product_prod_code_seq
 ALTER SEQUENCE public.product_prod_code_seq OWNER TO postgres;
 
 --
--- TOC entry 4988 (class 0 OID 0)
--- Dependencies: 227
+-- TOC entry 4977 (class 0 OID 0)
+-- Dependencies: 225
 -- Name: product_prod_code_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -200,7 +200,7 @@ ALTER SEQUENCE public.product_prod_code_seq OWNED BY public.product.prod_code;
 
 
 --
--- TOC entry 238 (class 1259 OID 17304)
+-- TOC entry 236 (class 1259 OID 17304)
 -- Name: review; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -217,7 +217,7 @@ CREATE TABLE public.review (
 ALTER TABLE public.review OWNER TO postgres;
 
 --
--- TOC entry 237 (class 1259 OID 17303)
+-- TOC entry 235 (class 1259 OID 17303)
 -- Name: review_review_code_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -233,8 +233,8 @@ CREATE SEQUENCE public.review_review_code_seq
 ALTER SEQUENCE public.review_review_code_seq OWNER TO postgres;
 
 --
--- TOC entry 4989 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 4978 (class 0 OID 0)
+-- Dependencies: 235
 -- Name: review_review_code_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -242,7 +242,7 @@ ALTER SEQUENCE public.review_review_code_seq OWNED BY public.review.review_code;
 
 
 --
--- TOC entry 232 (class 1259 OID 17260)
+-- TOC entry 230 (class 1259 OID 17260)
 -- Name: sales_transaction; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -258,7 +258,7 @@ CREATE TABLE public.sales_transaction (
 ALTER TABLE public.sales_transaction OWNER TO postgres;
 
 --
--- TOC entry 231 (class 1259 OID 17259)
+-- TOC entry 229 (class 1259 OID 17259)
 -- Name: sales_transaction_transaction_code_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -274,8 +274,8 @@ CREATE SEQUENCE public.sales_transaction_transaction_code_seq
 ALTER SEQUENCE public.sales_transaction_transaction_code_seq OWNER TO postgres;
 
 --
--- TOC entry 4990 (class 0 OID 0)
--- Dependencies: 231
+-- TOC entry 4979 (class 0 OID 0)
+-- Dependencies: 229
 -- Name: sales_transaction_transaction_code_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -314,7 +314,7 @@ CREATE SEQUENCE public.service_service_code_seq
 ALTER SEQUENCE public.service_service_code_seq OWNER TO postgres;
 
 --
--- TOC entry 4991 (class 0 OID 0)
+-- TOC entry 4980 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: service_service_code_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -323,7 +323,7 @@ ALTER SEQUENCE public.service_service_code_seq OWNED BY public.service.service_c
 
 
 --
--- TOC entry 240 (class 1259 OID 17335)
+-- TOC entry 238 (class 1259 OID 17335)
 -- Name: staff_schedule; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -339,7 +339,7 @@ CREATE TABLE public.staff_schedule (
 ALTER TABLE public.staff_schedule OWNER TO postgres;
 
 --
--- TOC entry 239 (class 1259 OID 17334)
+-- TOC entry 237 (class 1259 OID 17334)
 -- Name: staff_schedule_schedule_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -355,8 +355,8 @@ CREATE SEQUENCE public.staff_schedule_schedule_id_seq
 ALTER SEQUENCE public.staff_schedule_schedule_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4992 (class 0 OID 0)
--- Dependencies: 239
+-- TOC entry 4981 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: staff_schedule_schedule_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -364,49 +364,7 @@ ALTER SEQUENCE public.staff_schedule_schedule_id_seq OWNED BY public.staff_sched
 
 
 --
--- TOC entry 226 (class 1259 OID 17212)
--- Name: supplier; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.supplier (
-    supp_code integer NOT NULL,
-    supp_name character varying(100),
-    supp_contact_person character varying(100),
-    supp_contact_number character varying(20),
-    supp_email_address character varying(100),
-    supp_product_supplied text
-);
-
-
-ALTER TABLE public.supplier OWNER TO postgres;
-
---
--- TOC entry 225 (class 1259 OID 17211)
--- Name: supplier_supp_code_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.supplier_supp_code_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.supplier_supp_code_seq OWNER TO postgres;
-
---
--- TOC entry 4993 (class 0 OID 0)
--- Dependencies: 225
--- Name: supplier_supp_code_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.supplier_supp_code_seq OWNED BY public.supplier.supp_code;
-
-
---
--- TOC entry 236 (class 1259 OID 17295)
+-- TOC entry 234 (class 1259 OID 17295)
 -- Name: sys_user; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -422,7 +380,7 @@ CREATE TABLE public.sys_user (
 ALTER TABLE public.sys_user OWNER TO postgres;
 
 --
--- TOC entry 235 (class 1259 OID 17294)
+-- TOC entry 233 (class 1259 OID 17294)
 -- Name: sys_user_user_code_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -438,8 +396,8 @@ CREATE SEQUENCE public.sys_user_user_code_seq
 ALTER SEQUENCE public.sys_user_user_code_seq OWNER TO postgres;
 
 --
--- TOC entry 4994 (class 0 OID 0)
--- Dependencies: 235
+-- TOC entry 4982 (class 0 OID 0)
+-- Dependencies: 233
 -- Name: sys_user_user_code_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -447,7 +405,7 @@ ALTER SEQUENCE public.sys_user_user_code_seq OWNED BY public.sys_user.user_code;
 
 
 --
--- TOC entry 234 (class 1259 OID 17272)
+-- TOC entry 232 (class 1259 OID 17272)
 -- Name: transaction_details; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -464,7 +422,7 @@ CREATE TABLE public.transaction_details (
 ALTER TABLE public.transaction_details OWNER TO postgres;
 
 --
--- TOC entry 233 (class 1259 OID 17271)
+-- TOC entry 231 (class 1259 OID 17271)
 -- Name: transaction_details_detail_code_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -480,8 +438,8 @@ CREATE SEQUENCE public.transaction_details_detail_code_seq
 ALTER SEQUENCE public.transaction_details_detail_code_seq OWNER TO postgres;
 
 --
--- TOC entry 4995 (class 0 OID 0)
--- Dependencies: 233
+-- TOC entry 4983 (class 0 OID 0)
+-- Dependencies: 231
 -- Name: transaction_details_detail_code_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -522,7 +480,7 @@ CREATE SEQUENCE public.veterinary_staff_staff_code_seq
 ALTER SEQUENCE public.veterinary_staff_staff_code_seq OWNER TO postgres;
 
 --
--- TOC entry 4996 (class 0 OID 0)
+-- TOC entry 4984 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: veterinary_staff_staff_code_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -531,7 +489,7 @@ ALTER SEQUENCE public.veterinary_staff_staff_code_seq OWNED BY public.veterinary
 
 
 --
--- TOC entry 4756 (class 2604 OID 17236)
+-- TOC entry 4750 (class 2604 OID 17236)
 -- Name: appointment appt_code; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -539,7 +497,7 @@ ALTER TABLE ONLY public.appointment ALTER COLUMN appt_code SET DEFAULT nextval('
 
 
 --
--- TOC entry 4750 (class 2604 OID 17174)
+-- TOC entry 4745 (class 2604 OID 17174)
 -- Name: client clt_code; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -547,7 +505,7 @@ ALTER TABLE ONLY public.client ALTER COLUMN clt_code SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4752 (class 2604 OID 17192)
+-- TOC entry 4747 (class 2604 OID 17192)
 -- Name: pet pet_code; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -555,7 +513,7 @@ ALTER TABLE ONLY public.pet ALTER COLUMN pet_code SET DEFAULT nextval('public.pe
 
 
 --
--- TOC entry 4755 (class 2604 OID 17224)
+-- TOC entry 4749 (class 2604 OID 17224)
 -- Name: product prod_code; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -563,7 +521,7 @@ ALTER TABLE ONLY public.product ALTER COLUMN prod_code SET DEFAULT nextval('publ
 
 
 --
--- TOC entry 4763 (class 2604 OID 17307)
+-- TOC entry 4757 (class 2604 OID 17307)
 -- Name: review review_code; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -571,7 +529,7 @@ ALTER TABLE ONLY public.review ALTER COLUMN review_code SET DEFAULT nextval('pub
 
 
 --
--- TOC entry 4759 (class 2604 OID 17263)
+-- TOC entry 4753 (class 2604 OID 17263)
 -- Name: sales_transaction transaction_code; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -579,7 +537,7 @@ ALTER TABLE ONLY public.sales_transaction ALTER COLUMN transaction_code SET DEFA
 
 
 --
--- TOC entry 4753 (class 2604 OID 17206)
+-- TOC entry 4748 (class 2604 OID 17206)
 -- Name: service service_code; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -587,7 +545,7 @@ ALTER TABLE ONLY public.service ALTER COLUMN service_code SET DEFAULT nextval('p
 
 
 --
--- TOC entry 4765 (class 2604 OID 17338)
+-- TOC entry 4759 (class 2604 OID 17338)
 -- Name: staff_schedule schedule_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -595,15 +553,7 @@ ALTER TABLE ONLY public.staff_schedule ALTER COLUMN schedule_id SET DEFAULT next
 
 
 --
--- TOC entry 4754 (class 2604 OID 17215)
--- Name: supplier supp_code; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.supplier ALTER COLUMN supp_code SET DEFAULT nextval('public.supplier_supp_code_seq'::regclass);
-
-
---
--- TOC entry 4762 (class 2604 OID 17298)
+-- TOC entry 4756 (class 2604 OID 17298)
 -- Name: sys_user user_code; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -611,7 +561,7 @@ ALTER TABLE ONLY public.sys_user ALTER COLUMN user_code SET DEFAULT nextval('pub
 
 
 --
--- TOC entry 4760 (class 2604 OID 17275)
+-- TOC entry 4754 (class 2604 OID 17275)
 -- Name: transaction_details detail_code; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -619,7 +569,7 @@ ALTER TABLE ONLY public.transaction_details ALTER COLUMN detail_code SET DEFAULT
 
 
 --
--- TOC entry 4751 (class 2604 OID 17183)
+-- TOC entry 4746 (class 2604 OID 17183)
 -- Name: veterinary_staff staff_code; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -627,8 +577,8 @@ ALTER TABLE ONLY public.veterinary_staff ALTER COLUMN staff_code SET DEFAULT nex
 
 
 --
--- TOC entry 4969 (class 0 OID 17233)
--- Dependencies: 230
+-- TOC entry 4958 (class 0 OID 17233)
+-- Dependencies: 228
 -- Data for Name: appointment; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -650,12 +600,12 @@ COPY public.appointment (appt_code, client_code, pet_code, service_code, appt_da
 33	1	7	1	2025-05-14 16:00:00	sadwdawd	2025-05-14	16:00:00	walk-in	2025-05-14 04:55:08.507987	pending
 21	1	1	8	2025-05-14 10:00:00		2025-05-14	10:00:00	walk-in	2025-05-14 04:01:58.063307	pending
 34	1	8	1	2025-05-31 10:00:00	neoihqeiwqhoeh	2025-05-31	10:00:00	walk-in	2025-05-15 07:46:46.465807	pending
-35	2	6	1	2025-05-29 09:00:00	sdjhjisdfdfsnk	2025-05-29	09:00:00	walk-in	2025-05-15 08:43:00.468756	CONFIRMED
+35	2	6	1	2025-05-29 09:00:00	sdjhjisdfdfsnk	2025-05-29	09:00:00	walk-in	2025-05-15 08:43:00.468756	COMPLETED
 \.
 
 
 --
--- TOC entry 4957 (class 0 OID 17171)
+-- TOC entry 4948 (class 0 OID 17171)
 -- Dependencies: 218
 -- Data for Name: client; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -677,7 +627,7 @@ COPY public.client (clt_code, clt_lname, clt_fname, clt_initial, clt_contact, cl
 
 
 --
--- TOC entry 4961 (class 0 OID 17189)
+-- TOC entry 4952 (class 0 OID 17189)
 -- Dependencies: 222
 -- Data for Name: pet; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -695,21 +645,21 @@ COPY public.pet (pet_code, client_code, pet_name, pet_type, pet_breed, pet_age, 
 
 
 --
--- TOC entry 4967 (class 0 OID 17221)
--- Dependencies: 228
+-- TOC entry 4956 (class 0 OID 17221)
+-- Dependencies: 226
 -- Data for Name: product; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.product (prod_code, prod_name, prod_category, prod_stock, prod_price, supp_code, prod_image) FROM stdin;
-1	Dog Shampoo	shampoo	25	10.99	\N	/assets/images/products/novapink.png
 2	Isoflurane	anesthetics	56	56.99	\N	/assets/images/products/anesthetics.png
 3	Premium Dog Food	food-accessories	23	178.00	1	/assets/images/products/premium dog food.png
+1	Dog Shampoo	shampoo	251	10.99	1	/assets/images/products/novapink.png
 \.
 
 
 --
--- TOC entry 4977 (class 0 OID 17304)
--- Dependencies: 238
+-- TOC entry 4966 (class 0 OID 17304)
+-- Dependencies: 236
 -- Data for Name: review; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -725,8 +675,8 @@ COPY public.review (review_code, client_code, rating, comment, review_date) FROM
 
 
 --
--- TOC entry 4971 (class 0 OID 17260)
--- Dependencies: 232
+-- TOC entry 4960 (class 0 OID 17260)
+-- Dependencies: 230
 -- Data for Name: sales_transaction; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -735,7 +685,7 @@ COPY public.sales_transaction (transaction_code, client_code, transaction_total_
 
 
 --
--- TOC entry 4963 (class 0 OID 17203)
+-- TOC entry 4954 (class 0 OID 17203)
 -- Dependencies: 224
 -- Data for Name: service; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -753,41 +703,30 @@ COPY public.service (service_code, service_name, service_desc, service_fee) FROM
 
 
 --
--- TOC entry 4979 (class 0 OID 17335)
--- Dependencies: 240
+-- TOC entry 4968 (class 0 OID 17335)
+-- Dependencies: 238
 -- Data for Name: staff_schedule; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.staff_schedule (schedule_id, staff_code, day_of_week, start_time, end_time) FROM stdin;
-19	2	Monday	09:00:00	18:00:00
-20	2	Tuesday	09:00:00	18:00:00
-21	2	Wednesday	09:00:00	18:00:00
-22	2	Thursday	09:00:00	18:00:00
-23	2	Friday	09:00:00	18:00:00
-24	2	Saturday	09:00:00	18:00:00
 25	1	Monday	09:00:00	17:00:00
 26	1	Tuesday	09:00:00	17:00:00
 27	1	Wednesday	09:00:00	17:00:00
 28	1	Thursday	09:00:00	17:00:00
 29	1	Friday	09:00:00	17:00:00
 30	1	Saturday	09:00:00	17:00:00
+31	2	Monday	09:00:00	17:00:00
+32	2	Tuesday	09:00:00	18:00:00
+33	2	Wednesday	09:00:00	18:00:00
+34	2	Thursday	09:00:00	18:00:00
+35	2	Friday	09:00:00	18:00:00
+36	2	Saturday	09:00:00	18:00:00
 \.
 
 
 --
--- TOC entry 4965 (class 0 OID 17212)
--- Dependencies: 226
--- Data for Name: supplier; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.supplier (supp_code, supp_name, supp_contact_person, supp_contact_number, supp_email_address, supp_product_supplied) FROM stdin;
-1	Dog food	Stella	09154653758	stella@gmail.com	Premium dog food
-\.
-
-
---
--- TOC entry 4975 (class 0 OID 17295)
--- Dependencies: 236
+-- TOC entry 4964 (class 0 OID 17295)
+-- Dependencies: 234
 -- Data for Name: sys_user; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -808,8 +747,8 @@ COPY public.sys_user (user_code, username, password, role, client_code) FROM std
 
 
 --
--- TOC entry 4973 (class 0 OID 17272)
--- Dependencies: 234
+-- TOC entry 4962 (class 0 OID 17272)
+-- Dependencies: 232
 -- Data for Name: transaction_details; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -818,20 +757,20 @@ COPY public.transaction_details (detail_code, transaction_code, prod_code, servi
 
 
 --
--- TOC entry 4959 (class 0 OID 17180)
+-- TOC entry 4950 (class 0 OID 17180)
 -- Dependencies: 220
 -- Data for Name: veterinary_staff; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.veterinary_staff (staff_code, staff_name, staff_position, staff_contact, staff_email_address, staff_schedule) FROM stdin;
-2	Ricardo Moe	Doctor	111-3214	ricardomoe@example.com	Mon-Thu: 9am-4pm
 1	John Doe	Doctor	555-1234	johndoe@example.com	Mon-Fri: 9 am-6 pm
+2	Ricardo Moe	Doctor	111-3214	ricardomoe@example.com	Mon-Thu: 9am-4pm
 \.
 
 
 --
--- TOC entry 4997 (class 0 OID 0)
--- Dependencies: 229
+-- TOC entry 4985 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: appointment_appt_code_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -839,7 +778,7 @@ SELECT pg_catalog.setval('public.appointment_appt_code_seq', 35, true);
 
 
 --
--- TOC entry 4998 (class 0 OID 0)
+-- TOC entry 4986 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: client_clt_code_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -848,7 +787,7 @@ SELECT pg_catalog.setval('public.client_clt_code_seq', 14, true);
 
 
 --
--- TOC entry 4999 (class 0 OID 0)
+-- TOC entry 4987 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: pet_pet_code_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -857,17 +796,17 @@ SELECT pg_catalog.setval('public.pet_pet_code_seq', 8, true);
 
 
 --
--- TOC entry 5000 (class 0 OID 0)
--- Dependencies: 227
+-- TOC entry 4988 (class 0 OID 0)
+-- Dependencies: 225
 -- Name: product_prod_code_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.product_prod_code_seq', 3, true);
+SELECT pg_catalog.setval('public.product_prod_code_seq', 5, true);
 
 
 --
--- TOC entry 5001 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 4989 (class 0 OID 0)
+-- Dependencies: 235
 -- Name: review_review_code_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -875,8 +814,8 @@ SELECT pg_catalog.setval('public.review_review_code_seq', 7, true);
 
 
 --
--- TOC entry 5002 (class 0 OID 0)
--- Dependencies: 231
+-- TOC entry 4990 (class 0 OID 0)
+-- Dependencies: 229
 -- Name: sales_transaction_transaction_code_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -884,7 +823,7 @@ SELECT pg_catalog.setval('public.sales_transaction_transaction_code_seq', 1, fal
 
 
 --
--- TOC entry 5003 (class 0 OID 0)
+-- TOC entry 4991 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: service_service_code_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -893,26 +832,17 @@ SELECT pg_catalog.setval('public.service_service_code_seq', 8, true);
 
 
 --
--- TOC entry 5004 (class 0 OID 0)
--- Dependencies: 239
+-- TOC entry 4992 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: staff_schedule_schedule_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.staff_schedule_schedule_id_seq', 30, true);
+SELECT pg_catalog.setval('public.staff_schedule_schedule_id_seq', 36, true);
 
 
 --
--- TOC entry 5005 (class 0 OID 0)
--- Dependencies: 225
--- Name: supplier_supp_code_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.supplier_supp_code_seq', 1, true);
-
-
---
--- TOC entry 5006 (class 0 OID 0)
--- Dependencies: 235
+-- TOC entry 4993 (class 0 OID 0)
+-- Dependencies: 233
 -- Name: sys_user_user_code_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -920,8 +850,8 @@ SELECT pg_catalog.setval('public.sys_user_user_code_seq', 14, true);
 
 
 --
--- TOC entry 5007 (class 0 OID 0)
--- Dependencies: 233
+-- TOC entry 4994 (class 0 OID 0)
+-- Dependencies: 231
 -- Name: transaction_details_detail_code_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -929,7 +859,7 @@ SELECT pg_catalog.setval('public.transaction_details_detail_code_seq', 1, false)
 
 
 --
--- TOC entry 5008 (class 0 OID 0)
+-- TOC entry 4995 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: veterinary_staff_staff_code_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -938,7 +868,7 @@ SELECT pg_catalog.setval('public.veterinary_staff_staff_code_seq', 3, true);
 
 
 --
--- TOC entry 4780 (class 2606 OID 17238)
+-- TOC entry 4772 (class 2606 OID 17238)
 -- Name: appointment appointment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -947,7 +877,7 @@ ALTER TABLE ONLY public.appointment
 
 
 --
--- TOC entry 4768 (class 2606 OID 17178)
+-- TOC entry 4762 (class 2606 OID 17178)
 -- Name: client client_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -956,7 +886,7 @@ ALTER TABLE ONLY public.client
 
 
 --
--- TOC entry 4772 (class 2606 OID 17196)
+-- TOC entry 4766 (class 2606 OID 17196)
 -- Name: pet pet_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -965,7 +895,7 @@ ALTER TABLE ONLY public.pet
 
 
 --
--- TOC entry 4778 (class 2606 OID 17226)
+-- TOC entry 4770 (class 2606 OID 17226)
 -- Name: product product_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -974,7 +904,7 @@ ALTER TABLE ONLY public.product
 
 
 --
--- TOC entry 4793 (class 2606 OID 17313)
+-- TOC entry 4785 (class 2606 OID 17313)
 -- Name: review review_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -983,7 +913,7 @@ ALTER TABLE ONLY public.review
 
 
 --
--- TOC entry 4785 (class 2606 OID 17265)
+-- TOC entry 4777 (class 2606 OID 17265)
 -- Name: sales_transaction sales_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -992,7 +922,7 @@ ALTER TABLE ONLY public.sales_transaction
 
 
 --
--- TOC entry 4774 (class 2606 OID 17210)
+-- TOC entry 4768 (class 2606 OID 17210)
 -- Name: service service_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1001,7 +931,7 @@ ALTER TABLE ONLY public.service
 
 
 --
--- TOC entry 4795 (class 2606 OID 17340)
+-- TOC entry 4787 (class 2606 OID 17340)
 -- Name: staff_schedule staff_schedule_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1010,16 +940,7 @@ ALTER TABLE ONLY public.staff_schedule
 
 
 --
--- TOC entry 4776 (class 2606 OID 17219)
--- Name: supplier supplier_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.supplier
-    ADD CONSTRAINT supplier_pkey PRIMARY KEY (supp_code);
-
-
---
--- TOC entry 4789 (class 2606 OID 17300)
+-- TOC entry 4781 (class 2606 OID 17300)
 -- Name: sys_user sys_user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1028,7 +949,7 @@ ALTER TABLE ONLY public.sys_user
 
 
 --
--- TOC entry 4791 (class 2606 OID 17302)
+-- TOC entry 4783 (class 2606 OID 17302)
 -- Name: sys_user sys_user_username_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1037,7 +958,7 @@ ALTER TABLE ONLY public.sys_user
 
 
 --
--- TOC entry 4787 (class 2606 OID 17278)
+-- TOC entry 4779 (class 2606 OID 17278)
 -- Name: transaction_details transaction_details_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1046,7 +967,7 @@ ALTER TABLE ONLY public.transaction_details
 
 
 --
--- TOC entry 4770 (class 2606 OID 17187)
+-- TOC entry 4764 (class 2606 OID 17187)
 -- Name: veterinary_staff veterinary_staff_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1055,7 +976,7 @@ ALTER TABLE ONLY public.veterinary_staff
 
 
 --
--- TOC entry 4781 (class 1259 OID 17351)
+-- TOC entry 4773 (class 1259 OID 17351)
 -- Name: idx_appointment_client; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1063,7 +984,7 @@ CREATE INDEX idx_appointment_client ON public.appointment USING btree (client_co
 
 
 --
--- TOC entry 4782 (class 1259 OID 17353)
+-- TOC entry 4774 (class 1259 OID 17353)
 -- Name: idx_appointment_date_time; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1071,7 +992,7 @@ CREATE INDEX idx_appointment_date_time ON public.appointment USING btree (prefer
 
 
 --
--- TOC entry 4783 (class 1259 OID 17352)
+-- TOC entry 4775 (class 1259 OID 17352)
 -- Name: idx_appointment_pet; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1079,7 +1000,7 @@ CREATE INDEX idx_appointment_pet ON public.appointment USING btree (pet_code);
 
 
 --
--- TOC entry 4798 (class 2606 OID 17239)
+-- TOC entry 4789 (class 2606 OID 17239)
 -- Name: appointment appointment_client_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1088,7 +1009,7 @@ ALTER TABLE ONLY public.appointment
 
 
 --
--- TOC entry 4799 (class 2606 OID 17244)
+-- TOC entry 4790 (class 2606 OID 17244)
 -- Name: appointment appointment_pet_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1097,7 +1018,7 @@ ALTER TABLE ONLY public.appointment
 
 
 --
--- TOC entry 4800 (class 2606 OID 17249)
+-- TOC entry 4791 (class 2606 OID 17249)
 -- Name: appointment appointment_service_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1106,7 +1027,7 @@ ALTER TABLE ONLY public.appointment
 
 
 --
--- TOC entry 4801 (class 2606 OID 17354)
+-- TOC entry 4792 (class 2606 OID 17354)
 -- Name: appointment fk_client; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1115,7 +1036,7 @@ ALTER TABLE ONLY public.appointment
 
 
 --
--- TOC entry 4802 (class 2606 OID 17359)
+-- TOC entry 4793 (class 2606 OID 17359)
 -- Name: appointment fk_pet; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1124,7 +1045,7 @@ ALTER TABLE ONLY public.appointment
 
 
 --
--- TOC entry 4803 (class 2606 OID 17364)
+-- TOC entry 4794 (class 2606 OID 17364)
 -- Name: appointment fk_service; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1133,7 +1054,7 @@ ALTER TABLE ONLY public.appointment
 
 
 --
--- TOC entry 4796 (class 2606 OID 17197)
+-- TOC entry 4788 (class 2606 OID 17197)
 -- Name: pet pet_client_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1142,16 +1063,7 @@ ALTER TABLE ONLY public.pet
 
 
 --
--- TOC entry 4797 (class 2606 OID 17227)
--- Name: product product_supp_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.product
-    ADD CONSTRAINT product_supp_code_fkey FOREIGN KEY (supp_code) REFERENCES public.supplier(supp_code) ON DELETE SET NULL;
-
-
---
--- TOC entry 4809 (class 2606 OID 17314)
+-- TOC entry 4800 (class 2606 OID 17314)
 -- Name: review review_client_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1160,7 +1072,7 @@ ALTER TABLE ONLY public.review
 
 
 --
--- TOC entry 4804 (class 2606 OID 17266)
+-- TOC entry 4795 (class 2606 OID 17266)
 -- Name: sales_transaction sales_transaction_client_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1169,7 +1081,7 @@ ALTER TABLE ONLY public.sales_transaction
 
 
 --
--- TOC entry 4810 (class 2606 OID 17341)
+-- TOC entry 4801 (class 2606 OID 17341)
 -- Name: staff_schedule staff_schedule_staff_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1178,7 +1090,7 @@ ALTER TABLE ONLY public.staff_schedule
 
 
 --
--- TOC entry 4808 (class 2606 OID 17319)
+-- TOC entry 4799 (class 2606 OID 17319)
 -- Name: sys_user sys_user_client_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1187,7 +1099,7 @@ ALTER TABLE ONLY public.sys_user
 
 
 --
--- TOC entry 4805 (class 2606 OID 17284)
+-- TOC entry 4796 (class 2606 OID 17284)
 -- Name: transaction_details transaction_details_prod_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1196,7 +1108,7 @@ ALTER TABLE ONLY public.transaction_details
 
 
 --
--- TOC entry 4806 (class 2606 OID 17289)
+-- TOC entry 4797 (class 2606 OID 17289)
 -- Name: transaction_details transaction_details_service_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1205,7 +1117,7 @@ ALTER TABLE ONLY public.transaction_details
 
 
 --
--- TOC entry 4807 (class 2606 OID 17279)
+-- TOC entry 4798 (class 2606 OID 17279)
 -- Name: transaction_details transaction_details_transaction_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1213,7 +1125,7 @@ ALTER TABLE ONLY public.transaction_details
     ADD CONSTRAINT transaction_details_transaction_code_fkey FOREIGN KEY (transaction_code) REFERENCES public.sales_transaction(transaction_code) ON DELETE CASCADE;
 
 
--- Completed on 2025-05-21 11:31:42
+-- Completed on 2025-05-29 15:17:45
 
 --
 -- PostgreSQL database dump complete

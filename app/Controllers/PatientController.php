@@ -50,7 +50,7 @@ class PatientController {
     // Update existing patient (from POST /admin/patients/update)
     public function updatePatient() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Make sure we have all required fields
+         // Make sure we have all required fields
             if (!isset($_POST['pet_code']) || !isset($_POST['pet_age'])) {
                 // Log the error and redirect
                 error_log("Missing required fields for pet update");

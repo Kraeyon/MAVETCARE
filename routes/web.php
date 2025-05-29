@@ -23,6 +23,7 @@ $router->map('GET', '/appointment', 'App\Controllers\AppointmentController#index
 $router->map('POST', '/appointment', 'App\Controllers\AppointmentController#submitAppointment', 'submit-appointment');
 $router->map('GET', '/my-appointments', 'App\Controllers\AppointmentController#myAppointments', 'my-appointments');
 $router->map('GET', '/admin/appointments', 'App\Controllers\AppointmentController#viewAppointments', 'admin-appointments');
+$router->map('GET', '/api/appointment/availability', 'App\Controllers\AppointmentController#checkSlotAvailability', 'check-slot-availability');
 
 // Pet management
 $router->map('GET', '/add-pet', 'App\Controllers\AppointmentController#showAddPetForm', 'show-add-pet');
@@ -90,8 +91,4 @@ $router->map('POST', '/admin/inventory/add', 'App\Controllers\AdminController#ad
 $router->map('POST', '/admin/inventory/update', 'App\Controllers\AdminController#updateProduct', 'admin-inventory-update');
 $router->map('POST', '/admin/inventory/delete', 'App\Controllers\AdminController#deleteProduct', 'admin-inventory-delete');
 
-// Supplier management routes
-$router->map('GET', '/admin/suppliers', 'App\Controllers\AdminController#suppliers', 'admin-suppliers');
-$router->map('POST', '/admin/suppliers/add', 'App\Controllers\AdminController#addSupplier', 'admin-suppliers-add');
-$router->map('POST', '/admin/suppliers/update', 'App\Controllers\AdminController#updateSupplier', 'admin-suppliers-update');
-$router->map('POST', '/admin/suppliers/delete', 'App\Controllers\AdminController#deleteSupplier', 'admin-suppliers-delete');
+// Supplier management routes have been removed
