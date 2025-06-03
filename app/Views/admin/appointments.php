@@ -13,6 +13,47 @@ use App\Utils\StatusHelper;
     <title>MavetCare Clinic - Appointments</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        /* Enhanced styles for the filter section */
+        .filter-section {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1.2rem 1.5rem;
+            border-radius: 5px 5px 0 0;
+            margin-bottom: 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .filter-section h4 {
+            color: #ffffff;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+        
+        .filter-section h4 i {
+            margin-right: 0.75rem;
+            color: #4fc3f7;
+            font-size: 1.7rem;
+        }
+        
+        /* Better table styling */
+        .table-hover tbody tr:hover {
+            background-color: rgba(79, 195, 247, 0.1);
+        }
+        
+        /* Improved badge styling */
+        .badge {
+            font-size: 0.8rem;
+            padding: 0.35rem 0.65rem;
+            font-weight: 600;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        }
+    </style>
 </head>
 <body>
     <div class="d-flex">
@@ -20,7 +61,7 @@ use App\Utils\StatusHelper;
 
         <div class="flex-grow-1 p-4" style="margin-top: 0;">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>
+                <h2 class="fw-bold">
                     <?php if (isset($filterTitle)): ?>
                         <?php echo $filterTitle; ?>
                     <?php else: ?>
@@ -50,6 +91,10 @@ use App\Utils\StatusHelper;
                         <i class="bi bi-arrow-clockwise me-1"></i>Refresh
                     </button>
                 </div>
+            </div>
+
+            <div class="filter-section">
+                <h4><i class="bi bi-funnel-fill"></i>Filter Appointments</h4>
             </div>
 
             <div class="card shadow-sm">

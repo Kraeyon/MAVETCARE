@@ -278,6 +278,14 @@ if (!isset($controller)) {
             border-left: 3px solid #dc3545;
             text-decoration: line-through;
         }
+        
+        /* Improved badge styling */
+        .badge {
+            font-size: 0.8rem;
+            padding: 0.35rem 0.65rem;
+            font-weight: 600;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
@@ -348,8 +356,8 @@ if (!isset($controller)) {
         
         <!-- Status Filter Buttons -->
         <div class="card mb-4">
-            <div class="card-header bg-light">
-                <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Filter Appointments</h5>
+            <div class="card-header bg-light bg-primary text-white" style="background-color: #2c3e50 !important;">
+                <h5 class="mb-0" style="color: #ffffff; font-size: 1.4rem; font-weight: 700; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);"><i class="bi bi-funnel me-2" style="color: #4fc3f7;"></i>Filter Appointments</h5>
             </div>
             <div class="card-body">
                 <div class="d-flex flex-wrap gap-2">
