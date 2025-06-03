@@ -53,6 +53,7 @@ $router->map('GET', '/admin/appointments', 'App\Controllers\AdminController#view
 $router->map('GET', '/admin/inventory', 'App\Controllers\AdminController#inventoryFiltered', 'admin-inventory-filtered');
 $router->map('GET', '/admin/reviews', 'App\Controllers\AdminController#reviews', 'admin-reviews');
 $router->map('GET', '/admin/notifications', 'App\Controllers\AdminController#allNotifications', 'admin-all-notifications');
+$router->map('GET', '/admin/archived', 'App\Controllers\AdminController#archivedItems', 'admin-archived-items');
 
 // Add route for adding a new patient
 $router->map('POST', '/admin/patients/add', 'App\Controllers\PatientController#addPatient', 'add-patient');
@@ -85,10 +86,12 @@ $router->map('POST', '/register', 'App\Controllers\AuthController#register', 're
 
 $router->map('POST', '/admin/employees/add', 'App\\Controllers\\AdminEmployeeController#addEmployee', 'add-employee');
 $router->map('POST', '/admin/employees/edit', 'App\\Controllers\\AdminEmployeeController#editEmployee', 'edit-employee');
-$router->map('POST', '/admin/employees/delete', 'App\\Controllers\\AdminEmployeeController#deleteEmployee', 'delete-employee');
+$router->map('POST', '/admin/employees/archive', 'App\\Controllers\\AdminEmployeeController#archiveEmployee', 'archive-employee');
+$router->map('POST', '/admin/employees/delete', 'App\\Controllers\\AdminEmployeeController#archiveEmployee', 'delete-employee');
 
 $router->map('POST', '/admin/inventory/add', 'App\Controllers\AdminController#addProduct', 'admin-inventory-add');
 $router->map('POST', '/admin/inventory/update', 'App\Controllers\AdminController#updateProduct', 'admin-inventory-update');
-$router->map('POST', '/admin/inventory/delete', 'App\Controllers\AdminController#deleteProduct', 'admin-inventory-delete');
+$router->map('POST', '/admin/inventory/archive', 'App\Controllers\AdminController#archiveProduct', 'admin-inventory-archive');
+$router->map('POST', '/admin/inventory/delete', 'App\Controllers\AdminController#archiveProduct', 'admin-inventory-delete');
 
 // Supplier management routes have been removed

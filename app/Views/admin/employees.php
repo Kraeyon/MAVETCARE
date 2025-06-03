@@ -260,6 +260,25 @@ function formatSchedule($scheduleDetails) {
             <div class="alert alert-success">Staff member deleted successfully!</div>
         <?php endif; ?>
 
+        <?php if (isset($_GET['archived'])): ?>
+            <div class="alert alert-success">Staff member archived successfully!</div>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['error'])): ?>
+            <div class="alert alert-danger">
+                <?php 
+                $error = $_GET['error'];
+                switch($error) {
+                    case 'archive_failed':
+                        echo 'Error: Failed to archive the staff member.';
+                        break;
+                    default:
+                        echo 'An error occurred.';
+                }
+                ?>
+            </div>
+        <?php endif; ?>
+
         <!-- Staff Table with Inline Editing -->
         <div class="card">
             <div class="card-header bg-primary text-white">
@@ -299,8 +318,8 @@ function formatSchedule($scheduleDetails) {
                                         </button>
                                         <form method="POST" action="/admin/employees/delete" class="d-inline delete-form">
                                             <input type="hidden" name="staff_code" value="<?= $member['staff_code'] ?>">
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this staff member?')">
-                                                <i class="bi bi-trash"></i>
+                                            <button type="submit" class="btn btn-sm btn-outline-warning" onclick="return confirm('Are you sure you want to archive this staff member? They will be marked as inactive but remain in the system.')">
+                                                <i class="bi bi-archive"></i> Archive
                                             </button>
                                         </form>
                                     </td>

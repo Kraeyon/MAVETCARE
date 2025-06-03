@@ -155,7 +155,8 @@ class AdminAppointmentController {
     }
 
     private function deleteAppointment($appt_code) {
-        return $this->adminAppointmentModel->deleteAppointment($appt_code);
+        // Renamed to archive for better clarity
+        return $this->adminAppointmentModel->archiveAppointment($appt_code);
     }
     
     /**
@@ -291,27 +292,23 @@ class AdminAppointmentController {
     }
     
     /**
-     * Delete an appointment (form submission handler)
+     * Archive an appointment (form submission handler)
      */
     public function handleAppointmentDelete() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_appointment'], $_POST['appt_code'])) {
-            $apptCode = $_POST['appt_code'];
+            $apptCode = filter_var($_POST['appt_code'], FILTER_SANITIZE_NUMBER_INT);
             
-            // Call model method to delete
-            $result = $this->adminAppointmentModel->deleteAppointment($apptCode);
+            // Call model method to archive
+            $result = $this->adminAppointmentModel->archiveAppointment($apptCode);
             
-            // Redirect back to appointments list with success/error message
             if ($result) {
-                header('Location: /admin/appointments?message=Appointment deleted successfully');
+                // Redirect with success message
+                header('Location: /admin/appointments?message=Appointment archived successfully');
             } else {
-                header('Location: /admin/appointments?error=Failed to delete appointment');
+                header('Location: /admin/appointments?error=Failed to archive appointment');
             }
             exit;
         }
-        
-        // Invalid request
-        header('Location: /admin/appointments');
-        exit;
     }
     
     /**

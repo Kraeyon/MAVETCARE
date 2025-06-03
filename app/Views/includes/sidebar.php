@@ -53,6 +53,12 @@ $pageUrl = $_SERVER['REQUEST_URI']; // Get the full URL
                     <i class="bi bi-people me-2"></i>Employees
                 </a>
             </li>
+            
+            <li class="nav-item">
+                <a class="nav-link <?php echo ($pageUrl == '/admin/archived') ? 'active' : ''; ?>" href="/admin/archived">
+                    <i class="bi bi-archive me-2"></i>Archived Items
+                </a>
+            </li>
         </ul>
     </div>
 </div>

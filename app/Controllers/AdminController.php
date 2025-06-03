@@ -521,40 +521,116 @@ class AdminController extends BaseController{
         }
     }
 
-    public function deleteProduct() {
-        $pdo = \Config\Database::getInstance()->getConnection();
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $prod_code = $_POST['prod_code'] ?? null;
-            if (!$prod_code) {
-                header("Location: /admin/inventory?error=no_product_code");
-                exit;
-            }
+    /**
+     * Archive a product (mark as inactive) instead of deleting it
+     */
+    public function archiveProduct() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
             try {
-                $pdo->beginTransaction();
+                $productId = filter_var($_POST['product_id'], FILTER_SANITIZE_NUMBER_INT);
                 
-                // First check if product exists
+                // Check if product exists
+                $pdo = $this->getPDO();
                 $checkStmt = $pdo->prepare("SELECT prod_code FROM product WHERE prod_code = ?");
-                $checkStmt->execute([$prod_code]);
+                $checkStmt->execute([$productId]);
+                
                 if (!$checkStmt->fetch()) {
-                    throw new \Exception("Product not found");
+                    header("Location: /admin/inventory?error=product_not_found");
+                    exit;
                 }
                 
-                // Delete the product
-                $stmt = $pdo->prepare("DELETE FROM product WHERE prod_code = ?");
-                $stmt->execute([$prod_code]);
+                // Archive the product by setting status to inactive
+                $stmt = $pdo->prepare("UPDATE product SET prod_status = 'ARCHIVED', updated_at = NOW() WHERE prod_code = ?");
+                $success = $stmt->execute([$productId]);
                 
-                $pdo->commit();
-                header("Location: /admin/inventory?deleted=1");
-                exit;
+                if ($success) {
+                    header("Location: /admin/inventory?archived=1");
+                } else {
+                    header("Location: /admin/inventory?error=archive_failed");
+                }
             } catch (\Exception $e) {
-                $pdo->rollBack();
-                error_log("Error deleting product: " . $e->getMessage());
-                header("Location: /admin/inventory?error=delete_failed");
-                exit;
+                error_log("Error archiving product: " . $e->getMessage());
+                header("Location: /admin/inventory?error=archive_failed");
             }
-        } else {
-            header("Location: /admin/inventory?error=invalid_method");
             exit;
         }
+        
+        header("Location: /admin/inventory");
+        exit;
+    }
+    
+    /**
+     * @deprecated Use archiveProduct() instead
+     */
+    public function deleteProduct() {
+        // Redirect to archive method
+        $this->archiveProduct();
+    }
+
+    /**
+     * Get archived products
+     * 
+     * @return array List of archived products
+     */
+    private function getArchivedProducts() {
+        try {
+            $pdo = $this->getPDO();
+            $stmt = $pdo->prepare("
+                SELECT p.*
+                FROM product p
+                WHERE p.prod_status = 'ARCHIVED'
+                ORDER BY p.prod_name ASC
+            ");
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $e) {
+            error_log("Error fetching archived products: " . $e->getMessage());
+            return [];
+        }
+    }
+    
+    /**
+     * Get archived staff members
+     * 
+     * @return array List of archived staff
+     */
+    private function getArchivedStaff() {
+        try {
+            $pdo = $this->getPDO();
+            $stmt = $pdo->prepare("
+                SELECT vs.*
+                FROM veterinary_staff vs
+                WHERE vs.status = 'INACTIVE'
+                ORDER BY vs.staff_name ASC
+            ");
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $e) {
+            error_log("Error fetching archived staff: " . $e->getMessage());
+            return [];
+        }
+    }
+    
+    /**
+     * View all archived items
+     */
+    public function archivedItems() {
+        // Get archived appointments
+        $db = \Config\Database::getInstance()->getConnection();
+        $appointmentModel = new \App\Models\AdminAppointmentModel($db);
+        $archivedAppointments = $appointmentModel->getArchivedAppointments();
+        
+        // Get archived products
+        $archivedProducts = $this->getArchivedProducts();
+        
+        // Get archived staff
+        $archivedStaff = $this->getArchivedStaff();
+        
+        // Render the view
+        $this->render('admin/archived_items', [
+            'appointments' => $archivedAppointments,
+            'products' => $archivedProducts,
+            'staff' => $archivedStaff
+        ]);
     }
 }

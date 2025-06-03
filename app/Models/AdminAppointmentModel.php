@@ -105,9 +105,28 @@ class AdminAppointmentModel extends BaseModel {
         return $stmt->execute([$client_code, $pet_code, $service_code, $appt_datetime, $appointment_type, $status, $additional_notes, $appt_code]);
     }
 
+    /**
+     * Archive an appointment instead of deleting it
+     * 
+     * @param int $appt_code Appointment ID
+     * @return bool Success status
+     */
+    public function archiveAppointment($appt_code) {
+        try {
+            $stmt = $this->db->prepare('UPDATE appointment SET status = ? WHERE appt_code = ?');
+            return $stmt->execute(['ARCHIVED', $appt_code]);
+        } catch (\PDOException $e) {
+            error_log("Error archiving appointment: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * @deprecated Use archiveAppointment() instead
+     */
     public function deleteAppointment($appt_code) {
-        $stmt = $this->db->prepare('DELETE FROM appointment WHERE appt_code = ?');
-        return $stmt->execute([$appt_code]);
+        // Redirect to archive method instead of deleting
+        return $this->archiveAppointment($appt_code);
     }
 
     public function getClients() {
@@ -155,6 +174,25 @@ class AdminAppointmentModel extends BaseModel {
             ORDER BY a.appt_datetime ASC
         ');
         $stmt->execute([$dbStatus]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Get archived appointments
+     * 
+     * @return array List of archived appointments
+     */
+    public function getArchivedAppointments() {
+        $stmt = $this->db->prepare('
+            SELECT a.*, c.clt_fname, c.clt_lname, p.pet_name, p.pet_type, p.pet_breed, s.service_name, s.service_fee
+            FROM appointment a
+            JOIN client c ON a.client_code = c.clt_code
+            JOIN pet p ON a.pet_code = p.pet_code
+            LEFT JOIN service s ON a.service_code = s.service_code
+            WHERE UPPER(a.status) = ?
+            ORDER BY a.preferred_date DESC, a.preferred_time DESC
+        ');
+        $stmt->execute(['ARCHIVED']);
         return $stmt->fetchAll();
     }
 }

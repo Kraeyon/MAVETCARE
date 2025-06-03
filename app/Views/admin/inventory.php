@@ -72,18 +72,26 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="alert alert-success">Product deleted successfully!</div>
         <?php endif; ?>
 
+        <?php if (isset($_GET['archived'])): ?>
+            <div class="alert alert-success">Product archived successfully!</div>
+        <?php endif; ?>
+
         <?php if (isset($_GET['error'])): ?>
             <div class="alert alert-danger">
-                <?php
-                switch ($_GET['error']) {
+                <?php 
+                $error = $_GET['error'];
+                switch($error) {
                     case 'no_product_code':
                         echo 'Error: No product code provided.';
                         break;
                     case 'delete_failed':
                         echo 'Error: Failed to delete the product.';
                         break;
-                    case 'invalid_method':
-                        echo 'Error: Invalid request method.';
+                    case 'archive_failed':
+                        echo 'Error: Failed to archive the product.';
+                        break;
+                    case 'product_not_found':
+                        echo 'Error: Product not found.';
                         break;
                     default:
                         echo 'An error occurred.';
@@ -127,15 +135,14 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     </td>
                                     <td>₱<?= number_format($product['prod_price'], 2) ?></td>
                                     <td>
-                                        <button class="btn btn-sm btn-warning" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#editProductModal<?= $product['prod_code'] ?>">
+                                        <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProductModal<?php echo $product['prod_code']; ?>">
                                             <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <form method="POST" action="/admin/inventory/delete" class="d-inline">
-                                            <input type="hidden" name="prod_code" value="<?= $product['prod_code'] ?>">
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">
-                                                <i class="bi bi-trash"></i>
+                                        </a>
+                                        
+                                        <form method="POST" action="/admin/inventory/archive" class="d-inline">
+                                            <input type="hidden" name="product_id" value="<?php echo $product['prod_code']; ?>">
+                                            <button type="submit" class="btn btn-sm btn-outline-warning" onclick="return confirm('Are you sure you want to archive this product? It will be marked as inactive but remain in the system.')">
+                                                <i class="bi bi-archive"></i>
                                             </button>
                                         </form>
                                     </td>

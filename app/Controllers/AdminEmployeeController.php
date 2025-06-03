@@ -103,23 +103,40 @@ class AdminEmployeeController extends BaseController {
         }
     }
 
-    public function deleteEmployee() {
-        $pdo = Database::getInstance()->getConnection();
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $staff_code = $_POST['staff_code'];
+    /**
+     * Archive an employee by setting status to inactive
+     */
+    public function archiveEmployee() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['staff_code'])) {
+            $pdo = $this->getPDO();
+            $staff_code = filter_var($_POST['staff_code'], FILTER_SANITIZE_NUMBER_INT);
+            
             try {
                 $pdo->beginTransaction();
-                $stmt = $pdo->prepare("DELETE FROM staff_schedule WHERE staff_code=?");
+                
+                // Update staff status to inactive
+                $stmt = $pdo->prepare("UPDATE veterinary_staff SET status = 'INACTIVE', updated_at = NOW() WHERE staff_code = ?");
                 $stmt->execute([$staff_code]);
-                $stmt = $pdo->prepare("DELETE FROM veterinary_staff WHERE staff_code=?");
-                $stmt->execute([$staff_code]);
+                
                 $pdo->commit();
-                header("Location: /admin/employees?deleted=1");
-                exit;
-            } catch (\PDOException $e) {
+                header("Location: /admin/employees?archived=1");
+            } catch (\Exception $e) {
                 $pdo->rollBack();
-                die("Database error: " . $e->getMessage());
+                error_log("Error archiving employee: " . $e->getMessage());
+                header("Location: /admin/employees?error=archive_failed");
             }
+            exit;
         }
+        
+        header("Location: /admin/employees");
+        exit;
+    }
+    
+    /**
+     * @deprecated Use archiveEmployee() instead
+     */
+    public function deleteEmployee() {
+        // Redirect to archive method
+        $this->archiveEmployee();
     }
 } 

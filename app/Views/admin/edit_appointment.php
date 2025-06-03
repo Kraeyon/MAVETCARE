@@ -100,11 +100,14 @@
                         </div>
                         
                         <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">
+                                <i class="bi bi-arrow-left me-1"></i>Back
+                            </button>
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-save me-1"></i>Save Changes
                             </button>
-                            <button type="button" class="btn btn-outline-danger" onclick="confirmDelete(<?php echo $appointment['appt_code']; ?>)">
-                                <i class="bi bi-trash me-1"></i>Delete Appointment
+                            <button type="button" class="btn btn-outline-warning" onclick="confirmArchive(<?php echo $appointment['appt_code']; ?>)">
+                                <i class="bi bi-archive me-1"></i>Archive Appointment
                             </button>
                         </div>
                     </form>
@@ -113,23 +116,23 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <!-- Archive Confirmation Modal -->
+    <div class="modal fade" id="archiveModal" tabindex="-1" aria-labelledby="archiveModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <h5 class="modal-title" id="archiveModalLabel">Confirm Archive</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this appointment? This action cannot be undone.
+                    Are you sure you want to archive this appointment? The record will be marked as archived but will remain in the system for record-keeping purposes.
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <form method="POST" action="/admin/appointments/delete">
                         <input type="hidden" name="delete_appointment" value="1">
-                        <input type="hidden" name="appt_code" id="delete_appt_code" value="">
-                        <button type="submit" class="btn btn-danger">Delete</button>
+                        <input type="hidden" name="appt_code" id="archive_appt_code" value="">
+                        <button type="submit" class="btn btn-warning">Archive</button>
                     </form>
                 </div>
             </div>
@@ -138,10 +141,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    function confirmDelete(apptCode) {
-        document.getElementById('delete_appt_code').value = apptCode;
-        var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        deleteModal.show();
+    function confirmArchive(apptCode) {
+        document.getElementById('archive_appt_code').value = apptCode;
+        var archiveModal = new bootstrap.Modal(document.getElementById('archiveModal'));
+        archiveModal.show();
     }
     
     // Handle client change to load their pets
