@@ -1,5 +1,79 @@
 <?php include_once '../app/views/includes/header.php'; ?>
 
+<style>
+    /* Styles for the notes button */
+    .view-notes-btn {
+        transition: all 0.3s ease;
+    }
+    .view-notes-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Modal content styles */
+    #modalNotesContent {
+        white-space: pre-line; /* Preserve line breaks */
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #333;
+    }
+    
+    /* Fade-in animation for modal content */
+    .modal.show .modal-content {
+        animation: fadeInUp 0.3s;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Highlight animation for note cells */
+    td .btn-outline-primary {
+        position: relative;
+    }
+    td .btn-outline-primary::after {
+        content: '';
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        right: -4px;
+        bottom: -4px;
+        border-radius: 4px;
+        border: 2px solid transparent;
+        animation: pulse 2s infinite;
+        pointer-events: none;
+        display: none;
+    }
+    td .btn-outline-primary:hover::after {
+        display: block;
+    }
+    
+    @keyframes pulse {
+        0% {
+            border-color: rgba(13, 110, 253, 0);
+            transform: scale(1);
+        }
+        50% {
+            border-color: rgba(13, 110, 253, 0.5);
+            transform: scale(1.03);
+        }
+        100% {
+            border-color: rgba(13, 110, 253, 0);
+            transform: scale(1);
+        }
+    }
+</style>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <section class="py-5 bg-light text-center">
     <div class="container">
         <div class="row align-items-center">
@@ -141,10 +215,9 @@
                                         </td>
                                         <td>
                                             <?php if (!empty($appointment['additional_notes'])): ?>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" 
-                                                    data-bs-toggle="tooltip" data-bs-placement="top" 
-                                                    title="<?php echo htmlspecialchars($appointment['additional_notes']); ?>">
-                                                    <i class="fas fa-sticky-note"></i>
+                                                <button type="button" class="btn btn-sm btn-outline-primary view-notes-btn" 
+                                                    onclick="showNotes('<?php echo htmlspecialchars(addslashes($appointment['additional_notes'])); ?>', '<?php echo htmlspecialchars($appointment['appt_code']); ?>')">
+                                                    <i class="fas fa-sticky-note me-1"></i> View Notes
                                                 </button>
                                             <?php else: ?>
                                                 <span class="text-muted">-</span>
@@ -218,15 +291,44 @@
     </div>
 </section>
 
+<!-- Notes Modal -->
+<div class="modal fade" id="notesModal" tabindex="-1" aria-labelledby="notesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="notesModalLabel">Appointment Notes</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="p-2 bg-light rounded">
+          <p id="modalNotesContent" class="mb-0 p-2"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Add this script at the end of the file -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-    });
+// Function to show notes modal with the right content
+function showNotes(notes, apptId) {
+    // Get the modal elements
+    const modalTitle = document.getElementById('notesModalLabel');
+    const modalContent = document.getElementById('modalNotesContent');
     
+    // Set the content
+    modalTitle.textContent = `Appointment #${apptId} Notes`;
+    modalContent.textContent = notes;
+    
+    // Show the modal using Bootstrap's JavaScript API
+    const notesModal = new bootstrap.Modal(document.getElementById('notesModal'));
+    notesModal.show();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
     // Appointment filtering
     const filterLinks = document.querySelectorAll('[data-filter]');
     const appointmentRows = document.querySelectorAll('.appointment-row');
