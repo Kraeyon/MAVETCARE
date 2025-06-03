@@ -7,6 +7,100 @@
     <title>Archived Items - MavetCare</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Improved text readability styles */
+        body {
+            font-size: 16px;
+            color: #333;
+        }
+        
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        h5.mb-0 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .table {
+            font-size: 1rem;
+        }
+        
+        .table th {
+            font-weight: 600;
+            color: #2c3e50;
+            background-color: #f8f9fa;
+        }
+        
+        .table td {
+            vertical-align: middle;
+            color: #333;
+        }
+        
+        .text-muted {
+            color: #495057 !important;
+        }
+        
+        .nav-tabs .nav-link {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .nav-tabs .nav-link.active {
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 3px solid #2c3e50;
+        }
+        
+        .empty-state {
+            padding: 3rem 0;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #adb5bd;
+            margin-bottom: 1.5rem;
+        }
+        
+        .empty-state p {
+            font-size: 1.2rem;
+            color: #6c757d;
+        }
+        
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .modal-body h6 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+        
+        .modal-body p {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            border-color: #ffecb5;
+            color: #856404;
+            font-weight: 500;
+        }
+    </style>
 </head>
 <body>
     <div class="d-flex">
@@ -23,9 +117,46 @@
                 </nav>
             </div>
 
+            <!-- Success/Error Messages -->
+            <?php if (isset($_GET['appointment_restored'])): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>Success!</strong> Appointment has been restored successfully.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+            
+            <?php if (isset($_GET['product_restored'])): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>Success!</strong> Product has been restored successfully.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+            
+            <?php if (isset($_GET['staff_restored'])): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>Success!</strong> Staff member has been restored successfully.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+            
+            <?php if (isset($_GET['error'])): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Error!</strong> 
+                    <?php 
+                        $error = $_GET['error'];
+                        if ($error === 'restore_failed') {
+                            echo 'Failed to restore the item. Please try again.';
+                        } else {
+                            echo 'An error occurred.';
+                        }
+                    ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <p class="text-muted">
+                    <p class="text-muted fs-5">
                         <i class="bi bi-info-circle me-2"></i>
                         This page shows all archived items. Archived items are not deleted from the system but are no longer active.
                     </p>
@@ -61,9 +192,9 @@
                         </div>
                         <div class="card-body">
                             <?php if (empty($appointments)): ?>
-                                <div class="text-center py-5">
-                                    <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 text-muted">No archived appointments found.</p>
+                                <div class="text-center py-5 empty-state">
+                                    <i class="bi bi-calendar-x text-muted"></i>
+                                    <p class="mt-3">No archived appointments found.</p>
                                 </div>
                             <?php else: ?>
                                 <div class="table-responsive">
@@ -98,6 +229,14 @@
                                                                 data-bs-target="#appointmentDetailsModal<?php echo $appointment['appt_code']; ?>">
                                                             <i class="bi bi-eye"></i> View
                                                         </button>
+                                                        
+                                                        <form method="POST" action="/admin/appointments/restore" class="d-inline">
+                                                            <input type="hidden" name="appt_code" value="<?php echo $appointment['appt_code']; ?>">
+                                                            <button type="submit" class="btn btn-sm btn-outline-success" 
+                                                                    onclick="return confirm('Are you sure you want to restore this appointment?')">
+                                                                <i class="bi bi-arrow-counterclockwise"></i> Restore
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>
                                                 
@@ -159,9 +298,9 @@
                         </div>
                         <div class="card-body">
                             <?php if (empty($products)): ?>
-                                <div class="text-center py-5">
-                                    <i class="bi bi-box text-muted" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 text-muted">No archived products found.</p>
+                                <div class="text-center py-5 empty-state">
+                                    <i class="bi bi-box text-muted"></i>
+                                    <p class="mt-3">No archived products found.</p>
                                 </div>
                             <?php else: ?>
                                 <div class="table-responsive">
@@ -195,6 +334,14 @@
                                                                 data-bs-target="#productDetailsModal<?php echo $product['prod_code']; ?>">
                                                             <i class="bi bi-eye"></i> View
                                                         </button>
+                                                        
+                                                        <form method="POST" action="/admin/inventory/restore" class="d-inline">
+                                                            <input type="hidden" name="product_id" value="<?php echo $product['prod_code']; ?>">
+                                                            <button type="submit" class="btn btn-sm btn-outline-success" 
+                                                                    onclick="return confirm('Are you sure you want to restore this product?')">
+                                                                <i class="bi bi-arrow-counterclockwise"></i> Restore
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>
                                                 
@@ -251,9 +398,9 @@
                         </div>
                         <div class="card-body">
                             <?php if (empty($staff)): ?>
-                                <div class="text-center py-5">
-                                    <i class="bi bi-people text-muted" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 text-muted">No archived staff members found.</p>
+                                <div class="text-center py-5 empty-state">
+                                    <i class="bi bi-people text-muted"></i>
+                                    <p class="mt-3">No archived staff members found.</p>
                                 </div>
                             <?php else: ?>
                                 <div class="table-responsive">
@@ -280,6 +427,14 @@
                                                                 data-bs-target="#staffDetailsModal<?php echo $member['staff_code']; ?>">
                                                             <i class="bi bi-eye"></i> View
                                                         </button>
+                                                        
+                                                        <form method="POST" action="/admin/employees/restore" class="d-inline">
+                                                            <input type="hidden" name="staff_code" value="<?php echo $member['staff_code']; ?>">
+                                                            <button type="submit" class="btn btn-sm btn-outline-success" 
+                                                                    onclick="return confirm('Are you sure you want to restore this staff member?')">
+                                                                <i class="bi bi-arrow-counterclockwise"></i> Restore
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>
                                                 

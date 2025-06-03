@@ -195,5 +195,21 @@ class AdminAppointmentModel extends BaseModel {
         $stmt->execute(['ARCHIVED']);
         return $stmt->fetchAll();
     }
+
+    /**
+     * Restore an archived appointment
+     * 
+     * @param int $appt_code Appointment ID
+     * @return bool Success status
+     */
+    public function restoreAppointment($appt_code) {
+        try {
+            $stmt = $this->db->prepare('UPDATE appointment SET status = ? WHERE appt_code = ? AND status = ?');
+            return $stmt->execute(['PENDING', $appt_code, 'ARCHIVED']);
+        } catch (\PDOException $e) {
+            error_log("Error restoring appointment: " . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>

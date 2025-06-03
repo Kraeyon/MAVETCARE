@@ -331,5 +331,29 @@ class AdminAppointmentController {
         header('Content-Type: application/json');
         echo json_encode([]);
     }
+
+    /**
+     * Restore an archived appointment
+     */
+    public function restoreAppointment() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['appt_code'])) {
+            $apptCode = filter_var($_POST['appt_code'], FILTER_SANITIZE_NUMBER_INT);
+            
+            // Call model method to restore
+            $result = $this->adminAppointmentModel->restoreAppointment($apptCode);
+            
+            if ($result) {
+                // Redirect with success message
+                header('Location: /admin/archived?appointment_restored=1');
+            } else {
+                header('Location: /admin/archived?error=restore_failed');
+            }
+            exit;
+        }
+        
+        // Invalid request
+        header('Location: /admin/archived');
+        exit;
+    }
 }
 ?>

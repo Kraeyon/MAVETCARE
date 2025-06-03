@@ -70,6 +70,7 @@ $router->map('GET', '/admin/appointments/add', 'App\Controllers\AdminAppointment
 $router->map('GET', '/admin/appointments/edit/[i:id]', 'App\Controllers\AdminAppointmentController#showEditForm', 'show-edit-appointment');
 $router->map('POST', '/admin/appointments/update', 'App\Controllers\AdminAppointmentController#handleAppointmentUpdate', 'update-appointment');
 $router->map('POST', '/admin/appointments/delete', 'App\Controllers\AdminAppointmentController#handleAppointmentDelete', 'delete-appointment');
+$router->map('POST', '/admin/appointments/restore', 'App\Controllers\AdminAppointmentController#restoreAppointment', 'restore-appointment');
 $router->map('POST', '/admin/appointments/get-pets', 'App\Controllers\AdminAppointmentController#getPetsByClient', 'get-pets-by-client');
 $router->map('GET', '/admin/pets/add', 'App\Controllers\AdminController#showAddPetForm', 'show-add-pet-admin');
 $router->map('GET', '/admin/transactions/add', 'App\Controllers\AdminController#showAddTransactionForm', 'show-add-transaction');
@@ -88,10 +89,12 @@ $router->map('POST', '/admin/employees/add', 'App\\Controllers\\AdminEmployeeCon
 $router->map('POST', '/admin/employees/edit', 'App\\Controllers\\AdminEmployeeController#editEmployee', 'edit-employee');
 $router->map('POST', '/admin/employees/archive', 'App\\Controllers\\AdminEmployeeController#archiveEmployee', 'archive-employee');
 $router->map('POST', '/admin/employees/delete', 'App\\Controllers\\AdminEmployeeController#archiveEmployee', 'delete-employee');
+$router->map('POST', '/admin/employees/restore', 'App\\Controllers\\AdminController#restoreStaff', 'restore-employee');
 
 $router->map('POST', '/admin/inventory/add', 'App\Controllers\AdminController#addProduct', 'admin-inventory-add');
 $router->map('POST', '/admin/inventory/update', 'App\Controllers\AdminController#updateProduct', 'admin-inventory-update');
 $router->map('POST', '/admin/inventory/archive', 'App\Controllers\AdminController#archiveProduct', 'admin-inventory-archive');
 $router->map('POST', '/admin/inventory/delete', 'App\Controllers\AdminController#archiveProduct', 'admin-inventory-delete');
+$router->map('POST', '/admin/inventory/restore', 'App\Controllers\AdminController#restoreProduct', 'admin-inventory-restore');
 
 // Supplier management routes have been removed

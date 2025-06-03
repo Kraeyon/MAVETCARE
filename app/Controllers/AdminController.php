@@ -633,4 +633,62 @@ class AdminController extends BaseController{
             'staff' => $archivedStaff
         ]);
     }
+
+    /**
+     * Restore an archived product
+     */
+    public function restoreProduct() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
+            try {
+                $productId = filter_var($_POST['product_id'], FILTER_SANITIZE_NUMBER_INT);
+                $pdo = $this->getPDO();
+                
+                // Update product status to active
+                $stmt = $pdo->prepare("UPDATE product SET prod_status = 'ACTIVE', updated_at = NOW() WHERE prod_code = ? AND prod_status = 'ARCHIVED'");
+                $success = $stmt->execute([$productId]);
+                
+                if ($success) {
+                    header("Location: /admin/archived?product_restored=1");
+                } else {
+                    header("Location: /admin/archived?error=restore_failed");
+                }
+            } catch (\Exception $e) {
+                error_log("Error restoring product: " . $e->getMessage());
+                header("Location: /admin/archived?error=restore_failed");
+            }
+            exit;
+        }
+        
+        header("Location: /admin/archived");
+        exit;
+    }
+    
+    /**
+     * Restore an archived staff member
+     */
+    public function restoreStaff() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['staff_code'])) {
+            try {
+                $staffCode = filter_var($_POST['staff_code'], FILTER_SANITIZE_NUMBER_INT);
+                $pdo = $this->getPDO();
+                
+                // Update staff status to active
+                $stmt = $pdo->prepare("UPDATE veterinary_staff SET status = 'ACTIVE', updated_at = NOW() WHERE staff_code = ? AND status = 'INACTIVE'");
+                $success = $stmt->execute([$staffCode]);
+                
+                if ($success) {
+                    header("Location: /admin/archived?staff_restored=1");
+                } else {
+                    header("Location: /admin/archived?error=restore_failed");
+                }
+            } catch (\Exception $e) {
+                error_log("Error restoring staff: " . $e->getMessage());
+                header("Location: /admin/archived?error=restore_failed");
+            }
+            exit;
+        }
+        
+        header("Location: /admin/archived");
+        exit;
+    }
 }
