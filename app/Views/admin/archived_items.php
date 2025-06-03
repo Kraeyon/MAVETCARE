@@ -29,6 +29,23 @@
         .card-header {
             background-color: #f8f9fa;
             border-bottom: 2px solid #e9ecef;
+            padding: 1rem;
+        }
+        
+        /* Improved header styling for tab content */
+        .tab-pane .card-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .tab-pane .card-header h5 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin: 0;
+            letter-spacing: 0.5px;
         }
         
         .table {
@@ -109,12 +126,6 @@
         <div class="flex-grow-1 p-4" style="margin-top: 0;">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2><i class="bi bi-archive-fill me-2 text-warning"></i>Archived Items</h2>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="/index">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Archived Items</li>
-                    </ol>
-                </nav>
             </div>
 
             <!-- Success/Error Messages -->
@@ -187,7 +198,7 @@
                 <!-- Appointments Tab -->
                 <div class="tab-pane fade show active" id="appointments" role="tabpanel" aria-labelledby="appointments-tab">
                     <div class="card">
-                        <div class="card-header bg-light">
+                        <div class="card-header">
                             <h5 class="mb-0">Archived Appointments</h5>
                         </div>
                         <div class="card-body">
@@ -293,7 +304,7 @@
                 <!-- Products Tab -->
                 <div class="tab-pane fade" id="products" role="tabpanel" aria-labelledby="products-tab">
                     <div class="card">
-                        <div class="card-header bg-light">
+                        <div class="card-header">
                             <h5 class="mb-0">Archived Products</h5>
                         </div>
                         <div class="card-body">
@@ -393,7 +404,7 @@
                 <!-- Staff Tab -->
                 <div class="tab-pane fade" id="staff" role="tabpanel" aria-labelledby="staff-tab">
                     <div class="card">
-                        <div class="card-header bg-light">
+                        <div class="card-header">
                             <h5 class="mb-0">Archived Staff</h5>
                         </div>
                         <div class="card-body">
