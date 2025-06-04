@@ -40,7 +40,7 @@ $hours = [
       <!-- Right text -->
       <div class="col-md-6" data-aos="fade-left" data-aos-delay="100">
         <h1 class="display-4">Get to Know MaVetCare</h1>
-        <p class="lead">Learn about our story, values, and the team behind your pet’s care.</p>
+        <p class="lead">Learn about our story, values, and the team behind your pet's care.</p>
         <a href="/appointment" class="btn btn-primary mt-3" data-aos="zoom-in" data-aos-delay="200">Book an Appointment</a>
       </div>
     </div>
@@ -53,27 +53,29 @@ $hours = [
     <div class="container">
         <h2 class="text-center mb-4">What Do We Offer?</h2>
         <div class="row g-4">
-            <?php 
-            // Updated services array with titles for overlay text
-            $services = [
-                ["title" => "Vaccinations", "image" => "/assets/images/home_vaccinations.png", "text" => "Vaccinations", "link" => "/vaccination"],
-                ["title" => "Deworming", "image" => "/assets/images/home_grooming.png", "text" => "Grooming", "link" => "/grooming"],
-                ["title" => "Grooming", "image" => "/assets/images/home_foods.png", "text" => "Foods", "link" => "/products"],
-                ["title" => "Surgeries", "image" => "/assets/images/home_medicine.png", "text" => "Medicines", "link" => "/products"]
-            ];
-            ?>
-            <?php foreach($services as $service): ?>
-            <div class="col-md-3">
-                <a href="<?php echo htmlspecialchars($service['link']); ?>" class="text-decoration-none">
+            <?php if (empty($services)): ?>
+                <div class="col-12 text-center">
+                    <p>Our services are currently being updated. Please check back later.</p>
+                </div>
+            <?php else: ?>
+                <?php foreach($services as $service): ?>
+                <div class="col-md-3">
                     <div class="card h-100 position-relative service-card">
-                        <img src="<?php echo htmlspecialchars($service['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($service['title']); ?>">
+                        <img src="<?php echo !empty($service['service_img']) ? htmlspecialchars($service['service_img']) : '/assets/images/services/default.png'; ?>" 
+                             class="card-img-top" 
+                             alt="<?php echo htmlspecialchars($service['service_name']); ?>"
+                             onerror="this.src='/assets/images/services/default.png'">
                         <div class="overlay position-absolute top-50 start-50 translate-middle text-center">
-                            <h5 class="text-white"><?php echo htmlspecialchars($service['text']); ?></h5>
+                            <h5 class="text-white"><?php echo htmlspecialchars($service['service_name']); ?></h5>
+                        </div>
+                        <div class="price-tag position-absolute">₱<?php echo number_format($service['service_fee'], 2); ?></div>
+                        <div class="card-body">
+                            <h5 class="card-title"><?php echo htmlspecialchars($service['service_name']); ?></h5>
                         </div>
                     </div>
-                </a>
-            </div>
-        <?php endforeach; ?>
+                </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </div>
 </section>

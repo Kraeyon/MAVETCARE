@@ -615,13 +615,15 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
                             <label for="service">Select Service:</label>
                             <select id="service" name="service" required>
                                 <option value="">-- Select a Service --</option>
-                                <option value="vaccination" <?php echo (isset($form_data['service']) && $form_data['service'] === 'vaccination') ? 'selected' : ''; ?>>Vaccination</option>
-                                <option value="deworming" <?php echo (isset($form_data['service']) && $form_data['service'] === 'deworming') ? 'selected' : ''; ?>>Deworming</option>
-                                <option value="anti-parasitic program" <?php echo (isset($form_data['service']) && $form_data['service'] === 'anti-parasitic program') ? 'selected' : ''; ?>>Anti-parasitic Program</option>
-                                <option value="surgery" <?php echo (isset($form_data['service']) && $form_data['service'] === 'surgery') ? 'selected' : ''; ?>>Surgery</option>
-                                <option value="grooming" <?php echo (isset($form_data['service']) && $form_data['service'] === 'grooming') ? 'selected' : ''; ?>>Grooming</option>
-                                <option value="treatment" <?php echo (isset($form_data['service']) && $form_data['service'] === 'treatment') ? 'selected' : ''; ?>>Treatment</option>
-                                <option value="confinement" <?php echo (isset($form_data['service']) && $form_data['service'] === 'confinement') ? 'selected' : ''; ?>>Confinement</option>
+                                <?php if (!empty($services)): ?>
+                                    <?php foreach($services as $service): ?>
+                                    <option value="<?php echo htmlspecialchars($service['service_name']); ?>" 
+                                            data-code="<?php echo htmlspecialchars($service['service_code']); ?>"
+                                            <?php echo (isset($form_data['service']) && $form_data['service'] === $service['service_name']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($service['service_name']); ?> (₱<?php echo number_format($service['service_fee'], 2); ?>)
+                                    </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </select>
                         </div>
 
@@ -735,13 +737,15 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
                         <label for="new_pet_service">Select Service:</label>
                         <select id="new_pet_service" name="service" required>
                             <option value="">-- Select a Service --</option>
-                            <option value="vaccination" <?php echo (isset($form_data['service']) && $form_data['service'] === 'vaccination') ? 'selected' : ''; ?>>Vaccination</option>
-                            <option value="deworming" <?php echo (isset($form_data['service']) && $form_data['service'] === 'deworming') ? 'selected' : ''; ?>>Deworming</option>
-                            <option value="anti-parasitic program" <?php echo (isset($form_data['service']) && $form_data['service'] === 'anti-parasitic program') ? 'selected' : ''; ?>>Anti-parasitic Program</option>
-                            <option value="surgery" <?php echo (isset($form_data['service']) && $form_data['service'] === 'surgery') ? 'selected' : ''; ?>>Surgery</option>
-                            <option value="grooming" <?php echo (isset($form_data['service']) && $form_data['service'] === 'grooming') ? 'selected' : ''; ?>>Grooming</option>
-                            <option value="treatment" <?php echo (isset($form_data['service']) && $form_data['service'] === 'treatment') ? 'selected' : ''; ?>>Treatment</option>
-                            <option value="confinement" <?php echo (isset($form_data['service']) && $form_data['service'] === 'confinement') ? 'selected' : ''; ?>>Confinement</option>
+                            <?php if (!empty($services)): ?>
+                                <?php foreach($services as $service): ?>
+                                <option value="<?php echo htmlspecialchars($service['service_name']); ?>" 
+                                        data-code="<?php echo htmlspecialchars($service['service_code']); ?>"
+                                        <?php echo (isset($form_data['service']) && $form_data['service'] === $service['service_name']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($service['service_name']); ?> (₱<?php echo number_format($service['service_fee'], 2); ?>)
+                                </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </select>
                     </div>
 

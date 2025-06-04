@@ -11,7 +11,27 @@ class HomeController extends BaseController {
     }
     // about page
     public function aboutpage() {
-        $this->render('home/aboutpage');
+        try {
+            // Get PDO connection using the BaseController method
+            $pdo = $this->getPDO();
+            
+            // Fetch active services from the database (limit to 4 for the about page)
+            $stmt = $pdo->query("
+                SELECT service_code, service_name, service_desc, service_fee, service_img
+                FROM service
+                WHERE status = 'ACTIVE' OR status IS NULL
+                ORDER BY service_name ASC
+                LIMIT 4
+            ");
+            $services = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            
+            // Render the about page with the fetched services
+            $this->render('home/aboutpage', ['services' => $services]);
+        } catch (\PDOException $e) {
+            error_log("Error fetching services for about page: " . $e->getMessage());
+            // If there's an error, render the page with an empty services array
+            $this->render('home/aboutpage', ['services' => []]);
+        }
     }
     //reviews page
     public function reviews() {
@@ -19,7 +39,26 @@ class HomeController extends BaseController {
     }
     // services page
     public function services() {
-        $this->render('home/services');
+        try {
+            // Get PDO connection using the BaseController method
+            $pdo = $this->getPDO();
+            
+            // Fetch active services from the database
+            $stmt = $pdo->query("
+                SELECT service_code, service_name, service_desc, service_fee, service_img
+                FROM service
+                WHERE status = 'ACTIVE' OR status IS NULL
+                ORDER BY service_name ASC
+            ");
+            $services = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            
+            // Render the services page with the fetched services
+            $this->render('home/services', ['services' => $services]);
+        } catch (\PDOException $e) {
+            error_log("Error fetching services: " . $e->getMessage());
+            // If there's an error, render the page with an empty services array
+            $this->render('home/services', ['services' => []]);
+        }
     }
     // products page
     public function products() {
@@ -343,29 +382,9 @@ class HomeController extends BaseController {
             exit;
         }
     }
-    // vaccination page
-    public function vaccination() {
-        $this->render('home/vaccination');
-    }
-    // deworming page
-    public function deworming() {
-        $this->render('home/deworming');
-    }
-    // anti-parasitic page
-    public function antiparasitic() {
-        $this->render('home/antiparasitic');
-    }
-    // surgeries page
-    public function surgeries() {
-        $this->render('home/surgeries');
-    }
     // grooming page
     public function grooming() {
         $this->render('home/grooming');
-    }
-    // treatment page
-    public function treatment() {
-        $this->render('home/treatment');
     }
     // confinement page
     public function confinement() {

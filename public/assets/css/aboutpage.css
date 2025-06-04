@@ -1,44 +1,84 @@
-
-  .card {
+.card {
     position: relative;
     overflow: hidden;
   }
 
   .overlay {
-    background: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+    background: rgba(0, 0, 0, 0.5); /* Reduced opacity for lighter shadow */
     padding: 10px;
     border-radius: 10px;
+    position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 100%;
+    width: 80%; /* Reduced width for better appearance */
+    text-align: center; /* Ensure text is centered */
   }
 
   .overlay h5 {
     font-size: 1.5rem;
     color: white;
+    margin: 0; /* Remove any margin to ensure vertical centering */
   }
+  
+  .price-tag {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #3183FF;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .service-card:hover .price-tag {
+    transform: scale(1.05);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
+  }
+  
   .service-card {
     position: relative;
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  }
+
+  .service-card .card-body {
+    padding: 20px;
+  }
+  
+  .service-card .card-title {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
   }
 
   .service-card:hover {
-    transform: translateY(-10px); /* Slightly lift the card on hover */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Apply box shadow */
+    transform: translateY(-5px); /* Reduced lift on hover */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
   }
 
   .overlay {
-    background: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    background: rgba(0, 0, 0, 0.5); /* Lighter shadow to match services page */
     padding: 10px;
     border-radius: 10px;
+    position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 100%;
+    width: 80%; /* Reduced width */
     opacity: 0;
     transition: opacity 0.3s ease; /* Make the text fade in */
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .service-card:hover .overlay {
@@ -49,6 +89,16 @@
     font-size: 1.5rem;
     color: white;
     font-weight: bold;
+    margin: 0;
+    text-align: center;
+  }
+  
+  /* Add gradient overlay to image */
+  .service-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
   }
 
   

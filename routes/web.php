@@ -29,15 +29,6 @@ $router->map('GET', '/add-pet', 'App\Controllers\AppointmentController#showAddPe
 $router->map('POST', '/add-pet', 'App\Controllers\AppointmentController#addPet', 'add-pet');
 
 // Service-specific pages
-$router->map('GET', '/vaccination', 'App\Controllers\AppointmentController#vaccination', 'vaccination');
-$router->map('GET', '/deworming', 'App\Controllers\AppointmentController#deworming', 'deworming');
-$router->map('GET', '/antiparasitic', 'App\Controllers\AppointmentController#antiparasitic', 'antiparasitic');
-$router->map('GET', '/surgeries', 'App\Controllers\AppointmentController#surgeries', 'surgeries');
-$router->map('GET', '/grooming', 'App\Controllers\AppointmentController#grooming', 'grooming');
-$router->map('GET', '/treatment', 'App\Controllers\AppointmentController#treatment', 'treatment');
-$router->map('GET', '/confinement', 'App\Controllers\AppointmentController#confinement', 'confinement');
-
-
 
 // Admin routes
 $router->map('GET', '/index', 'App\Controllers\AdminController#index', 'index');

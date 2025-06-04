@@ -22,7 +22,8 @@ class AppointmentController extends BaseController {
         $user = $this->getUser();
         $userData = [
             'user' => $user,
-            'pets' => []
+            'pets' => [],
+            'services' => []
         ];
         
         // If user is logged in and is a regular client, get their pets
@@ -33,6 +34,19 @@ class AppointmentController extends BaseController {
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$user['client_code']]);
             $userData['pets'] = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            
+            // Get active services
+            try {
+                $stmt = $pdo->query("
+                    SELECT service_code, service_name, service_fee
+                    FROM service
+                    WHERE status = 'ACTIVE' OR status IS NULL
+                    ORDER BY service_name ASC
+                ");
+                $userData['services'] = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            } catch (\PDOException $e) {
+                error_log("Error fetching services for appointment form: " . $e->getMessage());
+            }
         }
         
         // Render the page with user data
@@ -524,37 +538,11 @@ class AppointmentController extends BaseController {
     }
     
     /**
-     * Display service-specific pages
-     */
-    public function vaccination() {
-        $this->render('home/vaccination');
-    }
+     
+
     
-    public function deworming() {
-        $this->render('home/deworming');
-    }
     
-    public function antiparasitic() {
-        $this->render('home/antiparasitic');
-    }
     
-    public function surgeries() {
-        $this->render('home/surgeries');
-    }
-    
-    public function grooming() {
-        $this->render('home/grooming');
-    }
-    
-    public function treatment() {
-        $this->render('home/treatment');
-    }
-    
-    public function confinement() {
-        $this->render('home/confinement');
-    }
-    
-    /**
      * Get service code based on service name
      * 
      * @param string $serviceName The name of the service

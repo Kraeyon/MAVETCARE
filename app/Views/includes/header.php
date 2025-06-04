@@ -26,18 +26,7 @@ $current_page = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         <div class="nav-links">
             <a href="/" class="<?= ($current_page == '/') ? 'active' : '' ?>">Home</a>
             <a href="/about" class="<?= ($current_page == '/about') ? 'active' : '' ?>">About</a>
-            <div class="dropdown">
-                <a href="/services" class="<?= (strpos($current_page, '/services') === 0) ? 'active' : '' ?>">Services ▾</a>
-                <div class="dropdown-content">
-                    <a href="/vaccination">Vaccination</a>
-                    <a href="/deworming">Deworming</a>
-                    <a href="/antiparasitic">Anti-Parasitic Program</a>
-                    <a href="/surgeries">Surgeries</a>
-                    <a href="/grooming">Grooming</a>
-                    <a href="/treatment">Treatment</a>
-                    <a href="/confinement">Confinement</a>
-                </div>
-            </div>
+            <a href="/services" class="<?= (strpos($current_page, '/services') === 0) ? 'active' : '' ?>">Services</a>
             <a href="/products" class="<?= ($current_page == '/products') ? 'active' : '' ?>">Products</a>
             <a href="/reviews" class="<?= ($current_page == '/reviews') ? 'active' : '' ?>">Review</a>
         </div>

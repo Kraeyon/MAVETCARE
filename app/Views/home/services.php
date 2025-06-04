@@ -23,7 +23,7 @@
     <!-- Left text -->
     <div class="col-md-6" data-aos="fade-right" data-aos-delay="100">
         <h1 class="display-4 fw-bold">Look for the services that you need.</h1>
-        <p class="lead">Whether it’s a check-up or a special procedure, we’ve got your furry friend covered.</p>
+        <p class="lead">Whether it's a check-up or a special procedure, we've got your furry friend covered.</p>
       </div>
 
       <!-- Right image -->
@@ -37,34 +37,34 @@
 <section class="py-5">
     <div class="container">
         <div class="row g-4">
-            <?php 
-            // Updated services array with titles for overlay text
-            $services = [
-                ["title" => "Vaccinations", "image" => "/assets/images/vaccination.png", "text" => "Vaccinations", "link" => "/vaccination"],
-                ["title" => "Deworming", "image" => "/assets/images/deworming.png", "text" => "Deworming", "link" => "/deworming"],
-                ["title" => "Anti Parasitic Program", "image" => "/assets/images/anti parasitic program.png", "text" => "Anti Parasitic Program", "link" => "/antiparasitic"],
-                ["title" => "Surgeries", "image" => "/assets/images/surgery.png", "text" => "Surgeries", "link" => "/surgeries"],
-                ["title" => "Grooming", "image" => "/assets/images/grooming.png", "text" => "Grooming", "link" => "/grooming"],
-                ["title" => "Treatment", "image" => "/assets/images/treatment.png", "text" => "Treatment", "link" => "/treatment"],
-                ["title" => "Confinement", "image" => "/assets/images/confinement.png", "text" => "Confinement", "link" => "/confinement"]
-
-            ];
-            ?>
-            <?php foreach($services as $service): ?>
-            <div class="col-md-3">
-                <a href="<?php echo htmlspecialchars($service['link']); ?>" class="text-decoration-none">
+            <?php if (empty($services)): ?>
+                <div class="col-12 text-center">
+                    <p>No services available at the moment. Please check back later.</p>
+                </div>
+            <?php else: ?>
+                <?php foreach($services as $service): ?>
+                <div class="col-md-4 mb-4">
                     <div class="card h-100 position-relative service-card">
-                        <img src="<?php echo htmlspecialchars($service['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($service['title']); ?>">
+                        <img src="<?php echo !empty($service['service_img']) ? htmlspecialchars($service['service_img']) : '/assets/images/services/default.png'; ?>" 
+                             class="card-img-top" 
+                             alt="<?php echo htmlspecialchars($service['service_name']); ?>"
+                             onerror="this.src='/assets/images/services/default.png'">
                         <div class="overlay position-absolute top-50 start-50 translate-middle text-center">
-                            <h5 class="text-white"><?php echo htmlspecialchars($service['text']); ?></h5>
+                            <h5 class="text-white"><?php echo htmlspecialchars($service['service_name']); ?></h5>
+                        </div>
+                        <div class="price-tag position-absolute">₱<?php echo number_format($service['service_fee'], 2); ?></div>
+                        <div class="card-body">
+                            <h5 class="card-title"><?php echo htmlspecialchars($service['service_name']); ?></h5>
+                            <?php if (!empty($service['service_desc'])): ?>
+                                <p class="card-text small text-muted"><?php echo htmlspecialchars(substr($service['service_desc'], 0, 100) . (strlen($service['service_desc']) > 100 ? '...' : '')); ?></p>
+                            <?php endif; ?>
                         </div>
                     </div>
-                </a>
-            </div>
-        <?php endforeach; ?>
-
+                </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
-        </div>
+    </div>
 </section>
 
 
