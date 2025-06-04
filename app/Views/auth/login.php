@@ -26,13 +26,6 @@
         <label for="password" class="form-label">Password</label>
         <input type="password" class="form-control" id="password" name="password" required>
       </div>
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="remember" name="remember">
-          <label class="form-check-label" for="remember">Remember me</label>
-        </div>
-        <a href="#" class="small">Forgot Password?</a>
-      </div>
       <button type="submit" class="btn btn-primary w-100">Login</button>
       <div class="text-center mt-3">
         <a href="/register" class="small">Create an account</a>

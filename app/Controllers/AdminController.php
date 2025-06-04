@@ -89,35 +89,11 @@ class AdminController extends BaseController{
     public function transactions() {
         $db = Database::getInstance()->getConnection();
         
-        // Filter by payment method (unpaid, etc.) if specified
-        $paymentMethod = isset($_GET['payment_method']) ? $_GET['payment_method'] : null;
-        
-        // Create or get a TransactionModel
-        // $transactionModel = new TransactionModel($db);
-        
-        // For now, we'll just mock this functionality with a simple query
-        if ($paymentMethod === 'pending' || $paymentMethod === 'unpaid') {
-            $stmt = $db->query("
-                SELECT st.*, c.clt_fname, c.clt_lname
-                FROM sales_transaction st
-                LEFT JOIN client c ON st.client_code = c.clt_code
-                WHERE st.transaction_pay_method = 'pending' OR st.transaction_pay_method IS NULL
-                ORDER BY st.transaction_datetime DESC
-            ");
-            $transactions = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        } else {
-            $stmt = $db->query("
-                SELECT st.*, c.clt_fname, c.clt_lname 
-                FROM sales_transaction st
-                LEFT JOIN client c ON st.client_code = c.clt_code
-                ORDER BY st.transaction_datetime DESC
-            ");
-            $transactions = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        }
-        
-        $this->render('admin/transactions', [
-            'transactions' => $transactions,
-            'filter' => $paymentMethod
+        // Tables have been dropped, show an informational message
+        $this->render('admin/error', [
+            'title' => 'Transactions Unavailable',
+            'message' => 'The transaction feature is currently unavailable as the related database tables have been removed.',
+            'back_url' => '/admin'
         ]);
     }
     
@@ -228,17 +204,6 @@ class AdminController extends BaseController{
         $nextWeek = date('Y-m-d', strtotime('+7 days'));
         $recentDate = date('Y-m-d', strtotime('-3 days'));
         
-        // Get unpaid transactions
-        $unpaidStmt = $db->query("
-            SELECT st.*, c.clt_fname, c.clt_lname
-            FROM sales_transaction st
-            LEFT JOIN client c ON st.client_code = c.clt_code
-            WHERE st.transaction_pay_method = 'pending' OR st.transaction_pay_method IS NULL
-            ORDER BY st.transaction_datetime DESC
-            LIMIT 10
-        ");
-        $unpaidTransactions = $unpaidStmt->fetchAll(\PDO::FETCH_ASSOC);
-        
         // Get pending appointments
         $pendingStmt = $db->prepare("
             SELECT a.*, c.clt_fname, c.clt_lname, p.pet_name, p.pet_type, s.service_name
@@ -295,7 +260,6 @@ class AdminController extends BaseController{
         error_log("Upcoming appointments count: " . count($upcomingAppointments));
         
         $this->render('admin/all_notifications', [
-            'unpaidTransactions' => $unpaidTransactions,
             'pendingAppointments' => $pendingAppointments,
             'lowStockProducts' => $lowStockProducts,
             'upcomingAppointments' => $upcomingAppointments,

@@ -26,14 +26,12 @@ $totalClients = $clientStmt->fetchColumn();
 $petStmt = $db->query("SELECT COUNT(*) FROM pet");
 $totalPets = $petStmt->fetchColumn();
 
-// Get revenue for current month from sales_transaction
-$revenueStmt = $db->prepare("
-    SELECT COALESCE(SUM(transaction_total_amount), 0) 
-    FROM sales_transaction
-    WHERE TO_CHAR(transaction_datetime, 'YYYY-MM') = ?
+// Get total services count
+$servicesStmt = $db->query("
+    SELECT COUNT(*) FROM service 
+    WHERE status = 'ACTIVE' OR status IS NULL
 ");
-$revenueStmt->execute([$currentMonth]);
-$monthlyRevenue = $revenueStmt->fetchColumn();
+$totalServices = $servicesStmt->fetchColumn();
 
 // Handle sorting for appointments
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'preferred_time';
@@ -117,8 +115,8 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
     <div class="col">
         <div class="card text-white bg-danger h-100">
             <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-cash-coin me-2"></i>Revenue This Month</h5>
-                <p class="card-text fs-4">₱<?php echo number_format($monthlyRevenue, 2); ?></p>
+                <h5 class="card-title"><i class="bi bi-gear me-2"></i>Services</h5>
+                <p class="card-text fs-4"><?php echo $totalServices; ?></p>
             </div>
         </div>
     </div>
@@ -205,14 +203,6 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
             // Count total notifications for badge
             $totalNotifications = 0;
             
-            // Get unpaid transactions
-            $unpaidStmt = $db->query("
-                SELECT COUNT(*) FROM sales_transaction 
-                WHERE transaction_pay_method = 'pending' OR transaction_pay_method IS NULL
-            ");
-            $unpaidCount = $unpaidStmt->fetchColumn();
-            $totalNotifications += $unpaidCount;
-            
             // Get pending appointments
             $pendingStmt = $db->prepare("
                 SELECT COUNT(*) FROM appointment 
@@ -258,16 +248,6 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
         
         <div class="card-body small p-0">
             <div class="list-group list-group-flush">
-                <?php if ($unpaidCount > 0): ?>
-                    <a href="/admin/transactions" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                        <div>
-                            <i class="bi bi-cash-coin text-warning me-2"></i>
-                            <strong><?php echo $unpaidCount; ?></strong> unpaid transaction<?php echo $unpaidCount != 1 ? 's' : ''; ?>
-                        </div>
-                        <i class="bi bi-chevron-right text-muted"></i>
-                    </a>
-                <?php endif; ?>
-                
                 <?php if ($pendingCount > 0): ?>
                     <a href="/admin/appointment?filter=pending" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                         <div>
