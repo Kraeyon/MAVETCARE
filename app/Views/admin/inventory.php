@@ -50,35 +50,47 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="flex-grow-1 p-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Inventory Management</h2>
+            <h2><i class="bi bi-box-seam me-2"></i>Inventory Management</h2>
             <div>
-                <a href="?filter=low-stock" class="btn btn-warning me-2">
-                    <i class="bi bi-exclamation-triangle"></i> Low Stock
-                </a>
+                <?php if ($filter !== 'low-stock'): ?>
+                    <a href="?filter=low-stock" class="btn btn-warning me-2">
+                        <i class="bi bi-exclamation-triangle me-1"></i> Low Stock
+                    </a>
+                <?php else: ?>
+                    <a href="/admin/inventory" class="btn btn-outline-primary me-2">
+                        <i class="bi bi-arrow-left me-1"></i> All Products
+                    </a>
+                <?php endif; ?>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
-                    <i class="bi bi-plus-circle"></i> Add New Product
+                    <i class="bi bi-plus-circle me-1"></i> Add New Product
                 </button>
             </div>
         </div>
 
         <?php if (isset($_GET['added'])): ?>
-            <div class="alert alert-success">Product added successfully!</div>
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="bi bi-check-circle me-1"></i> Product added successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         <?php endif; ?>
 
         <?php if (isset($_GET['updated'])): ?>
-            <div class="alert alert-success">Product updated successfully!</div>
-        <?php endif; ?>
-
-        <?php if (isset($_GET['deleted'])): ?>
-            <div class="alert alert-success">Product deleted successfully!</div>
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="bi bi-check-circle me-1"></i> Product updated successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         <?php endif; ?>
 
         <?php if (isset($_GET['archived'])): ?>
-            <div class="alert alert-success">Product archived successfully!</div>
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="bi bi-check-circle me-1"></i> Product archived successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         <?php endif; ?>
 
         <?php if (isset($_GET['error'])): ?>
-            <div class="alert alert-danger">
+            <div class="alert alert-danger alert-dismissible fade show">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>
                 <?php 
                 $error = $_GET['error'];
                 switch($error) {
@@ -98,24 +110,25 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         echo 'An error occurred.';
                 }
                 ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php endif; ?>
 
-        <div class="card">
+        <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><?php echo $filterTitle; ?></h5>
+                <h5 class="mb-0"><i class="bi bi-box me-2"></i><?php echo $filterTitle; ?></h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead>
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-light">
                             <tr>
-                                <th>Image</th>
+                                <th style="width: 70px">Image</th>
                                 <th>Product Name</th>
                                 <th>Category</th>
-                                <th>Stock</th>
-                                <th>Price</th>
-                                <th>Actions</th>
+                                <th style="width: 100px">Stock</th>
+                                <th style="width: 120px">Price</th>
+                                <th style="width: 120px" class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -124,25 +137,31 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td>
                                         <img src="<?= htmlspecialchars($product['prod_image']) ?>" 
                                              alt="<?= htmlspecialchars($product['prod_name']) ?>"
-                                             class="img-thumbnail"
+                                             class="img-thumbnail rounded"
                                              style="width: 50px; height: 50px; object-fit: cover;">
                                     </td>
-                                    <td><?= htmlspecialchars($product['prod_name']) ?></td>
-                                    <td><?= htmlspecialchars($product['prod_category']) ?></td>
+                                    <td class="fw-medium"><?= htmlspecialchars($product['prod_name']) ?></td>
                                     <td>
-                                        <span class="badge <?= $product['prod_stock'] < 10 ? 'bg-danger' : 'bg-success' ?>">
+                                        <span class="badge bg-secondary text-white">
+                                            <?= htmlspecialchars($product['prod_category']) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge <?= $product['prod_stock'] < 10 ? 'bg-danger' : 'bg-success' ?> fs-6">
                                             <?= htmlspecialchars($product['prod_stock']) ?>
                                         </span>
                                     </td>
-                                    <td>₱<?= number_format($product['prod_price'], 2) ?></td>
+                                    <td class="fw-bold">₱<?= number_format($product['prod_price'], 2) ?></td>
                                     <td>
-                                        <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProductModal<?php echo $product['prod_code']; ?>">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        
-                                        <button class="btn btn-sm btn-outline-danger" onclick="confirmArchiveProduct(<?php echo $product['prod_code']; ?>, '<?php echo htmlspecialchars($product['prod_name']); ?>')">
-                                            <i class="bi bi-archive"></i>
-                                        </button>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProductModal<?php echo $product['prod_code']; ?>" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            
+                                            <button class="btn btn-sm btn-outline-danger" onclick="confirmArchiveProduct(<?php echo $product['prod_code']; ?>, '<?php echo htmlspecialchars($product['prod_name']); ?>')" title="Archive">
+                                                <i class="bi bi-archive"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
 
@@ -150,9 +169,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <div class="modal fade" id="editProductModal<?= $product['prod_code'] ?>" tabindex="-1">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Edit Product</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            <div class="modal-header bg-primary text-white">
+                                                <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Edit Product</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <form method="POST" action="/admin/inventory/update" enctype="multipart/form-data">
@@ -176,21 +195,27 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                         </select>
                                                     </div>
 
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Price</label>
-                                                        <input type="number" class="form-control" name="prod_price" 
-                                                               value="<?= $product['prod_price'] ?>" step="0.01" required>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <label class="form-label">Price (₱)</label>
+                                                            <input type="number" class="form-control" name="prod_price" 
+                                                                value="<?= $product['prod_price'] ?>" step="0.01" required>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <label class="form-label">Stock</label>
+                                                            <input type="number" class="form-control" name="prod_stock" 
+                                                                value="<?= $product['prod_stock'] ?>" required>
+                                                        </div>
                                                     </div>
 
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Stock</label>
-                                                        <input type="number" class="form-control" name="prod_stock" 
-                                                               value="<?= $product['prod_stock'] ?>" required>
-                                                    </div>
-
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        <button type="submit" name="update_product" class="btn btn-primary">Update Product</button>
+                                                    <div class="modal-footer px-0 pb-0">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                            <i class="bi bi-x-circle me-1"></i>Cancel
+                                                        </button>
+                                                        <button type="submit" name="update_product" class="btn btn-primary">
+                                                            <i class="bi bi-save me-1"></i>Update Product
+                                                        </button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -210,9 +235,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="modal fade" id="addProductModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add New Product</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Add New Product</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form method="POST" action="/admin/inventory/add" enctype="multipart/form-data">
@@ -233,24 +258,31 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </select>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Price</label>
-                        <input type="number" class="form-control" name="prod_price" step="0.01" required>
-                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Price (₱)</label>
+                            <input type="number" class="form-control" name="prod_price" step="0.01" required>
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Stock</label>
-                        <input type="number" class="form-control" name="prod_stock" required>
+                        <div class="col-md-6">
+                            <label class="form-label">Stock</label>
+                            <input type="number" class="form-control" name="prod_stock" required>
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Product Image</label>
                         <input type="file" class="form-control" name="prod_image" accept="image/*">
+                        <div class="form-text">Recommended size: 500x500px. Max size: 2MB.</div>
                     </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" name="add_product" class="btn btn-primary">Add Product</button>
+                    <div class="modal-footer px-0 pb-0">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-1"></i>Cancel
+                        </button>
+                        <button type="submit" name="add_product" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-1"></i>Add Product
+                        </button>
                     </div>
                 </form>
             </div>
