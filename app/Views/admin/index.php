@@ -190,8 +190,8 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
 <div class="d-flex justify-content-start flex-wrap gap-2 mb-5">
     <a href="/admin/appointment" class="btn btn-outline-primary"><i class="bi bi-calendar-plus me-1"></i> Add Appointment</a>
     <a href="/admin/patients" class="btn btn-outline-success"><i class="bi bi-plus-circle me-1"></i> Register New Pet</a>
-    <a href="/admin/transactions" class="btn btn-outline-warning"><i class="bi bi-credit-card me-1"></i> Add Payment</a>
-    <a href="/admin/inventory" class="btn btn-outline-info"><i class="bi bi-gear me-1"></i> Add Service</a>
+    <a href="/admin/inventory" class="btn btn-outline-warning"><i class="bi bi-box-seam me-1"></i> Add Inventory</a>
+    <a href="/admin/services/add" class="btn btn-outline-info"><i class="bi bi-gear me-1"></i> Add Service</a>
 </div>
 
 <!-- Notifications Box -->

@@ -261,34 +261,59 @@ class AdminAppointmentController {
      * Update an appointment (form submission handler)
      */
     public function handleAppointmentUpdate() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_appointment'])) {
-            // Format date and time
-            $apptDatetime = $_POST['appt_date'] . ' ' . $_POST['appt_time'];
+        error_log("handleAppointmentUpdate method called");
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            error_log("POST request received in handleAppointmentUpdate");
+            error_log("POST data: " . print_r($_POST, true));
             
-            // Call model method to update
-            $result = $this->adminAppointmentModel->updateAppointment(
-                $_POST['appt_code'],
-                $_POST['client_code'],
-                $_POST['pet_code'],
-                $_POST['service_code'],
-                $apptDatetime,
-                $_POST['appointment_type'],
-                $_POST['status'],
-                $_POST['additional_notes'] ?? ''
-            );
-            
-            // Redirect back to appointments list with success/error message
-            if ($result) {
-                header('Location: /admin/appointments?message=Appointment updated successfully');
+            if (isset($_POST['update_appointment'])) {
+                error_log("update_appointment field found");
+                
+                try {
+                    // Format date and time
+                    $apptDate = $_POST['appt_date'] ?? '';
+                    $apptTime = $_POST['appt_time'] ?? '';
+                    $apptDatetime = $apptDate . ' ' . $apptTime;
+                    
+                    error_log("Updating appointment with date/time: " . $apptDatetime);
+                    
+                    // Call model method to update
+                    $result = $this->adminAppointmentModel->updateAppointment(
+                        $_POST['appt_code'],
+                        $_POST['client_code'],
+                        $_POST['pet_code'],
+                        $_POST['service_code'],
+                        $apptDatetime,
+                        $_POST['appointment_type'],
+                        $_POST['status'],
+                        $_POST['additional_notes'] ?? ''
+                    );
+                    
+                    error_log("Update result: " . ($result ? 'success' : 'failure'));
+                    
+                    // Redirect back to appointments list with success/error message
+                    if ($result) {
+                        header('Location: /admin/appointment?message=Appointment updated successfully');
+                    } else {
+                        header('Location: /admin/appointment?error=Failed to update appointment');
+                    }
+                    exit;
+                } catch (\Exception $e) {
+                    error_log("Exception during appointment update: " . $e->getMessage());
+                    header('Location: /admin/appointment?error=Error updating appointment: ' . urlencode($e->getMessage()));
+                    exit;
+                }
             } else {
-                header('Location: /admin/appointments?error=Failed to update appointment');
+                error_log("update_appointment field not found in POST data");
+                header('Location: /admin/appointment?error=Invalid form submission - missing required fields');
+                exit;
             }
+        } else {
+            error_log("Not a POST request in handleAppointmentUpdate");
+            header('Location: /admin/appointment?error=Invalid request method');
             exit;
         }
-        
-        // Invalid request
-        header('Location: /admin/appointments');
-        exit;
     }
     
     /**
@@ -303,9 +328,9 @@ class AdminAppointmentController {
             
             if ($result) {
                 // Redirect with success message
-                header('Location: /admin/appointments?message=Appointment archived successfully');
+                header('Location: /admin/appointment?message=Appointment archived successfully');
             } else {
-                header('Location: /admin/appointments?error=Failed to archive appointment');
+                header('Location: /admin/appointment?error=Failed to archive appointment');
             }
             exit;
         }

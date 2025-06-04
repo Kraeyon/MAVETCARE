@@ -54,11 +54,13 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="appt_date" class="form-label">Appointment Date</label>
-                                <input type="date" class="form-control" id="appt_date" name="appt_date" value="<?php echo date('Y-m-d', strtotime($appointment['preferred_date'])); ?>" required>
+                                <input type="date" class="form-control" id="appt_date" name="appt_date" 
+                                    value="<?php echo date('Y-m-d', strtotime(isset($appointment['appt_datetime']) ? $appointment['appt_datetime'] : $appointment['preferred_date'])); ?>" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="appt_time" class="form-label">Appointment Time</label>
-                                <input type="time" class="form-control" id="appt_time" name="appt_time" value="<?php echo date('H:i', strtotime($appointment['preferred_time'])); ?>" required>
+                                <input type="time" class="form-control" id="appt_time" name="appt_time" 
+                                    value="<?php echo date('H:i', strtotime(isset($appointment['appt_datetime']) ? $appointment['appt_datetime'] : $appointment['preferred_time'])); ?>" required>
                             </div>
                         </div>
                         

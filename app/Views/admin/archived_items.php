@@ -150,6 +150,13 @@
                 </div>
             <?php endif; ?>
             
+            <?php if (isset($_GET['service_restored'])): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>Success!</strong> Service has been restored successfully.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+            
             <?php if (isset($_GET['error'])): ?>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <strong>Error!</strong> 
@@ -177,12 +184,7 @@
             <!-- Nav tabs -->
             <ul class="nav nav-tabs mb-4" id="archiveTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="appointments-tab" data-bs-toggle="tab" data-bs-target="#appointments" type="button" role="tab" aria-controls="appointments" aria-selected="true">
-                        <i class="bi bi-calendar-check me-1"></i> Appointments (<?php echo count($appointments); ?>)
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button" role="tab" aria-controls="products" aria-selected="false">
+                    <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button" role="tab" aria-controls="products" aria-selected="true">
                         <i class="bi bi-box me-1"></i> Products (<?php echo count($products); ?>)
                     </button>
                 </li>
@@ -191,118 +193,17 @@
                         <i class="bi bi-people me-1"></i> Staff (<?php echo count($staff); ?>)
                     </button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services" type="button" role="tab" aria-controls="services" aria-selected="false">
+                        <i class="bi bi-gear me-1"></i> Services (<?php echo count($services); ?>)
+                    </button>
+                </li>
             </ul>
             
             <!-- Tab content -->
             <div class="tab-content" id="archiveTabContent">
-                <!-- Appointments Tab -->
-                <div class="tab-pane fade show active" id="appointments" role="tabpanel" aria-labelledby="appointments-tab">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">Archived Appointments</h5>
-                        </div>
-                        <div class="card-body">
-                            <?php if (empty($appointments)): ?>
-                                <div class="text-center py-5 empty-state">
-                                    <i class="bi bi-calendar-x text-muted"></i>
-                                    <p class="mt-3">No archived appointments found.</p>
-                                </div>
-                            <?php else: ?>
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Client</th>
-                                                <th>Pet</th>
-                                                <th>Service</th>
-                                                <th>Date & Time</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($appointments as $appointment): ?>
-                                                <tr>
-                                                    <td><?php echo $appointment['appt_code']; ?></td>
-                                                    <td><?php echo htmlspecialchars($appointment['clt_fname'] . ' ' . $appointment['clt_lname']); ?></td>
-                                                    <td><?php echo htmlspecialchars($appointment['pet_name'] . ' (' . $appointment['pet_type'] . ')'); ?></td>
-                                                    <td><?php echo htmlspecialchars($appointment['service_name'] ?? 'N/A'); ?></td>
-                                                    <td>
-                                                        <?php 
-                                                            $date = isset($appointment['preferred_date']) ? date('M d, Y', strtotime($appointment['preferred_date'])) : 'N/A';
-                                                            $time = isset($appointment['preferred_time']) ? date('h:i A', strtotime($appointment['preferred_time'])) : 'N/A';
-                                                            echo $date . ' at ' . $time;
-                                                        ?>
-                                                    </td>
-                                                    <td>
-                                                        <button class="btn btn-sm btn-outline-primary" 
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#appointmentDetailsModal<?php echo $appointment['appt_code']; ?>">
-                                                            <i class="bi bi-eye"></i> View
-                                                        </button>
-                                                        
-                                                        <form method="POST" action="/admin/appointments/restore" class="d-inline">
-                                                            <input type="hidden" name="appt_code" value="<?php echo $appointment['appt_code']; ?>">
-                                                            <button type="submit" class="btn btn-sm btn-outline-success" 
-                                                                    onclick="return confirm('Are you sure you want to restore this appointment?')">
-                                                                <i class="bi bi-arrow-counterclockwise"></i> Restore
-                                                            </button>
-                                                        </form>
-                                                    </td>
-                                                </tr>
-                                                
-                                                <!-- Modal for appointment details -->
-                                                <div class="modal fade" id="appointmentDetailsModal<?php echo $appointment['appt_code']; ?>" tabindex="-1">
-                                                    <div class="modal-dialog modal-lg">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title">Appointment Details #<?php echo $appointment['appt_code']; ?></h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <div class="row mb-3">
-                                                                    <div class="col-md-6">
-                                                                        <h6>Client Information</h6>
-                                                                        <p class="mb-1"><strong>Name:</strong> <?php echo htmlspecialchars($appointment['clt_fname'] . ' ' . $appointment['clt_lname']); ?></p>
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <h6>Pet Information</h6>
-                                                                        <p class="mb-1"><strong>Name:</strong> <?php echo htmlspecialchars($appointment['pet_name']); ?></p>
-                                                                        <p class="mb-1"><strong>Type:</strong> <?php echo htmlspecialchars($appointment['pet_type']); ?></p>
-                                                                        <p class="mb-1"><strong>Breed:</strong> <?php echo htmlspecialchars($appointment['pet_breed'] ?? 'N/A'); ?></p>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row mb-3">
-                                                                    <div class="col-md-6">
-                                                                        <h6>Appointment Information</h6>
-                                                                        <p class="mb-1"><strong>Service:</strong> <?php echo htmlspecialchars($appointment['service_name'] ?? 'N/A'); ?></p>
-                                                                        <p class="mb-1"><strong>Date:</strong> <?php echo isset($appointment['preferred_date']) ? date('F d, Y', strtotime($appointment['preferred_date'])) : 'N/A'; ?></p>
-                                                                        <p class="mb-1"><strong>Time:</strong> <?php echo isset($appointment['preferred_time']) ? date('h:i A', strtotime($appointment['preferred_time'])) : 'N/A'; ?></p>
-                                                                        <p class="mb-1"><strong>Type:</strong> <?php echo htmlspecialchars($appointment['appointment_type'] ?? 'N/A'); ?></p>
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <h6>Additional Information</h6>
-                                                                        <p class="mb-1"><strong>Notes:</strong> <?php echo !empty($appointment['additional_notes']) ? htmlspecialchars($appointment['additional_notes']) : 'No additional notes'; ?></p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-                
                 <!-- Products Tab -->
-                <div class="tab-pane fade" id="products" role="tabpanel" aria-labelledby="products-tab">
+                <div class="tab-pane fade show active" id="products" role="tabpanel" aria-labelledby="products-tab">
                     <div class="card">
                         <div class="card-header">
                             <h5 class="mb-0">Archived Products</h5>
@@ -471,6 +372,106 @@
                                                                 <div class="alert alert-warning">
                                                                     <i class="bi bi-exclamation-triangle me-2"></i>
                                                                     This staff member has been archived and is no longer active in the system.
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Services Tab -->
+                <div class="tab-pane fade" id="services" role="tabpanel" aria-labelledby="services-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Archived Services</h5>
+                        </div>
+                        <div class="card-body">
+                            <?php if (empty($services)): ?>
+                                <div class="text-center py-5 empty-state">
+                                    <i class="bi bi-gear text-muted"></i>
+                                    <p class="mt-3">No archived services found.</p>
+                                </div>
+                            <?php else: ?>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Image</th>
+                                                <th>Service Name</th>
+                                                <th>Description</th>
+                                                <th>Fee</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($services as $service): ?>
+                                                <tr>
+                                                    <td>
+                                                        <img src="<?php echo isset($service['service_img']) ? $service['service_img'] : '/assets/images/services/default.png'; ?>" 
+                                                             alt="<?php echo htmlspecialchars($service['service_name']); ?>"
+                                                             class="img-thumbnail"
+                                                             style="width: 50px; height: 50px; object-fit: cover;"
+                                                             onerror="this.src='/assets/images/services/default.png'; this.onerror=null;">
+                                                    </td>
+                                                    <td><?php echo htmlspecialchars($service['service_name']); ?></td>
+                                                    <td><?php echo htmlspecialchars(substr($service['service_desc'], 0, 50) . (strlen($service['service_desc']) > 50 ? '...' : '')); ?></td>
+                                                    <td>₱<?php echo number_format($service['service_fee'], 2); ?></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#serviceDetailsModal<?php echo $service['service_code']; ?>">
+                                                            <i class="bi bi-eye"></i> View
+                                                        </button>
+                                                        
+                                                        <form method="POST" action="/admin/services/restore" class="d-inline">
+                                                            <input type="hidden" name="service_id" value="<?php echo $service['service_code']; ?>">
+                                                            <button type="submit" class="btn btn-sm btn-outline-success" 
+                                                                    onclick="return confirm('Are you sure you want to restore this service?')">
+                                                                <i class="bi bi-arrow-counterclockwise"></i> Restore
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                                
+                                                <!-- Modal for service details -->
+                                                <div class="modal fade" id="serviceDetailsModal<?php echo $service['service_code']; ?>" tabindex="-1">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Service Details</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="text-center mb-3">
+                                                                    <img src="<?php echo isset($service['service_img']) ? $service['service_img'] : '/assets/images/services/default.png'; ?>" 
+                                                                         alt="<?php echo htmlspecialchars($service['service_name']); ?>"
+                                                                         class="img-fluid"
+                                                                         style="max-height: 200px;"
+                                                                         onerror="this.src='/assets/images/services/default.png'; this.onerror=null;">
+                                                                </div>
+                                                                <div class="row mb-3">
+                                                                    <div class="col-md-6">
+                                                                        <p class="mb-1"><strong>Name:</strong> <?php echo htmlspecialchars($service['service_name']); ?></p>
+                                                                        <p class="mb-1"><strong>Fee:</strong> ₱<?php echo number_format($service['service_fee'], 2); ?></p>
+                                                                    </div>
+                                                                    <div class="col-md-12 mt-3">
+                                                                        <p class="mb-1"><strong>Description:</strong></p>
+                                                                        <p><?php echo htmlspecialchars($service['service_desc']); ?></p>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="alert alert-warning">
+                                                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                                                    This service has been archived and is no longer active in the system.
                                                                 </div>
                                                             </div>
                                                             <div class="modal-footer">

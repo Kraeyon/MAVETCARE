@@ -6,7 +6,19 @@ use Config\Database;
 
 class AdminEmployeeController extends BaseController {
     public function index() {
-        $this->render('admin/employees');
+        $pdo = $this->getPDO();
+        
+        // Get active staff only
+        $stmt = $pdo->query("
+            SELECT vs.*, 
+                (SELECT JSON_AGG(ss.*) FROM staff_schedule ss WHERE ss.staff_code = vs.staff_code) as schedule_details 
+            FROM veterinary_staff vs
+            WHERE vs.status = 'ACTIVE' OR vs.status IS NULL
+            ORDER BY vs.staff_name
+        ");
+        $staff = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        
+        $this->render('admin/employees', ['staff' => $staff]);
     }
 
     public function addEmployee() {

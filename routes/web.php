@@ -22,7 +22,6 @@ $router->map('GET', '/products', 'App\Controllers\HomeController#products', 'pro
 $router->map('GET', '/appointment', 'App\Controllers\AppointmentController#index', 'appointment');
 $router->map('POST', '/appointment', 'App\Controllers\AppointmentController#submitAppointment', 'submit-appointment');
 $router->map('GET', '/my-appointments', 'App\Controllers\AppointmentController#myAppointments', 'my-appointments');
-$router->map('GET', '/admin/appointments', 'App\Controllers\AppointmentController#viewAppointments', 'admin-appointments');
 $router->map('GET', '/api/appointment/availability', 'App\Controllers\AppointmentController#checkSlotAvailability', 'check-slot-availability');
 
 // Pet management
@@ -75,6 +74,10 @@ $router->map('POST', '/admin/appointments/get-pets', 'App\Controllers\AdminAppoi
 $router->map('GET', '/admin/pets/add', 'App\Controllers\AdminController#showAddPetForm', 'show-add-pet-admin');
 $router->map('GET', '/admin/transactions/add', 'App\Controllers\AdminController#showAddTransactionForm', 'show-add-transaction');
 $router->map('GET', '/admin/services/add', 'App\Controllers\AdminController#showAddServiceForm', 'show-add-service');
+$router->map('POST', '/admin/services/add', 'App\Controllers\AdminController#addService', 'add-service');
+$router->map('POST', '/admin/services/update', 'App\Controllers\AdminController#updateService', 'update-service');
+$router->map('POST', '/admin/services/archive', 'App\Controllers\AdminController#archiveService', 'archive-service');
+$router->map('POST', '/admin/services/restore', 'App\Controllers\AdminController#restoreService', 'restore-service');
 
 $router->map('GET', '/admin/employees', 'App\Controllers\AdminEmployeeController#index', 'employees');
 

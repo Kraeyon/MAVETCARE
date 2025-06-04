@@ -211,5 +211,15 @@ class AdminAppointmentModel extends BaseModel {
             return false;
         }
     }
+
+    public function getServicesForDropdown() {
+        try {
+            $stmt = $this->db->query('SELECT service_code, service_name, service_fee FROM service WHERE status = \'ACTIVE\' OR status IS NULL ORDER BY service_name');
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            error_log("Error fetching services: " . $e->getMessage());
+            return [];
+        }
+    }
 }
 ?>

@@ -12,7 +12,7 @@ if ($filter === 'low-stock') {
     $stmt = $pdo->query("
         SELECT p.*
         FROM product p
-        WHERE p.prod_stock < 10
+        WHERE p.prod_stock < 10 AND (p.prod_status = 'ACTIVE' OR p.prod_status IS NULL)
         ORDER BY p.prod_stock ASC
     ");
     $filterTitle = 'Low Stock Products';
@@ -20,6 +20,7 @@ if ($filter === 'low-stock') {
     $stmt = $pdo->query("
         SELECT p.*
         FROM product p
+        WHERE p.prod_status = 'ACTIVE' OR p.prod_status IS NULL
         ORDER BY p.prod_name ASC
     ");
     $filterTitle = 'All Products';
@@ -139,12 +140,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         
-                                        <form method="POST" action="/admin/inventory/archive" class="d-inline">
-                                            <input type="hidden" name="product_id" value="<?php echo $product['prod_code']; ?>">
-                                            <button type="submit" class="btn btn-sm btn-outline-warning" onclick="return confirm('Are you sure you want to archive this product? It will be marked as inactive but remain in the system.')">
-                                                <i class="bi bi-archive"></i>
-                                            </button>
-                                        </form>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="confirmArchiveProduct(<?php echo $product['prod_code']; ?>, '<?php echo htmlspecialchars($product['prod_name']); ?>')">
+                                            <i class="bi bi-archive"></i>
+                                        </button>
                                     </td>
                                 </tr>
 
@@ -260,6 +258,41 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
+<!-- Archive Confirmation Modal -->
+<div class="modal fade" id="archiveProductModal" tabindex="-1" aria-labelledby="archiveProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="archiveProductModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Archive Product</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to archive the product <strong id="productNameToArchive"></strong>?</p>
+                <p>This product will no longer appear in the active inventory list but can be restored from the archived items page.</p>
+                <form id="archiveProductForm" action="/admin/inventory/archive" method="POST">
+                    <input type="hidden" id="product_id_to_archive" name="product_id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="document.getElementById('archiveProductForm').submit()">
+                    <i class="bi bi-archive me-1"></i>Archive Product
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Function to confirm archiving a product
+    function confirmArchiveProduct(productId, productName) {
+        document.getElementById('productNameToArchive').textContent = productName;
+        document.getElementById('product_id_to_archive').value = productId;
+        
+        const modal = new bootstrap.Modal(document.getElementById('archiveProductModal'));
+        modal.show();
+    }
+</script>
 </body>
 </html>

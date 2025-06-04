@@ -533,7 +533,7 @@ if (!isset($controller)) {
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('addAppointmentModal').style.display='none'">&times;</span>
             <h2>Add New Appointment</h2>
-            <form method="POST" action="">
+            <form method="POST" action="/admin/appointments/update">
                 <div class="form-group">
                     <label for="client_code">Client:</label>
                     <select name="client_code" id="client_code" class="form-control" required onchange="loadClientPets(this.value)">
@@ -608,8 +608,9 @@ if (!isset($controller)) {
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('editAppointmentModal').style.display='none'">&times;</span>
             <h2>Edit Appointment</h2>
-            <form method="POST" action="">
+            <form method="POST" action="/admin/appointments/update">
                 <input type="hidden" name="appt_code" id="edit_appt_code">
+                <input type="hidden" name="update_appointment" value="1">
                 
                 <div class="form-group">
                     <label for="edit_client_code">Client:</label>

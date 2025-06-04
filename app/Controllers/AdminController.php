@@ -125,69 +125,30 @@ class AdminController extends BaseController{
      * View appointments with filters
      */
     public function viewAppointmentsFiltered() {
-        $db = Database::getInstance()->getConnection();
-        $model = new AppointmentModel();
+        // Instead of showing a separate page, redirect to the main appointment dashboard
+        // with the appropriate filter parameters
+        $queryParams = [];
         
-        // Get filters from query string
-        $status = isset($_GET['status']) ? $_GET['status'] : null;
-        $period = isset($_GET['period']) ? $_GET['period'] : null;
-        $date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
-        
-        // Debug information
-        error_log("Filtering appointments with status: " . ($status ?? 'none') . ", period: " . ($period ?? 'none') . ", date: " . $date);
-        
-        // Build query based on filters
-        if ($status) {
-            // Normalize status parameter and make case-insensitive
-            $normalizedStatus = strtolower(trim($status));
-            error_log("Normalized status filter: " . $normalizedStatus);
-            
-            // Map normalized status to expected database values if needed
-            $statusMap = [
-                'pending' => 'PENDING',
-                'confirmed' => 'CONFIRMED',
-                'completed' => 'COMPLETED',
-                'cancelled' => 'CANCELLED'
-            ];
-            
-            // Use mapped value if available, otherwise use normalized value
-            $dbStatus = isset($statusMap[$normalizedStatus]) ? $statusMap[$normalizedStatus] : strtoupper($normalizedStatus);
-            
-            // Get appointments with the specified status
-            $appointments = $model->getAppointmentsByStatus($dbStatus);
-            $filterTitle = ucfirst($normalizedStatus) . ' Appointments';
-            
-            error_log("Found " . count($appointments) . " appointments with status: " . $dbStatus);
-        } else if ($period === 'next-week') {
-            $startDate = date('Y-m-d');
-            $endDate = date('Y-m-d', strtotime('+7 days'));
-            $appointments = $model->getAppointmentsByDateRange($startDate, $endDate);
-            $filterTitle = 'Upcoming Appointments (Next 7 Days)';
-        } else if ($date) {
-            $appointments = $model->getAppointmentsByDate($date);
-            $filterTitle = 'Appointments for ' . date('F j, Y', strtotime($date));
-        } else {
-            // Default to all appointments
-            $stmt = $db->query("
-                SELECT a.*, c.clt_fname, c.clt_lname, c.clt_contact, c.clt_email_address,
-                       p.pet_name, p.pet_type, p.pet_breed, s.service_name
-                FROM appointment a
-                JOIN client c ON a.client_code = c.clt_code
-                JOIN pet p ON a.pet_code = p.pet_code
-                LEFT JOIN service s ON a.service_code = s.service_code
-                ORDER BY a.preferred_date DESC, a.preferred_time DESC
-            ");
-            $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $filterTitle = 'All Appointments';
+        // Get filters from query string and pass them to the redirect
+        if (isset($_GET['status'])) {
+            $queryParams['filter'] = strtolower($_GET['status']);
+        }
+        if (isset($_GET['period']) && $_GET['period'] == 'next-week') {
+            $queryParams['filter'] = 'upcoming';
+        }
+        if (isset($_GET['date'])) {
+            $queryParams['date'] = $_GET['date'];
         }
         
-        $this->render('admin/appointments', [
-            'appointments' => $appointments,
-            'filterTitle' => $filterTitle,
-            'date' => $date,
-            'status' => $status,
-            'period' => $period
-        ]);
+        // Build the redirect URL
+        $redirectUrl = '/admin/appointment';
+        if (!empty($queryParams)) {
+            $redirectUrl .= '?' . http_build_query($queryParams);
+        }
+        
+        // Perform the redirect
+        header('Location: ' . $redirectUrl);
+        exit;
     }
     
     /**
@@ -204,7 +165,7 @@ class AdminController extends BaseController{
             $stmt = $db->query("
                 SELECT p.*
                 FROM product p
-                WHERE p.prod_stock < 10
+                WHERE p.prod_stock < 10 AND (p.prod_status = 'ACTIVE' OR p.prod_status IS NULL)
                 ORDER BY p.prod_stock ASC
             ");
             $filterTitle = 'Low Stock Products';
@@ -212,6 +173,7 @@ class AdminController extends BaseController{
             $stmt = $db->query("
                 SELECT p.*
                 FROM product p
+                WHERE p.prod_status = 'ACTIVE' OR p.prod_status IS NULL
                 ORDER BY p.prod_name ASC
             ");
             $filterTitle = 'All Products';
@@ -615,22 +577,24 @@ class AdminController extends BaseController{
      * View all archived items
      */
     public function archivedItems() {
-        // Get archived appointments
-        $db = \Config\Database::getInstance()->getConnection();
-        $appointmentModel = new \App\Models\AdminAppointmentModel($db);
-        $archivedAppointments = $appointmentModel->getArchivedAppointments();
-        
         // Get archived products
         $archivedProducts = $this->getArchivedProducts();
         
         // Get archived staff
         $archivedStaff = $this->getArchivedStaff();
         
+        // Get archived services
+        $archivedServices = $this->getArchivedServices();
+        
         // Render the view
         $this->render('admin/archived_items', [
-            'appointments' => $archivedAppointments,
             'products' => $archivedProducts,
-            'staff' => $archivedStaff
+            'staff' => $archivedStaff,
+            'services' => $archivedServices,
+            'message' => isset($_GET['service_restored']) ? 'Service restored successfully' : 
+                      (isset($_GET['product_restored']) ? 'Product restored successfully' : 
+                      (isset($_GET['staff_restored']) ? 'Staff restored successfully' : null)),
+            'error' => isset($_GET['error']) ? $_GET['error'] : null
         ]);
     }
 
@@ -690,5 +654,302 @@ class AdminController extends BaseController{
         
         header("Location: /admin/archived");
         exit;
+    }
+
+    /**
+     * Show the form to add a new service
+     */
+    public function showAddServiceForm() {
+        try {
+            // Fetch existing active services for reference
+            $stmt = $this->getPDO()->query("
+                SELECT service_code, service_name, service_desc, service_fee, service_img
+                FROM service
+                WHERE status = 'ACTIVE' OR status IS NULL
+                ORDER BY service_name ASC
+            ");
+            $services = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            
+            // Render the view with services data
+            $this->render('admin/service_add', [
+                'services' => $services,
+                'message' => isset($_GET['message']) ? $_GET['message'] : null,
+                'error' => isset($_GET['error']) ? $_GET['error'] : null
+            ]);
+        } catch (\PDOException $e) {
+            error_log("Error fetching services: " . $e->getMessage());
+            $this->render('admin/service_add', [
+                'services' => [],
+                'error' => 'Database error: ' . $e->getMessage()
+            ]);
+        }
+    }
+    
+    /**
+     * Handle service addition
+     */
+    public function addService() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $serviceName = $_POST['service_name'] ?? '';
+            $serviceDesc = $_POST['service_desc'] ?? '';
+            $serviceFee = isset($_POST['service_fee']) && $_POST['service_fee'] !== '' ? (float)$_POST['service_fee'] : 0;
+            
+            if (empty($serviceName)) {
+                header('Location: /admin/services/add?error=Service name is required');
+                exit;
+            }
+            
+            try {
+                // Handle image upload if present
+                $serviceImgPath = '/assets/images/services/default.png'; // Default image path
+                
+                if (isset($_FILES['service_img']) && $_FILES['service_img']['error'] == 0) {
+                    $uploadDir = __DIR__ . '/../../public/assets/images/services/';
+                    
+                    // Create directory if it doesn't exist
+                    if (!is_dir($uploadDir)) {
+                        if (!mkdir($uploadDir, 0755, true)) {
+                            error_log("Failed to create directory: " . $uploadDir);
+                            header('Location: /admin/services/add?error=Failed to create image upload directory');
+                            exit;
+                        }
+                    }
+                    
+                    // Generate unique filename
+                    $fileName = uniqid('service_') . '_' . basename($_FILES['service_img']['name']);
+                    $uploadPath = $uploadDir . $fileName;
+                    
+                    // Validate file type
+                    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                    if (!in_array($_FILES['service_img']['type'], $allowedTypes)) {
+                        header('Location: /admin/services/add?error=Invalid image type. Only JPEG, PNG, GIF, and WebP are allowed');
+                        exit;
+                    }
+                    
+                    // Validate file size (max 2MB)
+                    if ($_FILES['service_img']['size'] > 2 * 1024 * 1024) {
+                        header('Location: /admin/services/add?error=Image is too large. Maximum size is 2MB');
+                        exit;
+                    }
+                    
+                    // Move uploaded file
+                    if (move_uploaded_file($_FILES['service_img']['tmp_name'], $uploadPath)) {
+                        $serviceImgPath = '/assets/images/services/' . $fileName;
+                    } else {
+                        error_log("Failed to move uploaded file: " . $_FILES['service_img']['tmp_name'] . " to " . $uploadPath);
+                    }
+                }
+                
+                // Insert service with image path
+                $stmt = $this->getPDO()->prepare("
+                    INSERT INTO service (service_name, service_desc, service_fee, service_img)
+                    VALUES (?, ?, ?, ?)
+                ");
+                $result = $stmt->execute([$serviceName, $serviceDesc, $serviceFee, $serviceImgPath]);
+                
+                if ($result) {
+                    header('Location: /admin/services/add?message=Service added successfully');
+                } else {
+                    header('Location: /admin/services/add?error=Failed to add service');
+                }
+                exit;
+            } catch (\PDOException $e) {
+                error_log("Error adding service: " . $e->getMessage());
+                header('Location: /admin/services/add?error=' . urlencode('Database error: ' . $e->getMessage()));
+                exit;
+            } catch (\Exception $e) {
+                error_log("General error adding service: " . $e->getMessage());
+                header('Location: /admin/services/add?error=' . urlencode('Error: ' . $e->getMessage()));
+                exit;
+            }
+        }
+        
+        // If not a POST request, redirect back to the form
+        header('Location: /admin/services/add');
+        exit;
+    }
+    
+    /**
+     * Update an existing service
+     */
+    public function updateService() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $serviceCode = $_POST['service_code'] ?? '';
+            $serviceName = $_POST['service_name'] ?? '';
+            $serviceDesc = $_POST['service_desc'] ?? '';
+            $serviceFee = isset($_POST['service_fee']) && $_POST['service_fee'] !== '' ? (float)$_POST['service_fee'] : 0;
+            $currentImgPath = $_POST['current_img_path'] ?? '/assets/images/services/default.png';
+            
+            if (empty($serviceCode) || empty($serviceName)) {
+                header('Location: /admin/services/add?error=Service code and name are required');
+                exit;
+            }
+            
+            try {
+                // Handle image upload if present
+                $serviceImgPath = $currentImgPath; // Default to current image path
+                
+                if (isset($_FILES['service_img']) && $_FILES['service_img']['error'] == 0) {
+                    $uploadDir = __DIR__ . '/../../public/assets/images/services/';
+                    
+                    // Create directory if it doesn't exist
+                    if (!is_dir($uploadDir)) {
+                        if (!mkdir($uploadDir, 0755, true)) {
+                            error_log("Failed to create directory: " . $uploadDir);
+                            header('Location: /admin/services/add?error=Failed to create image upload directory');
+                            exit;
+                        }
+                    }
+                    
+                    // Generate unique filename
+                    $fileName = uniqid('service_') . '_' . basename($_FILES['service_img']['name']);
+                    $uploadPath = $uploadDir . $fileName;
+                    
+                    // Validate file type
+                    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                    if (!in_array($_FILES['service_img']['type'], $allowedTypes)) {
+                        header('Location: /admin/services/add?error=Invalid image type. Only JPEG, PNG, GIF, and WebP are allowed');
+                        exit;
+                    }
+                    
+                    // Validate file size (max 2MB)
+                    if ($_FILES['service_img']['size'] > 2 * 1024 * 1024) {
+                        header('Location: /admin/services/add?error=Image is too large. Maximum size is 2MB');
+                        exit;
+                    }
+                    
+                    // Move uploaded file
+                    if (move_uploaded_file($_FILES['service_img']['tmp_name'], $uploadPath)) {
+                        $serviceImgPath = '/assets/images/services/' . $fileName;
+                        
+                        // Delete previous image if it's not the default
+                        if ($currentImgPath !== '/assets/images/services/default.png' && strpos($currentImgPath, '/assets/images/services/') === 0) {
+                            $oldImagePath = __DIR__ . '/../../public' . $currentImgPath;
+                            if (file_exists($oldImagePath)) {
+                                unlink($oldImagePath);
+                            }
+                        }
+                    } else {
+                        error_log("Failed to move uploaded file: " . $_FILES['service_img']['tmp_name'] . " to " . $uploadPath);
+                    }
+                }
+                
+                // Update service with image path
+                $stmt = $this->getPDO()->prepare("
+                    UPDATE service 
+                    SET service_name = ?, service_desc = ?, service_fee = ?, service_img = ?
+                    WHERE service_code = ?
+                ");
+                $result = $stmt->execute([$serviceName, $serviceDesc, $serviceFee, $serviceImgPath, $serviceCode]);
+                
+                if ($result) {
+                    header('Location: /admin/services/add?message=Service updated successfully');
+                } else {
+                    header('Location: /admin/services/add?error=Failed to update service');
+                }
+                exit;
+            } catch (\PDOException $e) {
+                error_log("Error updating service: " . $e->getMessage());
+                header('Location: /admin/services/add?error=' . urlencode('Database error: ' . $e->getMessage()));
+                exit;
+            } catch (\Exception $e) {
+                error_log("General error updating service: " . $e->getMessage());
+                header('Location: /admin/services/add?error=' . urlencode('Error: ' . $e->getMessage()));
+                exit;
+            }
+        }
+        
+        // If not a POST request, redirect back to the form
+        header('Location: /admin/services/add');
+        exit;
+    }
+
+    /**
+     * Archive a service (mark as inactive) instead of deleting it
+     */
+    public function archiveService() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['service_id'])) {
+            try {
+                $serviceId = filter_var($_POST['service_id'], FILTER_SANITIZE_NUMBER_INT);
+                
+                // Check if service exists
+                $pdo = $this->getPDO();
+                $checkStmt = $pdo->prepare("SELECT service_code FROM service WHERE service_code = ?");
+                $checkStmt->execute([$serviceId]);
+                
+                if (!$checkStmt->fetch()) {
+                    header("Location: /admin/services/add?error=service_not_found");
+                    exit;
+                }
+                
+                // Archive the service by setting status to inactive
+                $stmt = $pdo->prepare("UPDATE service SET status = 'ARCHIVED', updated_at = NOW() WHERE service_code = ?");
+                $success = $stmt->execute([$serviceId]);
+                
+                if ($success) {
+                    header("Location: /admin/services/add?message=Service successfully archived");
+                } else {
+                    header("Location: /admin/services/add?error=archive_failed");
+                }
+            } catch (\Exception $e) {
+                error_log("Error archiving service: " . $e->getMessage());
+                header("Location: /admin/services/add?error=archive_failed");
+            }
+            exit;
+        }
+        
+        header("Location: /admin/services/add");
+        exit;
+    }
+    
+    /**
+     * Restore an archived service
+     */
+    public function restoreService() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['service_id'])) {
+            try {
+                $serviceId = filter_var($_POST['service_id'], FILTER_SANITIZE_NUMBER_INT);
+                $pdo = $this->getPDO();
+                
+                // Update service status to active
+                $stmt = $pdo->prepare("UPDATE service SET status = 'ACTIVE', updated_at = NOW() WHERE service_code = ? AND status = 'ARCHIVED'");
+                $success = $stmt->execute([$serviceId]);
+                
+                if ($success) {
+                    header("Location: /admin/archived?service_restored=1");
+                } else {
+                    header("Location: /admin/archived?error=restore_failed");
+                }
+            } catch (\Exception $e) {
+                error_log("Error restoring service: " . $e->getMessage());
+                header("Location: /admin/archived?error=restore_failed");
+            }
+            exit;
+        }
+        
+        header("Location: /admin/archived");
+        exit;
+    }
+
+    /**
+     * Get archived services
+     * 
+     * @return array List of archived services
+     */
+    private function getArchivedServices() {
+        try {
+            $pdo = $this->getPDO();
+            $stmt = $pdo->prepare("
+                SELECT s.*
+                FROM service s
+                WHERE s.status = 'ARCHIVED'
+                ORDER BY s.service_name ASC
+            ");
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $e) {
+            error_log("Error fetching archived services: " . $e->getMessage());
+            return [];
+        }
     }
 }

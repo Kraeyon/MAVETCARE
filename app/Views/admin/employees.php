@@ -5,7 +5,7 @@ use Config\Database;
 $pdo = Database::getInstance()->getConnection();
 
 // Fetch all staff for display and for copy schedule dropdown
-$stmt = $pdo->query("SELECT staff_code, staff_name FROM veterinary_staff ORDER BY staff_name ASC");
+$stmt = $pdo->query("SELECT staff_code, staff_name FROM veterinary_staff WHERE status = 'ACTIVE' OR status IS NULL ORDER BY staff_name ASC");
 $allStaff = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Handle staff addition
@@ -108,7 +108,7 @@ if (isset($_GET['delete'])) {
 }
 
 // Get all staff members
-$stmt = $pdo->query("SELECT * FROM veterinary_staff ORDER BY staff_name ASC");
+$stmt = $pdo->query("SELECT * FROM veterinary_staff WHERE status = 'ACTIVE' OR status IS NULL ORDER BY staff_name ASC");
 $staff = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // For each staff, fetch their schedule as an array of rows
@@ -316,12 +316,9 @@ function formatSchedule($scheduleDetails) {
                                         <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editStaffModal<?= $member['staff_code'] ?>">
                                             <i class="bi bi-pencil"></i>
                                         </button>
-                                        <form method="POST" action="/admin/employees/delete" class="d-inline delete-form">
-                                            <input type="hidden" name="staff_code" value="<?= $member['staff_code'] ?>">
-                                            <button type="submit" class="btn btn-sm btn-outline-warning" onclick="return confirm('Are you sure you want to archive this staff member? They will be marked as inactive but remain in the system.')">
-                                                <i class="bi bi-archive"></i> Archive
-                                            </button>
-                                        </form>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmArchiveStaff(<?= $member['staff_code'] ?>, '<?= htmlspecialchars($member['staff_name']) ?>')">
+                                            <i class="bi bi-archive"></i> Archive
+                                        </button>
                                     </td>
                                 </tr>
                                 <!-- Edit Staff Modal -->
@@ -492,6 +489,31 @@ function formatSchedule($scheduleDetails) {
     </div>
 </div>
 
+<!-- Archive Confirmation Modal -->
+<div class="modal fade" id="archiveStaffModal" tabindex="-1" aria-labelledby="archiveStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="archiveStaffModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Archive Staff Member</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to archive the staff member <strong id="staffNameToArchive"></strong>?</p>
+                <p>This staff member will no longer appear in the active staff list but can be restored from the archived items page.</p>
+                <form id="archiveStaffForm" action="/admin/employees/archive" method="POST">
+                    <input type="hidden" id="staff_code_to_archive" name="staff_code">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="document.getElementById('archiveStaffForm').submit()">
+                    <i class="bi bi-archive me-1"></i>Archive Staff Member
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // Inline editing logic
@@ -600,6 +622,15 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleTimeInputs(checkbox);
     });
 });
+
+// Function to confirm archiving a staff member
+function confirmArchiveStaff(staffCode, staffName) {
+    document.getElementById('staffNameToArchive').textContent = staffName;
+    document.getElementById('staff_code_to_archive').value = staffCode;
+    
+    const modal = new bootstrap.Modal(document.getElementById('archiveStaffModal'));
+    modal.show();
+}
 </script>
 </body>
 </html> 

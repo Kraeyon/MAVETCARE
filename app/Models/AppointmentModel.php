@@ -52,14 +52,14 @@ class AppointmentModel extends BaseModel {
             if (!$serviceCode) {
                 // Try to find a service by name if provided
                 if (!empty($data[':appointment_type'])) {
-                    $serviceStmt = $this->db->prepare("SELECT service_code FROM service WHERE LOWER(service_name) LIKE ?");
+                    $serviceStmt = $this->db->prepare("SELECT service_code FROM service WHERE LOWER(service_name) LIKE ? AND (status = 'ACTIVE' OR status IS NULL)");
                     $serviceStmt->execute(['%' . strtolower($data[':appointment_type']) . '%']);
                     $serviceCode = $serviceStmt->fetchColumn();
                 }
                 
                 // If still not found, use our General Checkup service or the first service
                 if (!$serviceCode) {
-                    $serviceStmt = $this->db->query("SELECT service_code FROM service ORDER BY service_code LIMIT 1");
+                    $serviceStmt = $this->db->query("SELECT service_code FROM service WHERE status = 'ACTIVE' OR status IS NULL ORDER BY service_code LIMIT 1");
                     $serviceCode = $serviceStmt->fetchColumn();
                 }
             }

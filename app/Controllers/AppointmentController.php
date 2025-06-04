@@ -565,6 +565,7 @@ class AppointmentController extends BaseController {
             $stmt = $this->db->prepare("
                 SELECT service_code FROM service 
                 WHERE LOWER(service_name) LIKE :service_name
+                AND (status = 'ACTIVE' OR status IS NULL)
                 LIMIT 1
             ");
             
