@@ -44,7 +44,7 @@
             <?php else: ?>
                 <?php foreach($services as $service): ?>
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100 position-relative service-card">
+                    <div class="card h-100 position-relative service-card" onclick="showServiceDetails('<?php echo htmlspecialchars($service['service_code']); ?>', '<?php echo htmlspecialchars($service['service_name']); ?>', '<?php echo htmlspecialchars(addslashes($service['service_desc'])); ?>', '<?php echo number_format($service['service_fee'], 2); ?>', '<?php echo !empty($service['service_img']) ? htmlspecialchars($service['service_img']) : '/assets/images/services/default.png'; ?>')">
                         <img src="<?php echo !empty($service['service_img']) ? htmlspecialchars($service['service_img']) : '/assets/images/services/default.png'; ?>" 
                              class="card-img-top" 
                              alt="<?php echo htmlspecialchars($service['service_name']); ?>"
@@ -67,14 +67,50 @@
     </div>
 </section>
 
+<!-- Service Details Modal -->
+<div class="modal fade" id="serviceModal" tabindex="-1" aria-labelledby="serviceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="serviceModalLabel">Service Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4 modal-image-container">
+                    <img id="modalServiceImage" src="" alt="Service Image" class="img-fluid rounded">
+                </div>
+                <h3 id="modalServiceName" class="mb-3 text-center"></h3>
+                <div class="d-flex justify-content-center mb-4">
+                    <span id="modalServicePrice" class="badge bg-primary px-3 py-2 fs-5"></span>
+                </div>
+                <p id="modalServiceDescription" class="lead"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a id="bookServiceBtn" href="/appointment" class="btn btn-primary">Book Now</a>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <!-- AOS Animation JS -->
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
   AOS.init();
-</script>
 
+  function showServiceDetails(id, name, description, price, image) {
+    // Set modal content
+    document.getElementById('modalServiceName').textContent = name;
+    document.getElementById('modalServicePrice').textContent = '₱' + price;
+    document.getElementById('modalServiceDescription').textContent = description;
+    document.getElementById('modalServiceImage').src = image;
+    
+    // Show the modal
+    var serviceModal = new bootstrap.Modal(document.getElementById('serviceModal'));
+    serviceModal.show();
+  }
+</script>
 
 </body>
 </html>

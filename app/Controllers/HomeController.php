@@ -25,12 +25,29 @@ class HomeController extends BaseController {
             ");
             $services = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             
-            // Render the about page with the fetched services
-            $this->render('home/aboutpage', ['services' => $services]);
+            // Fetch featured products (limit to 4)
+            $productStmt = $pdo->query("
+                SELECT prod_code, prod_name, prod_price, prod_image, prod_category
+                FROM product
+                WHERE (prod_status = 'ACTIVE' OR prod_status IS NULL)
+                AND prod_stock > 0
+                ORDER BY prod_name ASC
+                LIMIT 4
+            ");
+            $products = $productStmt->fetchAll(\PDO::FETCH_ASSOC);
+            
+            // Render the about page with the fetched data
+            $this->render('home/aboutpage', [
+                'services' => $services,
+                'products' => $products
+            ]);
         } catch (\PDOException $e) {
-            error_log("Error fetching services for about page: " . $e->getMessage());
-            // If there's an error, render the page with an empty services array
-            $this->render('home/aboutpage', ['services' => []]);
+            error_log("Error fetching data for about page: " . $e->getMessage());
+            // If there's an error, render the page with empty arrays
+            $this->render('home/aboutpage', [
+                'services' => [],
+                'products' => []
+            ]);
         }
     }
     //reviews page

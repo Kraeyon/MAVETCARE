@@ -52,15 +52,19 @@ $hours = [
 <section class="py-5">
     <div class="container">
         <h2 class="text-center mb-4">What Do We Offer?</h2>
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             <?php if (empty($services)): ?>
                 <div class="col-12 text-center">
                     <p>Our services are currently being updated. Please check back later.</p>
                 </div>
             <?php else: ?>
-                <?php foreach($services as $service): ?>
-                <div class="col-md-3">
-                    <div class="card h-100 position-relative service-card">
+                <?php 
+                // Limit to 3 services
+                $display_services = array_slice($services, 0, 3);
+                foreach($display_services as $service): 
+                ?>
+                <div class="col-md-4 col-lg-3">
+                    <div class="card h-100 position-relative service-card" style="max-width: 280px; margin: 0 auto;">
                         <img src="<?php echo !empty($service['service_img']) ? htmlspecialchars($service['service_img']) : '/assets/images/services/default.png'; ?>" 
                              class="card-img-top" 
                              alt="<?php echo htmlspecialchars($service['service_name']); ?>"
@@ -77,9 +81,76 @@ $hours = [
                 <?php endforeach; ?>
             <?php endif; ?>
         </div>
+        <div class="text-center mt-4">
+            <a href="/services" class="btn btn-outline-primary">View All Services</a>
+        </div>
     </div>
 </section>
 
+
+<!-- Featured Products Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4">Featured Products</h2>
+        <div class="row g-4 justify-content-center">
+            <?php 
+            // If no products from database, show fallback sample products
+            if (empty($products)) {
+                // Define fallback products (only 3)
+                $fallback_products = [
+                    [
+                        'prod_name' => 'Premium Pet Shampoo',
+                        'prod_price' => 250.00,
+                        'prod_image' => '/assets/images/products/default.png',
+                        'prod_category' => 'shampoo'
+                    ],
+                    [
+                        'prod_name' => 'Nutritious Dog Food',
+                        'prod_price' => 499.99,
+                        'prod_image' => '/assets/images/products/default.png',
+                        'prod_category' => 'food-accessories'
+                    ],
+                    [
+                        'prod_name' => 'Pet Vitamins',
+                        'prod_price' => 350.00,
+                        'prod_image' => '/assets/images/products/default.png',
+                        'prod_category' => 'cabinet-stocks'
+                    ]
+                ];
+                
+                // Use the fallback products
+                $products = $fallback_products;
+            } else {
+                // Limit to 3 products if there are more
+                $products = array_slice($products, 0, 3);
+            }
+            
+            // Display products (either from database or fallback)
+            foreach($products as $product): 
+            ?>
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card h-100 position-relative product-card" style="max-width: 280px; margin: 0 auto;">
+                    <div class="price-tag position-absolute">₱<?php echo number_format($product['prod_price'], 2); ?></div>
+                    <img src="<?php echo !empty($product['prod_image']) ? htmlspecialchars($product['prod_image']) : '/assets/images/products/default.png'; ?>" 
+                         class="card-img-top" 
+                         alt="<?php echo htmlspecialchars($product['prod_name']); ?>"
+                         onerror="this.src='/assets/images/products/default.png'">
+                    <div class="card-body">
+                        <h5 class="card-title"><?php echo htmlspecialchars($product['prod_name']); ?></h5>
+                        <p class="card-text small text-muted">
+                            <?php echo htmlspecialchars(ucfirst(str_replace('-', ' ', $product['prod_category']))); ?>
+                        </p>
+                        <a href="/products" class="btn btn-primary btn-sm mt-2">View Details</a>
+                    </div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <div class="text-center mt-4">
+            <a href="/products" class="btn btn-outline-primary">View All Products</a>
+        </div>
+    </div>
+</section>
 
 <!-- Why Choose Us Section -->
 <section class="py-5 bg-light">

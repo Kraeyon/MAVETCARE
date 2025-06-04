@@ -48,6 +48,7 @@
     border: none;
     border-radius: 12px;
     box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    cursor: pointer; /* Add cursor pointer to indicate it's clickable */
   }
 
   .service-card .card-body {
@@ -99,6 +100,28 @@
     object-fit: cover;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
+    object-position: center; /* Center the image horizontally and vertically */
+  }
+
+  /* Modal image styling */
+  .modal-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    overflow: hidden;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+  }
+
+  #modalServiceImage {
+    max-height: 200px;
+    height: auto;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 8px;
   }
 
   
