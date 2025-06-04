@@ -91,4 +91,11 @@ $router->map('POST', '/admin/inventory/archive', 'App\Controllers\AdminControlle
 $router->map('POST', '/admin/inventory/delete', 'App\Controllers\AdminController#archiveProduct', 'admin-inventory-delete');
 $router->map('POST', '/admin/inventory/restore', 'App\Controllers\AdminController#restoreProduct', 'admin-inventory-restore');
 
+// Sales routes
+$router->map('GET', '/admin/sales', 'App\Controllers\SalesController#index', 'admin-sales');
+$router->map('POST', '/admin/sales/add', 'App\Controllers\SalesController#addSale', 'admin-sales-add');
+$router->map('GET', '/admin/sales/details/[i:saleId]', 'App\Controllers\SalesController#getSaleDetails', 'admin-sales-details');
+$router->map('GET', '/admin/sales/print/[i:saleId]', 'App\Controllers\SalesController#printReceipt', 'admin-sales-print');
+$router->map('GET', '/admin/sales/filter', 'App\Controllers\SalesController#filterSales', 'admin-sales-filter');
+
 // Supplier management routes have been removed

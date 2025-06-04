@@ -33,6 +33,22 @@ $servicesStmt = $db->query("
 ");
 $totalServices = $servicesStmt->fetchColumn();
 
+// Get sales data for dashboard
+$todaySalesStmt = $db->query("
+    SELECT COALESCE(SUM(total_amount), 0) as total, COUNT(*) as count
+    FROM sales
+    WHERE DATE(sale_date) = CURRENT_DATE
+");
+$todaySales = $todaySalesStmt->fetch(\PDO::FETCH_ASSOC);
+
+$monthlySalesStmt = $db->query("
+    SELECT COALESCE(SUM(total_amount), 0) as total
+    FROM sales
+    WHERE EXTRACT(YEAR FROM sale_date) = EXTRACT(YEAR FROM CURRENT_DATE)
+    AND EXTRACT(MONTH FROM sale_date) = EXTRACT(MONTH FROM CURRENT_DATE)
+");
+$monthlySales = $monthlySalesStmt->fetch(\PDO::FETCH_ASSOC);
+
 // Handle sorting for appointments
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'preferred_time';
 $order = isset($_GET['order']) ? $_GET['order'] : 'ASC';
@@ -117,6 +133,44 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
             <div class="card-body">
                 <h5 class="card-title"><i class="bi bi-gear me-2"></i>Services</h5>
                 <p class="card-text fs-4"><?php echo $totalServices; ?></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sales Summary -->
+<h4 class="mb-4">Sales Summary</h4>
+<div class="row row-cols-1 row-cols-md-2 g-4 mb-5">
+    <div class="col">
+        <div class="card border-0 bg-primary bg-opacity-10 h-100 shadow-sm">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="rounded-circle bg-primary bg-opacity-25 p-3 me-3">
+                    <i class="bi bi-currency-dollar text-primary fs-3"></i>
+                </div>
+                <div>
+                    <h5 class="text-primary mb-1">Today's Sales</h5>
+                    <h2 class="fw-bold text-dark mb-1">₱<?php echo number_format($todaySales['total'], 2); ?></h2>
+                    <div class="badge bg-primary text-white p-2"><?php echo $todaySales['count']; ?> transactions today</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card border-0 bg-success bg-opacity-10 h-100 shadow-sm">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="rounded-circle bg-success bg-opacity-25 p-3 me-3">
+                    <i class="bi bi-graph-up text-success fs-3"></i>
+                </div>
+                <div>
+                    <h5 class="text-success mb-1">Monthly Sales</h5>
+                    <h2 class="fw-bold text-dark mb-1">₱<?php echo number_format($monthlySales['total'], 2); ?></h2>
+                    <div class="badge bg-success text-white p-2"><?php echo date('F Y'); ?></div>
+                </div>
+                <div class="ms-auto">
+                    <a href="/admin/sales" class="btn btn-sm btn-outline-success">
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

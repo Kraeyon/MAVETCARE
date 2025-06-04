@@ -49,6 +49,12 @@ $pageUrl = $_SERVER['REQUEST_URI']; // Get the full URL
             </li>
 
             <li class="nav-item">
+                <a class="nav-link <?php echo ($page == 'sales') ? 'active' : ''; ?>" href="/admin/sales">
+                    <i class="bi bi-cash me-2"></i>Sales
+                </a>
+            </li>
+
+            <li class="nav-item">
                 <a class="nav-link <?php echo (strpos($pageUrl, '/admin/services/add') === 0) ? 'active' : ''; ?>" href="/admin/services/add">
                     <i class="bi bi-gear-fill me-2"></i>Services
                 </a>
