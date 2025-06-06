@@ -164,5 +164,160 @@
     margin-top: 10px;
   }
   
+  /* Doctor card styling */
+  .doctor-card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    height: 100%;
+    background-color: white;
+    position: relative;
+  }
 
+  .doctor-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(49, 131, 255, 0.1);
+  }
+
+  .doctor-card .card-header {
+    background-color: #3183FF;
+    color: white;
+    font-weight: 500;
+    padding: 18px 20px;
+    border-bottom: none;
+    border-radius: 15px 15px 0 0;
+  }
+
+  .doctor-card .card-body {
+    padding: 25px;
+  }
+
+  .position-badge {
+    margin-bottom: 20px;
+  }
+
+  .position-badge .badge {
+    font-size: 0.85rem;
+    padding: 8px 15px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(49, 131, 255, 0.15);
+  }
+
+  .schedule-container {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  .schedule-display {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .schedule-block {
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    display: flex;
+    align-items: center;
+  }
+
+  .schedule-block .text-primary {
+    font-weight: 600;
+    color: #3183FF !important;
+  }
+
+  .doctor-card .btn-outline-primary {
+    border-color: #3183FF;
+    color: #3183FF;
+    transition: all 0.3s ease;
+    border-radius: 30px;
+    padding: 8px 20px;
+  }
+
+  .doctor-card .btn-outline-primary:hover {
+    background-color: #3183FF;
+    color: white;
+    box-shadow: 0 5px 15px rgba(49, 131, 255, 0.3);
+  }
+
+  /* Add divider style */
+  .divider {
+    height: 4px;
+    width: 60px;
+    background-color: #3183FF;
+    border-radius: 2px;
+  }
+  
+  /* Testimonial card styling */
+  .testimonial-card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    height: 100%;
+    background-color: white;
+    position: relative;
+  }
+
+  .testimonial-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(49, 131, 255, 0.1);
+  }
+
+  .testimonial-card .card-body {
+    padding: 25px;
+    position: relative;
+  }
+
+  .testimonial-card .card-body::before {
+    content: "\201C";
+    font-family: Georgia, serif;
+    font-size: 5rem;
+    color: rgba(49, 131, 255, 0.1);
+    position: absolute;
+    top: -15px;
+    left: 10px;
+    line-height: 1;
+  }
+
+  .testimonial-rating {
+    font-size: 1.2rem;
+  }
+
+  .testimonial-text {
+    font-style: italic;
+    color: #555;
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+  }
+
+  .testimonial-author {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+  }
+
+  .testimonial-avatar img {
+    border: 3px solid white;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  }
+
+  .testimonial-author h6 {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .testimonial-author small {
+    font-size: 0.85rem;
+  }
+  
   
