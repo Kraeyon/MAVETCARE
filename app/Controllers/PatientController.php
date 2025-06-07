@@ -21,8 +21,8 @@ class PatientController {
             $tempPassword = null;
 
             if ($clientCode === 'new') {
-                // Create a random password for the new client
-                $temporaryPassword = substr(md5(uniqid(mt_rand(), true)), 0, 8);
+                // Use 'password' as the default temporary password
+                $temporaryPassword = 'password';
                 
                 // Save the password to display to admin
                 $tempPassword = $temporaryPassword;
