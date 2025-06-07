@@ -117,6 +117,45 @@
             color: #856404;
             font-weight: 500;
         }
+        
+        /* Search box styles */
+        .search-box {
+            position: relative;
+            max-width: 300px;
+            margin-left: auto;
+        }
+        
+        .search-box .form-control {
+            padding-left: 35px;
+            border-radius: 20px;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 10px;
+            color: #6c757d;
+        }
+        
+        .tab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        @media (max-width: 768px) {
+            .search-box {
+                margin-top: 10px;
+                width: 100%;
+                max-width: none;
+            }
+            
+            .tab-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
@@ -206,7 +245,15 @@
                 <div class="tab-pane fade show active" id="products" role="tabpanel" aria-labelledby="products-tab">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="mb-0">Archived Products</h5>
+                            <div class="tab-header">
+                                <h5 class="mb-0">Archived Products</h5>
+                                <div class="search-box">
+                                    <i class="bi bi-search search-icon"></i>
+                                    <input type="text" id="searchProducts" class="form-control" 
+                                        placeholder="Search products..." 
+                                        style="padding-left: 35px; border-radius: 20px;">
+                                </div>
+                            </div>
                         </div>
                         <div class="card-body">
                             <?php if (empty($products)): ?>
@@ -229,7 +276,11 @@
                                         </thead>
                                         <tbody>
                                             <?php foreach ($products as $product): ?>
-                                                <tr>
+                                                <tr class="product-item"
+                                                   data-name="<?= strtolower(htmlspecialchars($product['prod_name'])) ?>"
+                                                   data-category="<?= strtolower(htmlspecialchars($product['prod_category'])) ?>"
+                                                   data-price="<?= $product['prod_price'] ?>"
+                                                   data-code="<?= $product['prod_code'] ?>">
                                                     <td>
                                                         <img src="<?php echo htmlspecialchars($product['prod_image']); ?>" 
                                                              alt="<?php echo htmlspecialchars($product['prod_name']); ?>"
@@ -310,7 +361,15 @@
                 <div class="tab-pane fade" id="staff" role="tabpanel" aria-labelledby="staff-tab">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="mb-0">Archived Staff</h5>
+                            <div class="tab-header">
+                                <h5 class="mb-0">Archived Staff</h5>
+                                <div class="search-box">
+                                    <i class="bi bi-search search-icon"></i>
+                                    <input type="text" id="searchStaff" class="form-control" 
+                                        placeholder="Search staff..." 
+                                        style="padding-left: 35px; border-radius: 20px;">
+                                </div>
+                            </div>
                         </div>
                         <div class="card-body">
                             <?php if (empty($staff)): ?>
@@ -332,7 +391,12 @@
                                         </thead>
                                         <tbody>
                                             <?php foreach ($staff as $member): ?>
-                                                <tr>
+                                                <tr class="staff-item"
+                                                   data-name="<?= strtolower(htmlspecialchars($member['staff_name'])) ?>"
+                                                   data-position="<?= strtolower(htmlspecialchars($member['staff_position'])) ?>"
+                                                   data-contact="<?= strtolower(htmlspecialchars($member['staff_contact'])) ?>"
+                                                   data-email="<?= strtolower(htmlspecialchars($member['staff_email_address'])) ?>"
+                                                   data-code="<?= $member['staff_code'] ?>">
                                                     <td><?php echo htmlspecialchars($member['staff_name']); ?></td>
                                                     <td><?php echo htmlspecialchars($member['staff_position']); ?></td>
                                                     <td><?php echo htmlspecialchars($member['staff_contact']); ?></td>
@@ -397,7 +461,15 @@
                 <div class="tab-pane fade" id="services" role="tabpanel" aria-labelledby="services-tab">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="mb-0">Archived Services</h5>
+                            <div class="tab-header">
+                                <h5 class="mb-0">Archived Services</h5>
+                                <div class="search-box">
+                                    <i class="bi bi-search search-icon"></i>
+                                    <input type="text" id="searchServices" class="form-control" 
+                                        placeholder="Search services..." 
+                                        style="padding-left: 35px; border-radius: 20px;">
+                                </div>
+                            </div>
                         </div>
                         <div class="card-body">
                             <?php if (empty($services)): ?>
@@ -419,7 +491,11 @@
                                         </thead>
                                         <tbody>
                                             <?php foreach ($services as $service): ?>
-                                                <tr>
+                                                <tr class="service-item"
+                                                   data-name="<?= strtolower(htmlspecialchars($service['service_name'])) ?>"
+                                                   data-desc="<?= strtolower(htmlspecialchars($service['service_desc'])) ?>"
+                                                   data-fee="<?= $service['service_fee'] ?>"
+                                                   data-code="<?= $service['service_code'] ?>">
                                                     <td>
                                                         <img src="<?php echo isset($service['service_img']) ? $service['service_img'] : '/assets/images/services/default.png'; ?>" 
                                                              alt="<?php echo htmlspecialchars($service['service_name']); ?>"
@@ -497,5 +573,165 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Function to create a "no results" message
+        function createNoResultsMessage(containerId, searchValue, itemType) {
+            const container = document.getElementById(containerId);
+            
+            // Remove any existing no results message
+            const existingMsg = container.querySelector('.no-results-message');
+            if (existingMsg) {
+                existingMsg.remove();
+            }
+            
+            // Create new message
+            const noResultsDiv = document.createElement('tr');
+            noResultsDiv.className = 'no-results-message';
+            noResultsDiv.innerHTML = `
+                <td colspan="6" class="text-center py-4">
+                    <div>
+                        <i class="bi bi-search text-muted fs-3"></i>
+                        <p class="mt-2 mb-0">No ${itemType} found matching "${searchValue}"</p>
+                    </div>
+                </td>
+            `;
+            
+            return noResultsDiv;
+        }
+        
+        // Products search functionality
+        document.getElementById('searchProducts').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase().trim();
+            const productItems = document.querySelectorAll('.product-item');
+            let visibleCount = 0;
+            
+            productItems.forEach(item => {
+                const name = item.getAttribute('data-name') || '';
+                const category = item.getAttribute('data-category') || '';
+                const price = item.getAttribute('data-price') || '';
+                const code = item.getAttribute('data-code') || '';
+                
+                if (name.includes(searchValue) || 
+                    category.includes(searchValue) || 
+                    price.includes(searchValue) || 
+                    code.includes(searchValue)) {
+                    item.style.display = '';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Show no results message if needed
+            const tbody = document.querySelector('#products table tbody');
+            if (visibleCount === 0 && searchValue !== '') {
+                const noResultsMsg = createNoResultsMessage('products', searchValue, 'products');
+                tbody.appendChild(noResultsMsg);
+            } else {
+                const existingMsg = tbody.querySelector('.no-results-message');
+                if (existingMsg) {
+                    existingMsg.remove();
+                }
+            }
+        });
+        
+        // Staff search functionality
+        document.getElementById('searchStaff').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase().trim();
+            const staffItems = document.querySelectorAll('.staff-item');
+            let visibleCount = 0;
+            
+            staffItems.forEach(item => {
+                const name = item.getAttribute('data-name') || '';
+                const position = item.getAttribute('data-position') || '';
+                const contact = item.getAttribute('data-contact') || '';
+                const email = item.getAttribute('data-email') || '';
+                const code = item.getAttribute('data-code') || '';
+                
+                if (name.includes(searchValue) || 
+                    position.includes(searchValue) || 
+                    contact.includes(searchValue) || 
+                    email.includes(searchValue) ||
+                    code.includes(searchValue)) {
+                    item.style.display = '';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Show no results message if needed
+            const tbody = document.querySelector('#staff table tbody');
+            if (visibleCount === 0 && searchValue !== '') {
+                const noResultsMsg = createNoResultsMessage('staff', searchValue, 'staff members');
+                tbody.appendChild(noResultsMsg);
+            } else {
+                const existingMsg = tbody.querySelector('.no-results-message');
+                if (existingMsg) {
+                    existingMsg.remove();
+                }
+            }
+        });
+        
+        // Services search functionality
+        document.getElementById('searchServices').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase().trim();
+            const serviceItems = document.querySelectorAll('.service-item');
+            let visibleCount = 0;
+            
+            serviceItems.forEach(item => {
+                const name = item.getAttribute('data-name') || '';
+                const desc = item.getAttribute('data-desc') || '';
+                const fee = item.getAttribute('data-fee') || '';
+                const code = item.getAttribute('data-code') || '';
+                
+                if (name.includes(searchValue) || 
+                    desc.includes(searchValue) || 
+                    fee.includes(searchValue) || 
+                    code.includes(searchValue)) {
+                    item.style.display = '';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Show no results message if needed
+            const tbody = document.querySelector('#services table tbody');
+            if (visibleCount === 0 && searchValue !== '') {
+                const noResultsMsg = createNoResultsMessage('services', searchValue, 'services');
+                tbody.appendChild(noResultsMsg);
+            } else {
+                const existingMsg = tbody.querySelector('.no-results-message');
+                if (existingMsg) {
+                    existingMsg.remove();
+                }
+            }
+        });
+        
+        // Clear search when changing tabs
+        document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function() {
+                // Clear all search inputs
+                document.getElementById('searchProducts').value = '';
+                document.getElementById('searchStaff').value = '';
+                document.getElementById('searchServices').value = '';
+                
+                // Show all items in the current tab
+                const activeTabId = this.getAttribute('data-bs-target').substring(1);
+                const activeTabItems = document.querySelectorAll(`#${activeTabId} tr[class$="-item"]`);
+                activeTabItems.forEach(item => {
+                    item.style.display = '';
+                });
+                
+                // Remove any no results messages
+                const noResultsMsg = document.querySelector(`#${activeTabId} .no-results-message`);
+                if (noResultsMsg) {
+                    noResultsMsg.remove();
+                }
+            });
+        });
+    </script>
 </body>
 </html> 
