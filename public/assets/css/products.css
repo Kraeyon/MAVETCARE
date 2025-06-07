@@ -4,6 +4,11 @@ body {
   color: #333;
 }
 
+/* Override Bootstrap font classes */
+.display-5, .fw-bold, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: 'Arial', sans-serif !important;
+}
+
 .products-container {
   min-height: 70vh;
 }
@@ -20,11 +25,13 @@ body {
   color: #343a40;
   margin-bottom: 1rem;
   font-weight: 700;
+  font-family: 'Arial', sans-serif;
 }
 
 .banner p.lead {
   color: #6c757d;
   font-size: 1.1rem;
+  font-family: 'Arial', sans-serif;
 }
 
 .pets-banner {
@@ -35,9 +42,12 @@ body {
   margin-bottom: 1rem;
 }
 
-/* Category Navigation */
+/* Category Navigation - Updated to match footer quicklinks */
 .product-categories {
   margin: 2rem 0;
+  background-color: #8ec6db;
+  padding: 20px;
+  border-radius: 10px;
 }
 
 .category-nav {
@@ -49,27 +59,26 @@ body {
   gap: 15px;
 }
 
+/* Updated category buttons to match footer quicklinks style */
 .category-btn {
-  padding: 12px 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   text-decoration: none;
+  color: #000;
   font-size: 16px;
-  color: #ffffff;
-  background-color: #3d6fbb;
-  border-radius: 5px;
   transition: all 0.3s ease;
-  font-weight: 500;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 8px 15px;
+  border-radius: 5px;
 }
 
 .category-btn:hover {
-  background-color: #0d6efd;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  color: #0d6efd;
 }
 
 .category-btn.active {
-  background-color: #0d6efd;
-  color: rgba(0, 0, 0,);
+  color: #0d6efd;
+  font-weight: bold;
 }
 
 /* Featured Products Section */
@@ -77,11 +86,16 @@ body {
   padding: 2rem 0;
 }
 
+.featured-products h1 {
+  font-family: 'Arial', sans-serif;
+}
+
 .category-title {
   color: #495057;
   font-size: 1.8rem;
   position: relative;
   padding-bottom: 15px;
+  font-family: 'Arial', sans-serif;
 }
 
 .category-title:after {
@@ -111,9 +125,9 @@ body {
 .product-card .card-img-top {
   height: 150px;
   width: 90%;
-  object-fit: contain;  /* Changed from 'cover' to 'contain' */
-  padding: 15px;  /* Added padding to prevent image from touching the edges */
-  background-color: #fff;  /* Adding white background */
+  object-fit: contain;
+  padding: 15px;
+  background-color: #fff;
 }
 
 .product-card .card-body {
@@ -124,6 +138,7 @@ body {
   font-weight: 750;
   margin-bottom: 10px;
   color: #343a40;
+  font-family: 'Arial', sans-serif;
 }
 
 .product-card .price {
@@ -131,6 +146,7 @@ body {
   font-weight: 700;
   color: #1b1a1a;
   margin: 10px 0;
+  font-family: 'Arial', sans-serif;
 }
 
 .product-card .btn {
@@ -147,6 +163,7 @@ body {
   transform: translateY(-2px);
 }
 
+@media (max-width: 768px) {
   .category-btn {
     padding: 8px 15px;
     font-size: 15px;
@@ -159,3 +176,4 @@ body {
   .pets-banner {
     max-height: 300px;
   }
+}

@@ -66,24 +66,26 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
   }
 
+  /* Removing overlay styles since we removed the overlay element */
+  /* 
   .overlay {
-    background: rgba(0, 0, 0, 0.5); /* Lighter shadow to match services page */
+    background: rgba(0, 0, 0, 0.5);
     padding: 10px;
     border-radius: 10px;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80%; /* Reduced width */
+    width: 80%;
     opacity: 0;
-    transition: opacity 0.3s ease; /* Make the text fade in */
+    transition: opacity 0.3s ease;
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
   .service-card:hover .overlay {
-    opacity: 1; /* Make the overlay text appear on hover */
+    opacity: 1;
   }
 
   .overlay h5 {
@@ -93,6 +95,7 @@
     margin: 0;
     text-align: center;
   }
+  */
   
   /* Add gradient overlay to image */
   .service-card .card-img-top {

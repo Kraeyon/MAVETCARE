@@ -21,6 +21,35 @@ $products = $stmt->fetchAll();
 ?>
 
 <link rel="stylesheet" href="/assets/css/products.css">
+<style>
+  /* Ensure consistent font throughout the page */
+  * {
+    font-family: 'Arial', sans-serif;
+  }
+  .modal-title, .modal-body, .card-title, .price, .btn {
+    font-family: 'Arial', sans-serif !important;
+  }
+  
+  /* Icon styling for category buttons */
+  .category-icon {
+    background-color: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+  }
+  
+  .category-btn:hover .category-icon {
+    background-color: #c9b176;
+  }
+  
+  .category-btn.active .category-icon {
+    background-color: #c9b176;
+  }
+</style>
 
 <main class="products-container">
   <section class="banner text-center">
@@ -41,12 +70,42 @@ $products = $stmt->fetchAll();
       <div class="row">
         <div class="col-lg-12">
           <div class="category-nav" data-aos="fade-up">
-            <a href="?category=shampoo" class="category-btn">Shampoo</a>
-            <a href="?category=food-accessories" class="category-btn">Food & Accessories</a>
-            <a href="?category=vaccines" class="category-btn">Vaccines</a>
-            <a href="?category=injectables" class="category-btn">Injectables</a>
-            <a href="?category=anesthetics" class="category-btn">Anesthetics</a>
-            <a href="?category=cabinet-stocks" class="category-btn">Cabinet Stocks</a>
+            <a href="?category=shampoo" class="category-btn">
+              <div class="category-icon">
+                <i class="fas fa-bath text-black text-xs"></i>
+              </div>
+              <span>Shampoo</span>
+            </a>
+            <a href="?category=food-accessories" class="category-btn">
+              <div class="category-icon">
+                <i class="fas fa-utensils text-black text-xs"></i>
+              </div>
+              <span>Food & Accessories</span>
+            </a>
+            <a href="?category=vaccines" class="category-btn">
+              <div class="category-icon">
+                <i class="fas fa-syringe text-black text-xs"></i>
+              </div>
+              <span>Vaccines</span>
+            </a>
+            <a href="?category=injectables" class="category-btn">
+              <div class="category-icon">
+                <i class="fas fa-prescription-bottle text-black text-xs"></i>
+              </div>
+              <span>Injectables</span>
+            </a>
+            <a href="?category=anesthetics" class="category-btn">
+              <div class="category-icon">
+                <i class="fas fa-tablets text-black text-xs"></i>
+              </div>
+              <span>Anesthetics</span>
+            </a>
+            <a href="?category=cabinet-stocks" class="category-btn">
+              <div class="category-icon">
+                <i class="fas fa-box-open text-black text-xs"></i>
+              </div>
+              <span>Cabinet Stocks</span>
+            </a>
           </div>
         </div>
       </div>
@@ -63,7 +122,7 @@ $products = $stmt->fetchAll();
       
       // Display heading based on selected category
       if ($category != 'all') {
-        echo '<h3 class="text-center mb-4 category-title">' . ucfirst(str_replace('-', ' ', $category)) . '</h3>';
+        echo '<h3 class="text-center mb-4 category-title">' . ucwords(str_replace('-', ' ', $category)) . '</h3>';
       }
       ?>
       
@@ -72,9 +131,9 @@ $products = $stmt->fetchAll();
         <?php foreach ($products as $product): ?>
           <div class="col-md-2 mb-1" data-aos="fade-up" data-aos-delay="100" data-category="<?= htmlspecialchars($product['prod_category']) ?>">
               <div class="card h-85 product-card">
-                  <img src="/assets/images/products/<?= htmlspecialchars(basename($product['prod_image'])) ?>" class="card-img-top" alt="<?= htmlspecialchars($product['prod_name']) ?>">
+                  <img src="/assets/images/products/<?= htmlspecialchars(basename($product['prod_image'])) ?>" class="card-img-top" alt="<?= htmlspecialchars(ucwords(strtolower($product['prod_name']))) ?>">
                   <div class="card-body">
-                      <h5 class="card-title"><?= htmlspecialchars($product['prod_name']) ?></h5>
+                      <h5 class="card-title"><?= htmlspecialchars(ucwords(strtolower($product['prod_name']))) ?></h5>
                       <p class="price">₱<?= number_format($product['prod_price'], 2) ?></p>
                       <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal<?= $product['prod_code'] ?>">View Details</a>
                   </div>
@@ -86,15 +145,15 @@ $products = $stmt->fetchAll();
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="productModalLabel<?= $product['prod_code'] ?>"><?= htmlspecialchars($product['prod_name']) ?></h5>
+                  <h5 class="modal-title" id="productModalLabel<?= $product['prod_code'] ?>"><?= htmlspecialchars(ucwords(strtolower($product['prod_name']))) ?></h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                   <div class="text-center mb-3">
-                    <img src="/assets/images/products/<?= htmlspecialchars(basename($product['prod_image'])) ?>" class="img-fluid rounded" style="max-height: 200px;" alt="<?= htmlspecialchars($product['prod_name']) ?>">
+                    <img src="/assets/images/products/<?= htmlspecialchars(basename($product['prod_image'])) ?>" class="img-fluid rounded" style="max-height: 200px;" alt="<?= htmlspecialchars(ucwords(strtolower($product['prod_name']))) ?>">
                   </div>
                   <h5 class="text-primary">Price: ₱<?= number_format($product['prod_price'], 2) ?></h5>
-                  <h6>Category: <?= htmlspecialchars(ucfirst(str_replace('-', ' ', $product['prod_category']))) ?></h6>
+                  <h6>Category: <?= htmlspecialchars(ucwords(str_replace('-', ' ', $product['prod_category']))) ?></h6>
                   <div class="mt-3">
                     <h6>Description:</h6>
                     <p><?= htmlspecialchars($product['prod_details'] ?? 'No details provided.') ?></p>

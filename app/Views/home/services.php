@@ -44,14 +44,14 @@
             <?php else: ?>
                 <?php foreach($services as $service): ?>
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100 position-relative service-card" onclick="showServiceDetails('<?php echo htmlspecialchars($service['service_code']); ?>', '<?php echo htmlspecialchars($service['service_name']); ?>', '<?php echo htmlspecialchars(addslashes($service['service_desc'])); ?>', '<?php echo number_format($service['service_fee'], 2); ?>', '<?php echo !empty($service['service_img']) ? htmlspecialchars($service['service_img']) : '/assets/images/services/default.png'; ?>')">
+                    <div class="card h-100 position-relative service-card" onclick="showServiceDetails('<?php echo htmlspecialchars($service['service_code']); ?>', '<?php echo htmlspecialchars(ucwords(strtolower($service['service_name']))); ?>', '<?php echo htmlspecialchars(addslashes($service['service_desc'])); ?>', '<?php echo number_format($service['service_fee'], 2); ?>', '<?php echo !empty($service['service_img']) ? htmlspecialchars($service['service_img']) : '/assets/images/services/default.png'; ?>')">
                         <img src="<?php echo !empty($service['service_img']) ? htmlspecialchars($service['service_img']) : '/assets/images/services/default.png'; ?>" 
                              class="card-img-top" 
-                             alt="<?php echo htmlspecialchars($service['service_name']); ?>"
+                             alt="<?php echo htmlspecialchars(ucwords(strtolower($service['service_name']))); ?>"
                              onerror="this.src='/assets/images/services/default.png'">
                         <div class="price-tag position-absolute">₱<?php echo number_format($service['service_fee'], 2); ?></div>
                         <div class="card-body">
-                            <h5 class="card-title"><?php echo htmlspecialchars($service['service_name']); ?></h5>
+                            <h5 class="card-title"><?php echo htmlspecialchars(ucwords(strtolower($service['service_name']))); ?></h5>
                             <?php if (!empty($service['service_desc'])): ?>
                                 <p class="card-text small text-muted"><?php echo htmlspecialchars(substr($service['service_desc'], 0, 100) . (strlen($service['service_desc']) > 100 ? '...' : '')); ?></p>
                             <?php endif; ?>

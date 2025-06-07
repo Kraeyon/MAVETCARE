@@ -138,14 +138,11 @@ $testimonials = $reviewStmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="card h-100 position-relative service-card" style="max-width: 280px; margin: 0 auto;">
                         <img src="<?php echo !empty($service['service_img']) ? htmlspecialchars($service['service_img']) : '/assets/images/services/default.png'; ?>" 
                              class="card-img-top" 
-                             alt="<?php echo htmlspecialchars($service['service_name']); ?>"
+                             alt="<?php echo htmlspecialchars(ucwords(strtolower($service['service_name']))); ?>"
                              onerror="this.src='/assets/images/services/default.png'">
-                        <div class="overlay position-absolute top-50 start-50 translate-middle text-center">
-                            <h5 class="text-white"><?php echo htmlspecialchars($service['service_name']); ?></h5>
-                        </div>
                         <div class="price-tag position-absolute">₱<?php echo number_format($service['service_fee'], 2); ?></div>
                         <div class="card-body">
-                            <h5 class="card-title"><?php echo htmlspecialchars($service['service_name']); ?></h5>
+                            <h5 class="card-title"><?php echo htmlspecialchars(ucwords(strtolower($service['service_name']))); ?></h5>
                         </div>
                     </div>
                 </div>
@@ -207,9 +204,9 @@ $testimonials = $reviewStmt->fetchAll(PDO::FETCH_ASSOC);
                          alt="<?php echo htmlspecialchars($product['prod_name']); ?>"
                          onerror="this.src='/assets/images/products/default.png'">
                     <div class="card-body">
-                        <h5 class="card-title"><?php echo htmlspecialchars($product['prod_name']); ?></h5>
+                        <h5 class="card-title"><?php echo htmlspecialchars(ucwords(strtolower($product['prod_name']))); ?></h5>
                         <p class="card-text small text-muted">
-                            <?php echo htmlspecialchars(ucfirst(str_replace('-', ' ', $product['prod_category']))); ?>
+                            <?php echo htmlspecialchars(ucwords(str_replace('-', ' ', $product['prod_category']))); ?>
                         </p>
                         <a href="/products" class="btn btn-primary btn-sm mt-2">View Details</a>
                     </div>

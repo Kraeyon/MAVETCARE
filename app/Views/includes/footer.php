@@ -76,7 +76,7 @@
             <h3 class="font-bold mb-4">Get in Touch!</h3>
 
             <div class="flex items-center space-x-2 mb-4 max-w-[250px]">
-                <input class="rounded-full py-1 px-4 text-xs w-full outline-none" placeholder="mavetcare@email.com" type="email"/>
+                <input class="rounded-full py-1 px-4 text-xs w-full outline-none" value="deliamontanez92@gmail.com" type="email" readonly/>
                 <div class="bg-[#c9b176] rounded-full w-8 h-8 flex items-center justify-center cursor-pointer">
                     <i class="fas fa-paw text-black text-sm"></i>
                 </div>
