@@ -19,6 +19,12 @@
         align-items: center;
         text-decoration: none;
         color: inherit;
+        font-family: Arial, sans-serif !important;
+    }
+    
+    .logo span {
+        font-family: Arial, sans-serif !important;
+        font-weight: 500;
     }
     
     .logo img {
@@ -36,6 +42,7 @@
         padding: 5px 10px;
         transition: background-color 0.3s, color 0.3s;
         border-radius: 5px;
+        font-family: Arial, sans-serif !important;
     }
     .nav-links a.active {
         background-color: #0d6efd;
@@ -57,6 +64,7 @@
         border-radius: 5px;
         color: black;
         transition: background-color 0.3s, color 0.3s;
+        font-family: Arial, sans-serif !important;
     }
     .nav-buttons a:hover {
         background-color: black;
@@ -118,6 +126,7 @@
         cursor: pointer;
         font-weight: 500;
         transition: background 0.2s;
+        font-family: Arial, sans-serif !important;
     }
     
     .user-info:hover {
@@ -159,6 +168,7 @@
         font-size: 0.95rem;
         cursor: pointer;
         transition: background 0.2s;
+        font-family: Arial, sans-serif !important;
     }
     
     .user-menu button:hover {

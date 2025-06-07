@@ -8,7 +8,7 @@
   .footer-main {
     max-width: 1200px;
     margin: auto;
-    padding: 40px 20px; /* You could add top/bottom padding as well */
+    padding: 40px 20px;
     display: grid;
     grid-template-columns: 1fr;
     border-bottom: 1px solid black;
@@ -36,8 +36,38 @@
   }
   
   .links li {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     font-size: 14px;
+  }
+  
+  .blue-link {
+    color: #0066cc;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+  }
+  
+  .blue-link:hover {
+    text-decoration: underline;
+    color: #004999;
+  }
+  
+  .icon-circle {
+    background-color: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .blue-link:hover .icon-circle {
+    background-color: #c9b176;
   }
   
   .center {
@@ -76,17 +106,17 @@
     margin-top: 15px;
   }
   
-  .social-icons button {
+  .social-button {
     border: 1px solid black;
     background: transparent;
     color: black;
     padding: 8px;
-    border-radius: 50%;
+    border-radius: 4px;
     cursor: pointer;
     transition: 0.3s;
   }
   
-  .social-icons button:hover {
+  .social-button:hover {
     background: black;
     color: white;
   }
@@ -97,13 +127,17 @@
     margin-bottom: 20px;
   }
   
-  .contact-email input {
+  .email-display {
+    background-color: white;
     border-radius: 9999px;
     padding: 6px 12px;
     font-size: 12px;
     flex: 1;
-    border: none;
-    outline: none;
+    text-decoration: none;
+    color: #333;
+    user-select: all;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
   .paw-button {
@@ -121,7 +155,33 @@
   
   .contact-phone {
     font-size: 14px;
-    margin-top: 10px;
+  }
+  
+  .phone-numbers {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .phone-item {
+    display: flex;
+    align-items: center;
+  }
+  
+  .phone-link {
+    color: #0066cc;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .phone-link:hover {
+    text-decoration: underline;
+    color: #004999;
+  }
+  
+  .phone-item .icon-circle {
+    font-size: 12px;
   }
   
 /* Footer images positioning */
@@ -129,20 +189,21 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  max-width: 150px; /* Adjust the image size as needed */
-  transform: translateY(20%); /* Move the image slightly down */
-  z-index: 1; /* Ensure it's above other content */
+  max-width: 150px;
+}
+
+@media (min-width: 768px) {
+  .footer-dog-image {
+    max-width: 350px;
+  }
 }
 
 .footer-cat-image {
   position: absolute;
   bottom: 0;
   left: 0;
-  max-width: 150px; /* Adjust the image size as needed */
-  transform: translateY(20%); /* Move the image slightly down */
-  z-index: 1; /* Ensure it's above other content */
+  max-width: 200px;
 }
-
   
   .footer-bottom {
     text-align: center;

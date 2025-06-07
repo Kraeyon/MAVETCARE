@@ -53,6 +53,4 @@ $current_page = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         </div>
     </div>
 </div>
-
-</body>
-</html>
+<!-- Don't close body or html here, as this is just the header include -->

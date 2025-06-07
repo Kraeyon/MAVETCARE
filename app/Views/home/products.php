@@ -22,8 +22,8 @@ $products = $stmt->fetchAll();
 
 <link rel="stylesheet" href="/assets/css/products.css">
 <style>
-  /* Ensure consistent font throughout the page */
-  * {
+  /* Scope font styles to main content only, not affecting header */
+  .products-container * {
     font-family: 'Arial', sans-serif;
   }
   .modal-title, .modal-body, .card-title, .price, .btn {
