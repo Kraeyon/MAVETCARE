@@ -3,28 +3,49 @@ namespace App\Controllers;
 
 use Config\Database;
 use App\Models\PatientModel;
+use App\Models\UserModel;
 
 class PatientController {
     private $model;
+    private $userModel;
 
     public function __construct() {
         $this->model = new PatientModel(Database::getInstance()->getConnection());
+        $this->userModel = new UserModel();
     }
 
     // Add a new patient (called from POST /admin/patients/add)
     public function addPatient() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $clientCode = $_POST['client_code'];
+            $tempPassword = null;
 
             if ($clientCode === 'new') {
-                $clientCode = $this->model->addClient(
-                    $_POST['new_fname'],
-                    $_POST['new_lname'],
-                    $_POST['new_initial'],
-                    $_POST['new_contact'],
-                    $_POST['new_email'],
-                    $_POST['new_address']
-                );
+                // Create a random password for the new client
+                $temporaryPassword = substr(md5(uniqid(mt_rand(), true)), 0, 8);
+                
+                // Save the password to display to admin
+                $tempPassword = $temporaryPassword;
+                
+                // Prepare user data for registration
+                $userData = [
+                    'first_name' => $_POST['new_fname'],
+                    'last_name' => $_POST['new_lname'],
+                    'middle_initial' => $_POST['new_initial'],
+                    'contact' => $_POST['new_contact'],
+                    'email' => $_POST['new_email'],
+                    'address' => $_POST['new_address'],
+                    'password' => $temporaryPassword
+                ];
+                
+                // Register client (creates both client and user records)
+                $this->userModel->registerClient($userData);
+                
+                // Get the client code of the newly created client
+                $clientCode = $this->model->getClientCodeByEmail($_POST['new_email']);
+                
+                // Flag to indicate a new client was created
+                $newClientCreated = true;
             }
 
             // Check if a pet with the same name, owner, and type already exists
@@ -42,7 +63,20 @@ class PatientController {
                 $_POST['pet_med_history']
             );
 
-            header('Location: /admin/patients' . ($result ? '?success=added' : '?error=add_failed'));
+            $successUrl = '/admin/patients';
+            if ($result) {
+                $successUrl .= '?success=added';
+                if (isset($newClientCreated) && $newClientCreated) {
+                    $successUrl .= '&new_client=yes';
+                    if ($tempPassword) {
+                        $successUrl .= '&temp_password=' . urlencode($tempPassword);
+                    }
+                }
+            } else {
+                $successUrl .= '?error=add_failed';
+            }
+            
+            header('Location: ' . $successUrl);
             exit();
         }
     }

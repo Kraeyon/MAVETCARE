@@ -49,6 +49,22 @@
     <?php if (isset($_GET['success']) && $_GET['success'] === 'added'): ?>
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="bi bi-check-circle-fill"></i> New pet has been successfully added.
+        <?php if (isset($_GET['new_client']) && $_GET['new_client'] === 'yes'): ?>
+        <div class="mt-2 p-3 border rounded bg-light">
+            <h6 class="mb-2"><i class="bi bi-person-plus"></i> New User Account Created</h6>
+            <p class="mb-1">A user account has been created for the new client.</p>
+            <?php if (isset($_GET['temp_password'])): ?>
+            <div class="d-flex align-items-center">
+                <span class="me-2"><strong>Temporary Password:</strong></span>
+                <code class="bg-white border px-3 py-1 rounded"><?= htmlspecialchars($_GET['temp_password']) ?></code>
+                <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyPassword('<?= htmlspecialchars($_GET['temp_password']) ?>')">
+                    <i class="bi bi-clipboard"></i> Copy
+                </button>
+            </div>
+            <p class="text-muted small mt-2 mb-0">Please provide this password to the client. They can use it to log in.</p>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     <?php endif; ?>
@@ -227,20 +243,68 @@
                 <option value="new">New Client</option>
             </select>
         </div>
-        <div id="newClientFields" class="border p-2 rounded bg-light" style="display: none;">
-            <h6>New Client Details</h6>
-            <input type="text" name="new_fname" class="form-control mb-2" placeholder="First Name">
-            <input type="text" name="new_initial" class="form-control mb-2" placeholder="Middle Initial">
-            <input type="text" name="new_lname" class="form-control mb-2" placeholder="Last Name">
-            <input type="text" name="new_contact" class="form-control mb-2" placeholder="Contact Number">
-            <input type="email" name="new_email" class="form-control mb-2" placeholder="Email Address">
-            <textarea name="new_address" class="form-control mb-2" placeholder="Home Address"></textarea>
+        <div id="newClientFields" class="border p-3 rounded bg-dark text-white" style="display: none;">
+            <h6 class="mb-3"><i class="bi bi-person-plus"></i> New Client Details</h6>
+            <div class="alert alert-info">
+                <small><i class="bi bi-info-circle"></i> A user account will be created automatically. The temporary password will be shown after submission.</small>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-5">
+                    <label class="form-label small">First Name</label>
+                    <input type="text" name="new_fname" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small">M.I.</label>
+                    <input type="text" name="new_initial" class="form-control" maxlength="1">
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label small">Last Name</label>
+                    <input type="text" name="new_lname" class="form-control" required>
+                </div>
+            </div>
+            <div class="mb-2">
+                <label class="form-label small">Contact Number</label>
+                <input type="text" name="new_contact" class="form-control" required>
+            </div>
+            <div class="mb-2">
+                <label class="form-label small">Email Address</label>
+                <input type="email" name="new_email" class="form-control" required>
+            </div>
+            <div class="mb-2">
+                <label class="form-label small">Home Address</label>
+                <textarea name="new_address" class="form-control" required rows="2"></textarea>
+            </div>
         </div>
-        <div class="mb-2"><label>Pet Name</label><input type="text" name="pet_name" class="form-control" required></div>
-        <div class="mb-2"><label>Pet Type</label><input type="text" name="pet_type" class="form-control" required></div>
-        <div class="mb-2"><label>Pet Breed</label><input type="text" name="pet_breed" class="form-control" required></div>
-        <div class="mb-2"><label>Pet Age</label><input type="number" name="pet_age" class="form-control" required></div>
-        <div class="mb-2"><label>Medical History</label><textarea name="pet_med_history" class="form-control"></textarea></div>
+        
+        <div class="mb-3 mt-3">
+            <label class="form-label">Pet Information</label>
+            <div class="border p-3 rounded">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label small">Pet Name</label>
+                        <input type="text" name="pet_name" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label small">Pet Type</label>
+                        <input type="text" name="pet_type" class="form-control" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8 mb-2">
+                        <label class="form-label small">Breed</label>
+                        <input type="text" name="pet_breed" class="form-control" required>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label small">Age</label>
+                        <input type="number" name="pet_age" class="form-control" required>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small">Medical History</label>
+                    <textarea name="pet_med_history" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" type="submit">Add Pet</button>
@@ -255,6 +319,28 @@ document.getElementById('clientSelect').addEventListener('change', function () {
     const newClientFields = document.getElementById('newClientFields');
     newClientFields.style.display = this.value === 'new' ? 'block' : 'none';
 });
+
+function copyPassword(password) {
+    // Create a temporary input element
+    const tempInput = document.createElement('input');
+    tempInput.value = password;
+    document.body.appendChild(tempInput);
+    
+    // Select and copy the text
+    tempInput.select();
+    document.execCommand('copy');
+    
+    // Remove the temporary element
+    document.body.removeChild(tempInput);
+    
+    // Show a tooltip or change the button text temporarily
+    const copyBtn = event.currentTarget;
+    const originalHTML = copyBtn.innerHTML;
+    copyBtn.innerHTML = '<i class="bi bi-check"></i> Copied!';
+    setTimeout(() => {
+        copyBtn.innerHTML = originalHTML;
+    }, 2000);
+}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

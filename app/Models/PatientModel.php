@@ -181,5 +181,16 @@ class PatientModel extends BaseModel {
         $result = $stmt->fetch();
         return $result['count'] > 0;
     }
+    
+    public function getClientCodeByEmail($email) {
+        $stmt = $this->db->prepare('
+            SELECT clt_code 
+            FROM client 
+            WHERE clt_email_address = ?
+        ');
+        $stmt->execute([$email]);
+        $result = $stmt->fetch();
+        return $result ? $result['clt_code'] : null;
+    }
 }
 
