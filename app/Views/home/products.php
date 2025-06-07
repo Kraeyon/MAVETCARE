@@ -11,9 +11,9 @@ $pdo = Database::getInstance()->getConnection();
 $category = $_GET['category'] ?? 'all';
 
 if ($category === 'all') {
-    $stmt = $pdo->query("SELECT * FROM product");
+    $stmt = $pdo->query("SELECT * FROM product WHERE prod_status != 'ARCHIVED' OR prod_status IS NULL");
 } else {
-    $stmt = $pdo->prepare("SELECT * FROM product WHERE prod_category = :category");
+    $stmt = $pdo->prepare("SELECT * FROM product WHERE prod_category = :category AND (prod_status != 'ARCHIVED' OR prod_status IS NULL)");
     $stmt->execute(['category' => $category]);
 }
 

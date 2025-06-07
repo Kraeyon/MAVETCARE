@@ -28,36 +28,47 @@
         <!-- Quick Links -->
         <div class="border-r border-black pr-6 mb-8 md:mb-0">
     <h3 class="font-bold mb-4">Quick Links</h3>
-    <ul class="text-sm space-y-2">
-        <li><a href="app/Views/home/index.php" class="text-black hover:text-blue-600 hover:underline transition">Home</a></li>
-        <li><a href="app/Views/home/aboutpage.php" class="text-black hover:text-blue-600 hover:underline transition">About</a></li>
-        <li><a href="app/Views/home/services.php" class="text-black hover:text-blue-600 hover:underline transition">Services</a></li>
-        <li><a href="app/Views/home/products.php" class="text-black hover:text-blue-600 hover:underline transition">Products</a></li>
-    </ul>
+    <div class="space-y-3">
+        <a href="/" class="flex items-center gap-2 text-sm hover:text-blue-700 transition group">
+            <div class="bg-white rounded-full w-7 h-7 flex items-center justify-center group-hover:bg-[#c9b176] transition">
+                <i class="fas fa-home text-black text-xs"></i>
+            </div>
+            <span class="font-medium">Home</span>
+        </a>
+        <a href="/about" class="flex items-center gap-2 text-sm hover:text-blue-700 transition group">
+            <div class="bg-white rounded-full w-7 h-7 flex items-center justify-center group-hover:bg-[#c9b176] transition">
+                <i class="fas fa-info-circle text-black text-xs"></i>
+            </div>
+            <span class="font-medium">About</span>
+        </a>
+        <a href="/services" class="flex items-center gap-2 text-sm hover:text-blue-700 transition group">
+            <div class="bg-white rounded-full w-7 h-7 flex items-center justify-center group-hover:bg-[#c9b176] transition">
+                <i class="fas fa-stethoscope text-black text-xs"></i>
+            </div>
+            <span class="font-medium">Services</span>
+        </a>
+        <a href="/products" class="flex items-center gap-2 text-sm hover:text-blue-700 transition group">
+            <div class="bg-white rounded-full w-7 h-7 flex items-center justify-center group-hover:bg-[#c9b176] transition">
+                <i class="fas fa-shopping-cart text-black text-xs"></i>
+            </div>
+            <span class="font-medium">Products</span>
+        </a>
+        <a href="/reviews" class="flex items-center gap-2 text-sm hover:text-blue-700 transition group">
+            <div class="bg-white rounded-full w-7 h-7 flex items-center justify-center group-hover:bg-[#c9b176] transition">
+                <i class="fas fa-star text-black text-xs"></i>
+            </div>
+            <span class="font-medium">Reviews</span>
+        </a>
+    </div>
 </div>
 
-        <!-- Center Logo and Socials -->
+        <!-- Center Logo and Tagline -->
         <div class="flex flex-col items-center justify-center border-r border-black px-6 mb-8 md:mb-0">
             <div class="bg-white rounded-full w-14 h-14 flex items-center justify-center mb-2">
                 <i class="fas fa-paw text-black text-xl"></i>
             </div>
             <span class="font-greatvibes text-xl select-none mb-3">MaVetCare</span>
             <p class="text-center text-sm max-w-[180px]">Leave your pets in safe hands.</p>
-
-            <div class="flex space-x-4 mt-4">
-                <button aria-label="Facebook" class="bg-transparent border border-black rounded p-2 text-black hover:bg-black hover:text-white transition">
-                    <i class="fab fa-facebook-f"></i>
-                </button>
-                <button aria-label="Instagram" class="bg-transparent border border-black rounded p-2 text-black hover:bg-black hover:text-white transition">
-                    <i class="fab fa-instagram"></i>
-                </button>
-                <button aria-label="GitHub" class="bg-transparent border border-black rounded p-2 text-black hover:bg-black hover:text-white transition">
-                    <i class="fab fa-github"></i>
-                </button>
-                <button aria-label="Twitter" class="bg-transparent border border-black rounded p-2 text-black hover:bg-black hover:text-white transition">
-                    <i class="fab fa-twitter"></i>
-                </button>
-            </div>
         </div>
 
         <!-- Contact Section -->
@@ -71,13 +82,28 @@
                 </div>
             </div>
 
-            <div class="flex items-center space-x-2 text-xs font-semibold">
-                <i class="fas fa-phone"></i>
-                <span>
-                    233 2039<br>
-                    +63 916 295 8059<br>
-                    +63 956 734 6746
-                </span>
+            <div class="mt-4">
+                <h4 class="font-semibold text-sm mb-2">Contact Numbers:</h4>
+                <div class="space-y-2">
+                    <a href="tel:2332039" class="flex items-center gap-2 text-sm hover:text-blue-700 transition group">
+                        <div class="bg-white rounded-full w-7 h-7 flex items-center justify-center group-hover:bg-[#c9b176] transition">
+                            <i class="fas fa-phone text-black text-xs"></i>
+                        </div>
+                        <span class="font-medium">233 2039</span>
+                    </a>
+                    <a href="tel:+639162958059" class="flex items-center gap-2 text-sm hover:text-blue-700 transition group">
+                        <div class="bg-white rounded-full w-7 h-7 flex items-center justify-center group-hover:bg-[#c9b176] transition">
+                            <i class="fas fa-mobile-alt text-black text-xs"></i>
+                        </div>
+                        <span class="font-medium">+63 916 295 8059</span>
+                    </a>
+                    <a href="tel:+639567346746" class="flex items-center gap-2 text-sm hover:text-blue-700 transition group">
+                        <div class="bg-white rounded-full w-7 h-7 flex items-center justify-center group-hover:bg-[#c9b176] transition">
+                            <i class="fas fa-mobile-alt text-black text-xs"></i>
+                        </div>
+                        <span class="font-medium">+63 956 734 6746</span>
+                    </a>
+                </div>
             </div>
 
             </div>
