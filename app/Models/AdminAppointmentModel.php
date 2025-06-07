@@ -12,48 +12,85 @@ class AdminAppointmentModel extends BaseModel {
     }
 
     public function getAppointments($searchTerm = null, $sortBy = 'appt_datetime', $orderDirection = 'ASC') {
-        $query = '
-            SELECT a.*, c.clt_fname, c.clt_lname, p.pet_name, p.pet_type, p.pet_breed, s.service_name, s.service_fee
-            FROM appointment a
-            JOIN client c ON a.client_code = c.clt_code
-            JOIN pet p ON a.pet_code = p.pet_code
-            LEFT JOIN service s ON a.service_code = s.service_code
-            WHERE 1=1';
-        
-        $params = [];
-        
-        // Add search condition if searchTerm is provided
-        if (!empty($searchTerm)) {
-            $query .= " AND (c.clt_fname LIKE ? OR c.clt_lname LIKE ? OR p.pet_name LIKE ? OR s.service_name LIKE ? OR UPPER(a.status) LIKE UPPER(?) OR a.appt_code = ?)";
-            $params = [
-                "%$searchTerm%", 
-                "%$searchTerm%", 
-                "%$searchTerm%", 
-                "%$searchTerm%", 
-                "%$searchTerm%",
-                $searchTerm // For exact match on ID
+        try {
+            $query = '
+                SELECT a.*, c.clt_fname, c.clt_lname, c.clt_code, p.pet_name, p.pet_type, p.pet_breed, s.service_name, s.service_fee
+                FROM appointment a
+                JOIN client c ON a.client_code = c.clt_code
+                JOIN pet p ON a.pet_code = p.pet_code
+                LEFT JOIN service s ON a.service_code = s.service_code
+                WHERE 1=1';
+            
+            $params = [];
+            
+            // Add search condition if searchTerm is provided
+            if (!empty($searchTerm)) {
+                $searchTermLike = "%$searchTerm%";
+                $query .= " AND (
+                            c.clt_fname LIKE :search_fname 
+                            OR c.clt_lname LIKE :search_lname 
+                            OR CONCAT(c.clt_fname, ' ', c.clt_lname) LIKE :search_fullname
+                            OR p.pet_name LIKE :search_pet 
+                            OR p.pet_breed LIKE :search_breed
+                            OR CONCAT(p.pet_name, ' (', p.pet_breed, ')') LIKE :search_pet_with_breed
+                            OR p.pet_type LIKE :search_pet_type
+                            OR s.service_name LIKE :search_service 
+                            OR UPPER(a.status) LIKE UPPER(:search_status)";
+                
+                $params[':search_fname'] = $searchTermLike;
+                $params[':search_lname'] = $searchTermLike;
+                $params[':search_fullname'] = $searchTermLike;
+                $params[':search_pet'] = $searchTermLike;
+                $params[':search_breed'] = $searchTermLike;
+                $params[':search_pet_with_breed'] = $searchTermLike;
+                $params[':search_pet_type'] = $searchTermLike;
+                $params[':search_service'] = $searchTermLike;
+                $params[':search_status'] = $searchTermLike;
+                
+                // Add exact ID matches only if searchTerm is numeric
+                if (is_numeric($searchTerm)) {
+                    $query .= " OR a.appt_code = :search_appt_id";
+                    $query .= " OR c.clt_code = :search_client_id";
+                    $query .= " OR p.pet_code = :search_pet_id";
+                    
+                    $params[':search_appt_id'] = $searchTerm;
+                    $params[':search_client_id'] = $searchTerm;
+                    $params[':search_pet_id'] = $searchTerm;
+                }
+                
+                $query .= ")";
+            }
+            
+            // Add sorting
+            $validColumns = [
+                'appt_code' => 'a.appt_code',
+                'client_name' => 'CONCAT(c.clt_fname, \' \', c.clt_lname)',
+                'pet_name' => 'p.pet_name',
+                'service_name' => 's.service_name',
+                'appt_datetime' => 'a.appt_datetime',
+                'appointment_type' => 'a.appointment_type',
+                'status' => 'a.status'
             ];
+            
+            $sortColumn = isset($validColumns[$sortBy]) ? $validColumns[$sortBy] : 'a.appt_datetime';
+            $orderDir = ($orderDirection === 'DESC') ? 'DESC' : 'ASC';
+            
+            $query .= " ORDER BY $sortColumn $orderDir";
+            
+            $stmt = $this->db->prepare($query);
+            $stmt->execute($params);
+            return $stmt->fetchAll();
+        } catch (\PDOException $e) {
+            // Log the error
+            error_log("PDO Exception in getAppointments: " . $e->getMessage());
+            // Return empty array to avoid breaking the UI
+            return [];
+        } catch (\Exception $e) {
+            // Log the error
+            error_log("General Exception in getAppointments: " . $e->getMessage());
+            // Return empty array to avoid breaking the UI
+            return [];
         }
-        
-        // Add sorting
-        $validColumns = [
-            'appt_code' => 'a.appt_code',
-            'client_name' => 'CONCAT(c.clt_fname, \' \', c.clt_lname)',
-            'pet_name' => 'p.pet_name',
-            'service_name' => 's.service_name',
-            'appt_datetime' => 'a.appt_datetime',
-            'appointment_type' => 'a.appointment_type',
-            'status' => 'a.status'
-        ];
-        
-        $sortColumn = isset($validColumns[$sortBy]) ? $validColumns[$sortBy] : 'a.appt_datetime';
-        $orderDir = ($orderDirection === 'DESC') ? 'DESC' : 'ASC';
-        
-        $query .= " ORDER BY $sortColumn $orderDir";
-        
-        $stmt = $this->db->prepare($query);
-        $stmt->execute($params);
-        return $stmt->fetchAll();
     }
 
     public function searchAppointments($searchTerm) {

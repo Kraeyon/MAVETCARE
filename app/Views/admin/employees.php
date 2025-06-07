@@ -231,6 +231,20 @@ function formatSchedule($scheduleDetails) {
         .schedule-day.active:hover {
             box-shadow: 0 2px 4px rgba(13,110,253,0.2);
         }
+        .search-box {
+            position: relative;
+            max-width: 300px;
+        }
+        .search-box .form-control {
+            padding-left: 35px;
+            border-radius: 20px;
+        }
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 10px;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -249,40 +263,47 @@ function formatSchedule($scheduleDetails) {
         </div>
 
         <?php if (isset($_GET['added'])): ?>
-            <div class="alert alert-success">Staff member added successfully!</div>
+        <div class="alert alert-success alert-dismissible fade show">
+            Staff member added successfully.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
         <?php endif; ?>
 
         <?php if (isset($_GET['updated'])): ?>
-            <div class="alert alert-success">Staff member updated successfully!</div>
-        <?php endif; ?>
-
-        <?php if (isset($_GET['deleted'])): ?>
-            <div class="alert alert-success">Staff member deleted successfully!</div>
+        <div class="alert alert-success alert-dismissible fade show">
+            Staff member updated successfully.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
         <?php endif; ?>
 
         <?php if (isset($_GET['archived'])): ?>
-            <div class="alert alert-success">Staff member archived successfully!</div>
+        <div class="alert alert-success alert-dismissible fade show">
+            Staff member archived successfully.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
         <?php endif; ?>
 
         <?php if (isset($_GET['error'])): ?>
-            <div class="alert alert-danger">
-                <?php 
-                $error = $_GET['error'];
-                switch($error) {
-                    case 'archive_failed':
-                        echo 'Error: Failed to archive the staff member.';
-                        break;
-                    default:
-                        echo 'An error occurred.';
-                }
-                ?>
-            </div>
+        <div class="alert alert-danger alert-dismissible fade show">
+            Error: <?= htmlspecialchars($_GET['error']) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
         <?php endif; ?>
 
-        <!-- Staff Table with Inline Editing -->
         <div class="card">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Veterinary Staff</h5>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Veterinary Staff</h5>
+                    <div class="search-box">
+                        <div class="position-relative">
+                            <i class="bi bi-search search-icon"></i>
+                            <input type="text" id="searchStaff" class="form-control" 
+                                placeholder="Search by name, position, contact or email..." 
+                                value="<?= isset($search) ? htmlspecialchars($search) : '' ?>"
+                                style="padding-left: 35px; border-radius: 20px;">
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -298,8 +319,12 @@ function formatSchedule($scheduleDetails) {
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($staff as $member): ?>
-                                <tr>
+                            <?php if (!empty($staff)): ?>
+                                <?php foreach ($staff as $member): ?>
+                                <tr data-name="<?= strtolower(htmlspecialchars($member['staff_name'])) ?>" 
+                                    data-position="<?= strtolower(htmlspecialchars($member['staff_position'])) ?>"
+                                    data-contact="<?= strtolower(htmlspecialchars($member['staff_contact'])) ?>"
+                                    data-email="<?= strtolower(htmlspecialchars($member['staff_email_address'])) ?>">
                                     <td><?= htmlspecialchars($member['staff_name']) ?></td>
                                     <td><?= htmlspecialchars($member['staff_position']) ?></td>
                                     <td><?= htmlspecialchars($member['staff_contact']) ?></td>
@@ -415,7 +440,19 @@ function formatSchedule($scheduleDetails) {
                                         </div>
                                     </div>
                                 </div>
-                            <?php endforeach; ?>
+                                                            <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <?php if (isset($search) && $search): ?>
+                                            No staff found matching "<?= htmlspecialchars($search) ?>". 
+                                            <a href="/admin/employees">View all staff</a>
+                                        <?php else: ?>
+                                            No staff found
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -593,44 +630,86 @@ function toggleTimeInputs(checkbox) {
     }
 }
 
-function copyMondayToAll(btn) {
-    const modal = btn.closest('.modal');
-    const mondayRow = modal.querySelector('.schedule-day .form-check-label[for^="edit-Monday-"], .schedule-day .form-check-label[for^="add-Monday"]').closest('.schedule-day');
-    const mondayCheckbox = mondayRow.querySelector('input[type="checkbox"]');
-    const mondayStart = mondayRow.querySelector('input[name*="[Monday]"][name*="[start_time]"]').value;
-    const mondayEnd = mondayRow.querySelector('input[name*="[Monday]"][name*="[end_time]"]').value;
+function copyMondayToAll(button) {
+    const form = button.closest('form');
+    const mondayChecked = form.querySelector('input[name="schedule[Monday][active]"]').checked;
+    const mondayStart = form.querySelector('input[name="schedule[Monday][start_time]"]').value;
+    const mondayEnd = form.querySelector('input[name="schedule[Monday][end_time]"]').value;
     
-    if (!mondayStart || !mondayEnd) {
-        alert('Please set Monday schedule first');
+    if (!mondayChecked || !mondayStart || !mondayEnd) {
+        alert('Please set up Monday schedule first');
         return;
     }
     
-    const days = ['Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+    const days = ['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     days.forEach(day => {
-        const dayRow = modal.querySelector('.schedule-day .form-check-label[for^="edit-' + day + '-"], .schedule-day .form-check-label[for^="add-' + day + '"]').closest('.schedule-day');
-        const dayCheckbox = dayRow.querySelector('input[type="checkbox"]');
-        dayCheckbox.checked = true;
-        toggleTimeInputs(dayCheckbox);
-        dayRow.querySelector('input[name*="['+day+']"][name*="[start_time]"]').value = mondayStart;
-        dayRow.querySelector('input[name*="['+day+']"][name*="[end_time]"]').value = mondayEnd;
-    });
-}
-
-// Initialize all schedule toggles
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.schedule-toggle').forEach(function(checkbox) {
+        const checkbox = form.querySelector(`input[name="schedule[${day}][active]"]`);
+        const startInput = form.querySelector(`input[name="schedule[${day}][start_time]"]`);
+        const endInput = form.querySelector(`input[name="schedule[${day}][end_time]"]`);
+        
+        checkbox.checked = true;
+        startInput.value = mondayStart;
+        endInput.value = mondayEnd;
+        
         toggleTimeInputs(checkbox);
     });
-});
-
-// Function to confirm archiving a staff member
-function confirmArchiveStaff(staffCode, staffName) {
-    document.getElementById('staffNameToArchive').textContent = staffName;
-    document.getElementById('staff_code_to_archive').value = staffCode;
-    
-    const modal = new bootstrap.Modal(document.getElementById('archiveStaffModal'));
-    modal.show();
 }
+
+function confirmArchiveStaff(staffCode, staffName) {
+    if (confirm(`Are you sure you want to archive ${staffName}? This action can be reversed from the archived items page.`)) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/admin/employees/archive';
+        
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'staff_code';
+        input.value = staffCode;
+        
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+    // Client-side search functionality
+    document.getElementById('searchStaff').addEventListener('input', function() {
+        const searchValue = this.value.toLowerCase().trim();
+        const rows = document.querySelectorAll('#staffTable tbody tr');
+        
+        rows.forEach(row => {
+            // Skip the "no results" row if it exists
+            if (row.id === 'noResultsRow') return;
+            
+            const name = row.getAttribute('data-name') || '';
+            const position = row.getAttribute('data-position') || '';
+            const contact = row.getAttribute('data-contact') || '';
+            const email = row.getAttribute('data-email') || '';
+            
+            if (name.includes(searchValue) || 
+                position.includes(searchValue) || 
+                contact.includes(searchValue) || 
+                email.includes(searchValue)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    
+    // Show "no results" message if all rows are hidden
+    const visibleRows = document.querySelectorAll('#staffTable tbody tr:not([style*="display: none"])');
+    const noResultsRow = document.querySelector('#noResultsRow');
+    
+    if (visibleRows.length === 0 && !noResultsRow && searchValue !== '') {
+        const tbody = document.querySelector('#staffTable tbody');
+        const tr = document.createElement('tr');
+        tr.id = 'noResultsRow';
+        tr.innerHTML = `<td colspan="6" class="text-center">No staff found matching "${searchValue}". <a href="/admin/employees">View all staff</a></td>`;
+        tbody.appendChild(tr);
+    } else if ((visibleRows.length > 0 || searchValue === '') && noResultsRow) {
+        noResultsRow.remove();
+    }
+});
 </script>
 </body>
 </html> 

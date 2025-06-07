@@ -125,7 +125,25 @@
                 <div class="col-md-8">
                     <div class="card">
                         <div class="card-header py-3">
-                            <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Current Services</h5>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Current Services</h5>
+                                <form action="" method="GET" class="d-flex">
+                                    <div class="input-group">
+                                        <input type="text" name="search" class="form-control" 
+                                            placeholder="Search by name, description, fee or ID..." 
+                                            value="<?= isset($search) ? htmlspecialchars($search) : '' ?>"
+                                            style="height: 38px;">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-search"></i> Search
+                                        </button>
+                                        <?php if (isset($search) && $search): ?>
+                                            <a href="/admin/services/add" class="btn btn-outline-secondary">
+                                                <i class="bi bi-x-lg"></i> Clear
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -166,7 +184,14 @@
                                             <?php endforeach; ?>
                                         <?php else: ?>
                                             <tr>
-                                                <td colspan="6" class="text-center">No services found</td>
+                                                <td colspan="6" class="text-center">
+                                                    <?php if (isset($search) && $search): ?>
+                                                        No services found matching "<?= htmlspecialchars($search) ?>". 
+                                                        <a href="/admin/services/add">View all services</a>
+                                                    <?php else: ?>
+                                                        No services found
+                                                    <?php endif; ?>
+                                                </td>
                                             </tr>
                                         <?php endif; ?>
                                     </tbody>

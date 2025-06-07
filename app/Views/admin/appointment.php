@@ -327,7 +327,7 @@ if (!isset($controller)) {
                         <form action="" method="GET" class="d-flex">
                             <div class="input-group">
                                 <input type="text" name="search" class="form-control" 
-                                    placeholder="Search by name, pet, service, status or ID..." 
+                                    placeholder="Search by name, pet, breed, service, status or ID..." 
                                     value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>"
                                     style="height: 38px;">
                                 <button type="submit" class="btn btn-primary">
@@ -536,10 +536,16 @@ if (!isset($controller)) {
             <form method="POST" action="/admin/appointments/update">
                 <div class="form-group">
                     <label for="client_code">Client:</label>
+                    <div class="input-group mb-2">
+                        <input type="text" id="clientSearchInput" class="form-control" placeholder="Search clients..." aria-label="Search clients">
+                        <button class="btn btn-outline-secondary" type="button" onclick="clearClientSearch()">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
                     <select name="client_code" id="client_code" class="form-control" required onchange="loadClientPets(this.value)">
                         <option value="">Select Client</option>
                         <?php foreach($clients as $client): ?>
-                            <option value="<?php echo $client['clt_code']; ?>">
+                            <option value="<?php echo $client['clt_code']; ?>" data-name="<?php echo strtolower($client['clt_fname'] . ' ' . $client['clt_lname']); ?>">
                                 <?php echo $client['clt_fname'] . ' ' . $client['clt_lname']; ?>
                             </option>
                         <?php endforeach; ?>
@@ -614,10 +620,16 @@ if (!isset($controller)) {
                 
                 <div class="form-group">
                     <label for="edit_client_code">Client:</label>
+                    <div class="input-group mb-2">
+                        <input type="text" id="editClientSearchInput" class="form-control" placeholder="Search clients..." aria-label="Search clients">
+                        <button class="btn btn-outline-secondary" type="button" onclick="clearEditClientSearch()">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
                     <select name="client_code" id="edit_client_code" class="form-control" required onchange="loadClientPetsForEdit(this.value)">
                         <option value="">Select Client</option>
                         <?php foreach($clients as $client): ?>
-                            <option value="<?php echo $client['clt_code']; ?>">
+                            <option value="<?php echo $client['clt_code']; ?>" data-name="<?php echo strtolower($client['clt_fname'] . ' ' . $client['clt_lname']); ?>">
                                 <?php echo $client['clt_fname'] . ' ' . $client['clt_lname']; ?>
                             </option>
                         <?php endforeach; ?>
@@ -905,17 +917,77 @@ if (!isset($controller)) {
         // Show calendar view
         function showCalendarView() {
             document.getElementById('calendarView').style.display = 'block';
-            updateCalendar();
-            
-            // Scroll to calendar view
-            document.getElementById('calendarView').scrollIntoView({
-                behavior: 'smooth'
-            });
+            document.getElementById('tableView').style.display = 'none';
+            document.getElementById('calendarViewBtn').classList.add('active');
+            document.getElementById('tableViewBtn').classList.remove('active');
         }
         
-        // Hide calendar view
-        function hideCalendarView() {
+        // Show table view
+        function showTableView() {
             document.getElementById('calendarView').style.display = 'none';
+            document.getElementById('tableView').style.display = 'block';
+            document.getElementById('tableViewBtn').classList.add('active');
+            document.getElementById('calendarViewBtn').classList.remove('active');
+        }
+
+        // Client search functionality for Add Appointment
+        document.getElementById('clientSearchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const clientOptions = document.querySelectorAll('#client_code option');
+            
+            clientOptions.forEach(option => {
+                if (option.value === '') {
+                    // Always show the placeholder option
+                    option.style.display = '';
+                } else {
+                    const clientName = option.getAttribute('data-name');
+                    if (clientName && clientName.includes(searchTerm)) {
+                        option.style.display = '';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                }
+            });
+        });
+
+        // Client search functionality for Edit Appointment
+        document.getElementById('editClientSearchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const clientOptions = document.querySelectorAll('#edit_client_code option');
+            
+            clientOptions.forEach(option => {
+                if (option.value === '') {
+                    // Always show the placeholder option
+                    option.style.display = '';
+                } else {
+                    const clientName = option.getAttribute('data-name');
+                    if (clientName && clientName.includes(searchTerm)) {
+                        option.style.display = '';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                }
+            });
+        });
+
+        // Clear client search for Add Appointment
+        function clearClientSearch() {
+            document.getElementById('clientSearchInput').value = '';
+            // Show all options
+            const clientOptions = document.querySelectorAll('#client_code option');
+            clientOptions.forEach(option => {
+                option.style.display = '';
+            });
+        }
+
+        // Clear client search for Edit Appointment
+        function clearEditClientSearch() {
+            document.getElementById('editClientSearchInput').value = '';
+            // Show all options
+            const clientOptions = document.querySelectorAll('#edit_client_code option');
+            clientOptions.forEach(option => {
+                option.style.display = '';
+            });
         }
         
         // Store appointments data for calendar

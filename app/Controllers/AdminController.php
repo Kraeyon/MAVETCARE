@@ -57,13 +57,12 @@ class AdminController extends BaseController{
     public function doctor() {
         $doctorModel = new DoctorModel();
         
+        // Always get all doctors for client-side filtering
+        $data['doctors'] = $doctorModel->getDoctors();
+        
+        // If there's a search term in the URL, keep it for display purposes
         if (isset($_GET['search']) && !empty($_GET['search'])) {
-            // Search functionality
-            $data['doctors'] = $doctorModel->searchDoctors($_GET['search']);
             $data['search_term'] = $_GET['search'];
-        } else {
-            // Default view
-            $data['doctors'] = $doctorModel->getDoctors();
         }
         
         $this->render('admin/doctor', $data);
@@ -133,34 +132,60 @@ class AdminController extends BaseController{
     public function inventoryFiltered() {
         $db = Database::getInstance()->getConnection();
         
-        // Get filter from query string
+        // Get filter and search from query string
         $filter = isset($_GET['filter']) ? $_GET['filter'] : null;
+        $search = isset($_GET['search']) ? trim($_GET['search']) : null;
         
-        // Query products based on filter
-        if ($filter === 'low-stock') {
-            $stmt = $db->query("
-                SELECT p.*
-                FROM product p
-                WHERE p.prod_stock < 10 AND (p.prod_status = 'ACTIVE' OR p.prod_status IS NULL)
-                ORDER BY p.prod_stock ASC
-            ");
-            $filterTitle = 'Low Stock Products';
+        // Base query
+        $baseQuery = "
+            SELECT p.*
+            FROM product p
+            WHERE ";
+        
+        // Parameters for prepared statement
+        $params = [];
+        
+        // Apply search if provided
+        if (!empty($search)) {
+            $searchCondition = "(p.prod_name LIKE ? OR p.prod_category LIKE ? OR p.prod_details LIKE ?)";
+            $searchParam = "%$search%";
+            $params = [$searchParam, $searchParam, $searchParam];
+            
+            // Add numeric search for product code and price if the search term is numeric
+            if (is_numeric($search)) {
+                $searchCondition .= " OR p.prod_code = ? OR p.prod_price = ?";
+                $params[] = $search;
+                $params[] = $search;
+            }
+            
+            $baseQuery .= $searchCondition;
+            $filterTitle = 'Search Results for "' . htmlspecialchars($search) . '"';
+            
+            // Apply active status condition
+            $baseQuery .= " AND (p.prod_status = 'ACTIVE' OR p.prod_status IS NULL)";
         } else {
-            $stmt = $db->query("
-                SELECT p.*
-                FROM product p
-                WHERE p.prod_status = 'ACTIVE' OR p.prod_status IS NULL
-                ORDER BY p.prod_name ASC
-            ");
-            $filterTitle = 'All Products';
+            // No search, apply regular filters
+            if ($filter === 'low-stock') {
+                $baseQuery .= "p.prod_stock < 10 AND (p.prod_status = 'ACTIVE' OR p.prod_status IS NULL)";
+                $filterTitle = 'Low Stock Products';
+                $baseQuery .= " ORDER BY p.prod_stock ASC";
+            } else {
+                $baseQuery .= "(p.prod_status = 'ACTIVE' OR p.prod_status IS NULL)";
+                $filterTitle = 'All Products';
+                $baseQuery .= " ORDER BY p.prod_name ASC";
+            }
         }
         
+        // Execute query
+        $stmt = $db->prepare($baseQuery);
+        $stmt->execute($params);
         $products = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         
         $this->render('admin/inventory', [
             'products' => $products,
             'filterTitle' => $filterTitle,
-            'filter' => $filter
+            'filter' => $filter,
+            'search' => $search
         ]);
     }
     
@@ -627,26 +652,58 @@ class AdminController extends BaseController{
      */
     public function showAddServiceForm() {
         try {
-            // Fetch existing active services for reference
-            $stmt = $this->getPDO()->query("
+            // Get search term if provided
+            $search = isset($_GET['search']) ? trim($_GET['search']) : null;
+            
+            // Base query
+            $baseQuery = "
                 SELECT service_code, service_name, service_desc, service_fee, service_img
                 FROM service
-                WHERE status = 'ACTIVE' OR status IS NULL
-                ORDER BY service_name ASC
-            ");
+                WHERE (status = 'ACTIVE' OR status IS NULL)
+            ";
+            
+            // Parameters for prepared statement
+            $params = [];
+            
+            // Add search condition if search term is provided
+            if (!empty($search)) {
+                // Check if search term is numeric
+                $isNumeric = is_numeric($search);
+                
+                if ($isNumeric) {
+                    // If numeric, search in text fields and numeric fields
+                    $baseQuery .= " AND (service_name LIKE ? OR service_desc LIKE ? OR service_fee = ? OR service_code = ?)";
+                    $searchParam = "%$search%";
+                    $params = [$searchParam, $searchParam, $search, $search];
+                } else {
+                    // If not numeric, only search in text fields
+                    $baseQuery .= " AND (service_name LIKE ? OR service_desc LIKE ?)";
+                    $searchParam = "%$search%";
+                    $params = [$searchParam, $searchParam];
+                }
+            }
+            
+            // Add order by clause
+            $baseQuery .= " ORDER BY service_name ASC";
+            
+            // Prepare and execute the query
+            $stmt = $this->getPDO()->prepare($baseQuery);
+            $stmt->execute($params);
             $services = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             
             // Render the view with services data
             $this->render('admin/service_add', [
                 'services' => $services,
                 'message' => isset($_GET['message']) ? $_GET['message'] : null,
-                'error' => isset($_GET['error']) ? $_GET['error'] : null
+                'error' => isset($_GET['error']) ? $_GET['error'] : null,
+                'search' => $search
             ]);
         } catch (\PDOException $e) {
             error_log("Error fetching services: " . $e->getMessage());
             $this->render('admin/service_add', [
                 'services' => [],
-                'error' => 'Database error: ' . $e->getMessage()
+                'error' => 'Database error: ' . $e->getMessage(),
+                'search' => $search ?? null
             ]);
         }
     }

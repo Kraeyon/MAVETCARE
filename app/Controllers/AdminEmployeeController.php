@@ -8,17 +8,50 @@ class AdminEmployeeController extends BaseController {
     public function index() {
         $pdo = $this->getPDO();
         
-        // Get active staff only
-        $stmt = $pdo->query("
+        // Get search term if provided
+        $search = isset($_GET['search']) ? trim($_GET['search']) : null;
+        
+        // Base query
+        $baseQuery = "
             SELECT vs.*, 
                 (SELECT JSON_AGG(ss.*) FROM staff_schedule ss WHERE ss.staff_code = vs.staff_code) as schedule_details 
             FROM veterinary_staff vs
-            WHERE vs.status = 'ACTIVE' OR vs.status IS NULL
-            ORDER BY vs.staff_name
-        ");
+            WHERE (vs.status = 'ACTIVE' OR vs.status IS NULL)
+        ";
+        
+        // Parameters for prepared statement
+        $params = [];
+        
+        // Add search condition if search term is provided
+        if (!empty($search)) {
+            // Check if search term is numeric
+            $isNumeric = is_numeric($search);
+            
+            if ($isNumeric) {
+                // If numeric, search in text fields and numeric fields
+                $baseQuery .= " AND (vs.staff_name LIKE ? OR vs.staff_position LIKE ? OR vs.staff_contact LIKE ? OR vs.staff_email_address LIKE ? OR vs.staff_code = ?)";
+                $searchParam = "%$search%";
+                $params = [$searchParam, $searchParam, $searchParam, $searchParam, $search];
+            } else {
+                // If not numeric, only search in text fields
+                $baseQuery .= " AND (vs.staff_name LIKE ? OR vs.staff_position LIKE ? OR vs.staff_contact LIKE ? OR vs.staff_email_address LIKE ?)";
+                $searchParam = "%$search%";
+                $params = [$searchParam, $searchParam, $searchParam, $searchParam];
+            }
+        }
+        
+        // Add order by clause
+        $baseQuery .= " ORDER BY vs.staff_name";
+        
+        // Prepare and execute the query
+        $stmt = $pdo->prepare($baseQuery);
+        $stmt->execute($params);
         $staff = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         
-        $this->render('admin/employees', ['staff' => $staff]);
+        $this->render('admin/employees', [
+            'staff' => $staff,
+            'search' => $search
+        ]);
     }
 
     public function addEmployee() {

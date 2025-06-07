@@ -2,31 +2,60 @@
 require_once '../config/database.php';
 use Config\Database;
 
-$pdo = Database::getInstance()->getConnection();
+// Use products, filterTitle, filter and search passed from the controller
+// If they're not set (direct access to this file), initialize them
+if (!isset($products) || !isset($filterTitle) || !isset($filter) || !isset($search)) {
+    $pdo = Database::getInstance()->getConnection();
 
-// Get filter from query string
-$filter = isset($_GET['filter']) ? $_GET['filter'] : null;
-
-// Query products based on filter
-if ($filter === 'low-stock') {
-    $stmt = $pdo->query("
+    // Get filter from query string
+    $filter = isset($_GET['filter']) ? $_GET['filter'] : null;
+    $search = isset($_GET['search']) ? trim($_GET['search']) : null;
+    
+    // Base query
+    $baseQuery = "
         SELECT p.*
         FROM product p
-        WHERE p.prod_stock < 10 AND (p.prod_status = 'ACTIVE' OR p.prod_status IS NULL)
-        ORDER BY p.prod_stock ASC
-    ");
-    $filterTitle = 'Low Stock Products';
-} else {
-    $stmt = $pdo->query("
-        SELECT p.*
-        FROM product p
-        WHERE p.prod_status = 'ACTIVE' OR p.prod_status IS NULL
-        ORDER BY p.prod_name ASC
-    ");
-    $filterTitle = 'All Products';
+        WHERE ";
+    
+    // Parameters for prepared statement
+    $params = [];
+    
+    // Apply search if provided
+    if (!empty($search)) {
+        $searchCondition = "(p.prod_name LIKE ? OR p.prod_category LIKE ? OR p.prod_details LIKE ?)";
+        $searchParam = "%$search%";
+        $params = [$searchParam, $searchParam, $searchParam];
+        
+        // Add numeric search for product code and price if the search term is numeric
+        if (is_numeric($search)) {
+            $searchCondition .= " OR p.prod_code = ? OR p.prod_price = ?";
+            $params[] = $search;
+            $params[] = $search;
+        }
+        
+        $baseQuery .= $searchCondition;
+        $filterTitle = 'Search Results for "' . htmlspecialchars($search) . '"';
+        
+        // Apply active status condition
+        $baseQuery .= " AND (p.prod_status = 'ACTIVE' OR p.prod_status IS NULL)";
+    } else {
+        // No search, apply regular filters
+        if ($filter === 'low-stock') {
+            $baseQuery .= "p.prod_stock < 10 AND (p.prod_status = 'ACTIVE' OR p.prod_status IS NULL)";
+            $filterTitle = 'Low Stock Products';
+            $baseQuery .= " ORDER BY p.prod_stock ASC";
+        } else {
+            $baseQuery .= "(p.prod_status = 'ACTIVE' OR p.prod_status IS NULL)";
+            $filterTitle = 'All Products';
+            $baseQuery .= " ORDER BY p.prod_name ASC";
+        }
+    }
+    
+    // Execute query
+    $stmt = $pdo->prepare($baseQuery);
+    $stmt->execute($params);
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // No longer needed - removed supplier dropdown
 // $suppliers = $pdo->query("SELECT * FROM supplier ORDER BY supp_name")->fetchAll(PDO::FETCH_ASSOC);
@@ -64,6 +93,27 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
                     <i class="bi bi-plus-circle me-1"></i> Add New Product
                 </button>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form action="" method="GET" class="d-flex">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" 
+                            placeholder="Search by name, category, details or price..." 
+                            value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                        <?php if (isset($_GET['search'])): ?>
+                            <a href="<?= $filter === 'low-stock' ? '?filter=low-stock' : '/admin/inventory' ?>" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Clear
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </form>
             </div>
         </div>
 

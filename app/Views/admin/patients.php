@@ -235,10 +235,16 @@
       <div class="modal-body">
         <div class="mb-2">
             <label>Select Client</label>
+            <div class="input-group mb-2">
+                <input type="text" id="clientSearchInput" class="form-control" placeholder="Search clients..." aria-label="Search clients">
+                <button class="btn btn-outline-secondary" type="button" onclick="clearClientSearch()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
             <select name="client_code" class="form-select" id="clientSelect" required>
                 <option value="">-- Choose Client --</option>
                 <?php foreach ($clients as $client): ?>
-                    <option value="<?= $client['clt_code'] ?>"><?= htmlspecialchars($client['clt_fname'] . ' ' . $client['clt_initial'] . '. ' . $client['clt_lname']) ?></option>
+                    <option value="<?= $client['clt_code'] ?>" data-name="<?= strtolower(htmlspecialchars($client['clt_fname'] . ' ' . $client['clt_initial'] . ' ' . $client['clt_lname'])) ?>"><?= htmlspecialchars($client['clt_fname'] . ' ' . $client['clt_initial'] . '. ' . $client['clt_lname']) ?></option>
                 <?php endforeach; ?>
                 <option value="new">New Client</option>
             </select>
@@ -319,6 +325,35 @@ document.getElementById('clientSelect').addEventListener('change', function () {
     const newClientFields = document.getElementById('newClientFields');
     newClientFields.style.display = this.value === 'new' ? 'block' : 'none';
 });
+
+// Client search functionality
+document.getElementById('clientSearchInput').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const clientOptions = document.querySelectorAll('#clientSelect option');
+    
+    clientOptions.forEach(option => {
+        if (option.value === '' || option.value === 'new') {
+            // Always show the placeholder and "New Client" options
+            option.style.display = '';
+        } else {
+            const clientName = option.getAttribute('data-name');
+            if (clientName && clientName.includes(searchTerm)) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        }
+    });
+});
+
+function clearClientSearch() {
+    document.getElementById('clientSearchInput').value = '';
+    // Show all options
+    const clientOptions = document.querySelectorAll('#clientSelect option');
+    clientOptions.forEach(option => {
+        option.style.display = '';
+    });
+}
 
 function copyPassword(password) {
     // Create a temporary input element

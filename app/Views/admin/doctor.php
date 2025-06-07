@@ -137,17 +137,16 @@
                 <p class="text-muted mb-0">View and manage doctor schedules</p>
             </div>
             <div class="search-box mt-2 mt-md-0">
-                <form action="/admin/doctor" method="GET" class="d-flex">
-                    <div class="position-relative">
-                        <i class="bi bi-search search-icon"></i>
-                        <input type="text" name="search" id="searchDoctor" class="form-control" 
-                               placeholder="Search doctors..." value="<?= isset($search_term) ? htmlspecialchars($search_term) : '' ?>">
-                    </div>
-                    <button type="submit" class="btn btn-primary ms-2">Search</button>
+                <div class="position-relative">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" id="searchDoctor" class="form-control" 
+                           placeholder="Search doctors..." value="<?= isset($search_term) ? htmlspecialchars($search_term) : '' ?>">
                     <?php if (isset($search_term) && !empty($search_term)): ?>
-                        <a href="/admin/doctor" class="btn btn-secondary ms-2">Clear</a>
+                        <a href="/admin/doctor" class="btn btn-outline-secondary ms-2 mt-2" style="font-size: 0.9rem;">
+                            <i class="bi bi-x-lg"></i> Clear Search
+                        </a>
                     <?php endif; ?>
-                </form>
+                </div>
             </div>
             <div class="doctor-count mt-2 mt-md-0">
                 <i class="bi bi-people-fill"></i> Total Doctors: <span class="badge bg-primary"><?= count($doctors) ?></span>
@@ -336,22 +335,37 @@
     // Client-side search functionality (filters displayed cards)
     document.getElementById('searchDoctor').addEventListener('input', function() {
         const searchValue = this.value.toLowerCase().trim();
+        const doctorItems = document.querySelectorAll('.doctor-item');
+        let visibleCount = 0;
         
-        // Only do client-side filtering if we're not submitting the form
-        if (searchValue.length < 3) {
-            const doctorItems = document.querySelectorAll('.doctor-item');
+        doctorItems.forEach(item => {
+            const doctorName = item.getAttribute('data-name');
+            const doctorPosition = item.getAttribute('data-position');
             
-            doctorItems.forEach(item => {
-                const doctorName = item.getAttribute('data-name');
-                const doctorPosition = item.getAttribute('data-position');
-                
-                if (doctorName.includes(searchValue) || doctorPosition.includes(searchValue)) {
-                    item.style.display = '';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+            if (doctorName.includes(searchValue) || doctorPosition.includes(searchValue)) {
+                item.style.display = '';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        // Show or hide no results message
+        let noResultsMsg = document.getElementById('noResultsMessage');
+        if (visibleCount === 0 && searchValue !== '') {
+            if (!noResultsMsg) {
+                noResultsMsg = document.createElement('div');
+                noResultsMsg.id = 'noResultsMessage';
+                noResultsMsg.className = 'alert alert-info mt-3';
+                noResultsMsg.innerHTML = `<i class="bi bi-info-circle"></i> No doctors found matching "${searchValue}". <a href="/admin/doctor">View all doctors</a>`;
+                document.getElementById('doctorsContainer').parentNode.appendChild(noResultsMsg);
+            }
+        } else if (noResultsMsg) {
+            noResultsMsg.remove();
         }
+        
+        // Update the doctor count
+        document.querySelector('.doctor-count .badge').textContent = visibleCount;
     });
 
     function toggleTimeInputs(checkbox) {

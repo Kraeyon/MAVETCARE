@@ -114,23 +114,47 @@ class PatientModel extends BaseModel {
     }
 
     public function searchPatients($searchTerm) {
-        $searchTerm = "%$searchTerm%";
-        
-        // For exact pet_code search (without wildcards)
-        $exactTerm = trim($searchTerm, '%');
-        
-        $stmt = $this->db->prepare('
-            SELECT p.*, CONCAT(c.clt_fname, \' \', c.clt_initial, \'. \', c.clt_lname) AS client_name
-            FROM pet p
-            JOIN client c ON p.client_code = c.clt_code
-            WHERE p.pet_name LIKE ? 
-               OR p.pet_type LIKE ? 
-               OR p.pet_breed LIKE ?
-               OR CONCAT(c.clt_fname, \' \', c.clt_initial, \'. \', c.clt_lname) LIKE ?
-               OR p.pet_code = ?
-        ');
-        $stmt->execute([$searchTerm, $searchTerm, $searchTerm, $searchTerm, $exactTerm]);
-        return $stmt->fetchAll();
+        try {
+            $searchTerm = "%$searchTerm%";
+            
+            // For exact pet_code search (without wildcards)
+            $exactTerm = trim($searchTerm, '%');
+            $isNumeric = is_numeric($exactTerm);
+            
+            $sql = '
+                SELECT p.*, CONCAT(c.clt_fname, \' \', c.clt_initial, \'. \', c.clt_lname) AS client_name
+                FROM pet p
+                JOIN client c ON p.client_code = c.clt_code
+                WHERE p.pet_name LIKE :search 
+                   OR p.pet_type LIKE :search 
+                   OR p.pet_breed LIKE :search
+                   OR CONCAT(c.clt_fname, \' \', c.clt_initial, \'. \', c.clt_lname) LIKE :search';
+            
+            // Only add pet_code condition if the search term is numeric
+            if ($isNumeric) {
+                $sql .= ' OR p.pet_code = :exact';
+            }
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':search', $searchTerm, PDO::PARAM_STR);
+            
+            if ($isNumeric) {
+                $stmt->bindParam(':exact', $exactTerm, PDO::PARAM_INT);
+            }
+            
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (\PDOException $e) {
+            // Log the error
+            error_log("PDO Exception in searchPatients: " . $e->getMessage());
+            // Return empty array to avoid breaking the UI
+            return [];
+        } catch (\Exception $e) {
+            // Log the error
+            error_log("General Exception in searchPatients: " . $e->getMessage());
+            // Return empty array to avoid breaking the UI
+            return [];
+        }
     }
 
     public function getSortedPatients($sortBy = 'pet_code', $sortOrder = 'ASC') {
