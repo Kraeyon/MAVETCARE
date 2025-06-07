@@ -50,14 +50,14 @@
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="bi bi-check-circle-fill"></i> New pet has been successfully added.
         <?php if (isset($_GET['new_client']) && $_GET['new_client'] === 'yes'): ?>
-        <div class="mt-2 p-3 border rounded bg-light">
-            <h6 class="mb-2"><i class="bi bi-person-plus"></i> New User Account Created</h6>
+        <div class="mt-2 p-3 border rounded bg-white">
+            <h6 class="mb-2 text-success"><i class="bi bi-person-plus"></i> New User Account Created</h6>
             <p class="mb-1">A user account has been created for the new client.</p>
             <?php if (isset($_GET['temp_password'])): ?>
             <div class="d-flex align-items-center">
                 <span class="me-2"><strong>Temporary Password:</strong></span>
-                <code class="bg-white border px-3 py-1 rounded"><?= htmlspecialchars($_GET['temp_password']) ?></code>
-                <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyPassword('<?= htmlspecialchars($_GET['temp_password']) ?>')">
+                <code class="bg-light border px-3 py-1 rounded"><?= htmlspecialchars($_GET['temp_password']) ?></code>
+                <button class="btn btn-sm btn-outline-primary ms-2" onclick="copyPassword('<?= htmlspecialchars($_GET['temp_password']) ?>')">
                     <i class="bi bi-clipboard"></i> Copy
                 </button>
             </div>
@@ -243,8 +243,8 @@
                 <option value="new">New Client</option>
             </select>
         </div>
-        <div id="newClientFields" class="border p-3 rounded bg-dark text-white" style="display: none;">
-            <h6 class="mb-3"><i class="bi bi-person-plus"></i> New Client Details</h6>
+        <div id="newClientFields" class="border p-3 rounded bg-light" style="display: none;">
+            <h6 class="mb-3 text-primary"><i class="bi bi-person-plus"></i> New Client Details</h6>
             <div class="alert alert-info">
                 <small><i class="bi bi-info-circle"></i> A user account will be created automatically. The temporary password will be shown after submission.</small>
             </div>
