@@ -76,9 +76,35 @@ $products = $stmt->fetchAll();
                   <div class="card-body">
                       <h5 class="card-title"><?= htmlspecialchars($product['prod_name']) ?></h5>
                       <p class="price">₱<?= number_format($product['prod_price'], 2) ?></p>
-                      <a href="#" class="btn btn-primary">View Details</a>
+                      <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal<?= $product['prod_code'] ?>">View Details</a>
                   </div>
               </div>
+          </div>
+          
+          <!-- Product Modal -->
+          <div class="modal fade" id="productModal<?= $product['prod_code'] ?>" tabindex="-1" aria-labelledby="productModalLabel<?= $product['prod_code'] ?>" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="productModalLabel<?= $product['prod_code'] ?>"><?= htmlspecialchars($product['prod_name']) ?></h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="text-center mb-3">
+                    <img src="/assets/images/products/<?= htmlspecialchars(basename($product['prod_image'])) ?>" class="img-fluid rounded" style="max-height: 200px;" alt="<?= htmlspecialchars($product['prod_name']) ?>">
+                  </div>
+                  <h5 class="text-primary">Price: ₱<?= number_format($product['prod_price'], 2) ?></h5>
+                  <h6>Category: <?= htmlspecialchars(ucfirst(str_replace('-', ' ', $product['prod_category']))) ?></h6>
+                  <div class="mt-3">
+                    <h6>Description:</h6>
+                    <p><?= htmlspecialchars($product['prod_details'] ?? 'No details provided.') ?></p>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
           </div>
       <?php endforeach; ?>
 

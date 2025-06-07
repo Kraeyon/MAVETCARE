@@ -282,6 +282,10 @@
                                                                         <p class="mb-1"><strong>Price:</strong> ₱<?php echo number_format($product['prod_price'], 2); ?></p>
                                                                     </div>
                                                                 </div>
+                                                                <div class="mb-3">
+                                                                    <p class="mb-1"><strong>Details:</strong></p>
+                                                                    <p><?php echo htmlspecialchars($product['prod_details'] ?? 'No details provided.'); ?></p>
+                                                                </div>
                                                                 <div class="alert alert-warning">
                                                                     <i class="bi bi-exclamation-triangle me-2"></i>
                                                                     This product has been archived and is no longer active in the system.

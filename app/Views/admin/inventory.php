@@ -195,6 +195,12 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                         </select>
                                                     </div>
 
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Product Details</label>
+                                                        <textarea class="form-control" name="prod_details" rows="3"><?= htmlspecialchars($product['prod_details'] ?? 'No details provided.') ?></textarea>
+                                                        <small class="form-text text-muted">Provide additional information about the product</small>
+                                                    </div>
+
                                                     <div class="row mb-3">
                                                         <div class="col-md-6">
                                                             <label class="form-label">Price (₱)</label>
@@ -256,6 +262,12 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <option value="anesthetics">Anesthetics</option>
                             <option value="cabinet-stocks">Cabinet Stocks</option>
                         </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Product Details</label>
+                        <textarea class="form-control" name="prod_details" rows="3">No details provided.</textarea>
+                        <small class="form-text text-muted">Provide additional information about the product</small>
                     </div>
 
                     <div class="row mb-3">

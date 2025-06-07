@@ -390,6 +390,7 @@ class AdminController extends BaseController{
             $prod_category = $_POST['prod_category'];
             $prod_price = $_POST['prod_price'];
             $prod_stock = $_POST['prod_stock'];
+            $prod_details = $_POST['prod_details'] ?? 'No details provided.';
             $supp_code = $_POST['supp_code'] ?: null;
 
             // Only process image if one was uploaded
@@ -416,8 +417,8 @@ class AdminController extends BaseController{
                 $dbImagePath = '/assets/images/products/default.png';
             }
             try {
-                $stmt = $pdo->prepare("INSERT INTO product (prod_name, prod_category, prod_price, prod_stock, prod_image, supp_code) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$prod_name, $prod_category, $prod_price, $prod_stock, $dbImagePath, $supp_code]);
+                $stmt = $pdo->prepare("INSERT INTO product (prod_name, prod_category, prod_price, prod_stock, prod_image, prod_details, supp_code) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$prod_name, $prod_category, $prod_price, $prod_stock, $dbImagePath, $prod_details, $supp_code]);
                 header("Location: /admin/inventory?added=1");
                 exit;
             } catch (\PDOException $e) {
@@ -434,11 +435,12 @@ class AdminController extends BaseController{
             $prod_category = $_POST['prod_category'];
             $prod_price = $_POST['prod_price'];
             $prod_stock = $_POST['prod_stock'];
+            $prod_details = $_POST['prod_details'] ?? 'No details provided.';
             $supp_code = $_POST['supp_code'] ?: null;
             // Image update not handled here for simplicity
             try {
-                $stmt = $pdo->prepare("UPDATE product SET prod_name = ?, prod_category = ?, prod_price = ?, prod_stock = ?, supp_code = ? WHERE prod_code = ?");
-                $stmt->execute([$prod_name, $prod_category, $prod_price, $prod_stock, $supp_code, $prod_code]);
+                $stmt = $pdo->prepare("UPDATE product SET prod_name = ?, prod_category = ?, prod_price = ?, prod_stock = ?, prod_details = ?, supp_code = ? WHERE prod_code = ?");
+                $stmt->execute([$prod_name, $prod_category, $prod_price, $prod_stock, $prod_details, $supp_code, $prod_code]);
                 header("Location: /admin/inventory?updated=1");
                 exit;
             } catch (\PDOException $e) {
