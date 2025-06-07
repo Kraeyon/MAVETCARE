@@ -65,34 +65,6 @@
     transform: translateY(-5px); /* Reduced lift on hover */
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
   }
-
-  .overlay {
-    background: rgba(0, 0, 0, 0.5); /* Lighter shadow to match about section */
-    padding: 10px;
-    border-radius: 10px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%; /* Reduced width */
-    opacity: 0;
-    transition: opacity 0.3s ease; /* Make the text fade in */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .service-card:hover .overlay {
-    opacity: 1; /* Make the overlay text appear on hover */
-  }
-
-  .overlay h5 {
-    font-size: 1.5rem;
-    color: white;
-    font-weight: bold;
-    margin: 0;
-    text-align: center;
-  }
   
   /* Add gradient overlay to image */
   .service-card .card-img-top {

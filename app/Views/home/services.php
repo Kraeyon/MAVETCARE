@@ -49,9 +49,6 @@
                              class="card-img-top" 
                              alt="<?php echo htmlspecialchars($service['service_name']); ?>"
                              onerror="this.src='/assets/images/services/default.png'">
-                        <div class="overlay position-absolute top-50 start-50 translate-middle text-center">
-                            <h5 class="text-white"><?php echo htmlspecialchars($service['service_name']); ?></h5>
-                        </div>
                         <div class="price-tag position-absolute">₱<?php echo number_format($service['service_fee'], 2); ?></div>
                         <div class="card-body">
                             <h5 class="card-title"><?php echo htmlspecialchars($service['service_name']); ?></h5>
