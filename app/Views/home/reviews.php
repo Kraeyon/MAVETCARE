@@ -209,9 +209,14 @@ include_once '../app/views/includes/header.php';
       fetch('/api/reviews/distribution')
         .then(res => res.json())
         .then(data => {
+          // Calculate total reviews
+          const totalReviews = data.reduce((sum, row) => sum + parseInt(row.count), 0);
+          
           const container = document.getElementById('rating-distribution');
           container.innerHTML = data.map(row => {
-            const percent = row.count;
+            // Calculate actual percentage
+            const percent = totalReviews > 0 ? Math.round((row.count / totalReviews) * 100) : 0;
+            
             return `
               <div class="d-flex align-items-center mb-2">
                 <span class="me-2">${row.rating} stars</span>

@@ -632,8 +632,7 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
                             <label for="appointment_type">Type of Appointment:</label>
                             <select id="appointment_type" name="appointment_type" required>
                                 <option value="">-- Select Type --</option>
-                                <option value="walk-in" <?php echo (isset($form_data['appointment_type']) && $form_data['appointment_type'] === 'walk-in') ? 'selected' : ''; ?>>Walk-in</option>
-                                <option value="service-on-call" <?php echo (isset($form_data['appointment_type']) && $form_data['appointment_type'] === 'service-on-call') ? 'selected' : ''; ?>>Service-on-call</option>
+                                <option value="walk-in" selected>Walk-in</option>
                             </select>
                         </div>
 
@@ -754,8 +753,7 @@ if (!empty($form_data) && isset($form_data['form_type']) && $form_data['form_typ
                         <label for="new_pet_appointment_type">Type of Appointment:</label>
                         <select id="new_pet_appointment_type" name="appointment_type" required>
                             <option value="">-- Select Type --</option>
-                            <option value="walk-in" <?php echo (isset($form_data['appointment_type']) && $form_data['appointment_type'] === 'walk-in') ? 'selected' : ''; ?>>Walk-in</option>
-                            <option value="service-on-call" <?php echo (isset($form_data['appointment_type']) && $form_data['appointment_type'] === 'service-on-call') ? 'selected' : ''; ?>>Service-on-call</option>
+                            <option value="walk-in" selected>Walk-in</option>
                         </select>
                     </div>
 

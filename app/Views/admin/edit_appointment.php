@@ -90,9 +90,7 @@
                         <div class="mb-3">
                             <label for="appointment_type" class="form-label">Appointment Type</label>
                             <select class="form-select" id="appointment_type" name="appointment_type">
-                                <option value="walk-in" <?php echo (strtolower($appointment['appointment_type']) === 'walk-in') ? 'selected' : ''; ?>>Walk-in</option>
-                                <option value="scheduled" <?php echo (strtolower($appointment['appointment_type']) === 'scheduled') ? 'selected' : ''; ?>>Scheduled</option>
-                                <option value="emergency" <?php echo (strtolower($appointment['appointment_type']) === 'emergency') ? 'selected' : ''; ?>>Emergency</option>
+                                <option value="walk-in" selected>Walk-in</option>
                             </select>
                         </div>
                         

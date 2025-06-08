@@ -585,7 +585,6 @@ if (!isset($controller)) {
                     <label for="appt_type">Appointment Type:</label>
                     <select name="appointment_type" id="appt_type" class="form-control" required>
                         <option value="WALK-IN">WALK-IN</option>
-                        <option value="SERVICE-ON-CALL">SERVICE-ON-CALL</option>
                     </select>
                 </div>
                 
@@ -669,7 +668,6 @@ if (!isset($controller)) {
                     <label for="edit_appt_type">Appointment Type:</label>
                     <select name="appointment_type" id="edit_appt_type" class="form-control" required>
                         <option value="WALK-IN">WALK-IN</option>
-                        <option value="SERVICE-ON-CALL">SERVICE-ON-CALL</option>
                     </select>
                 </div>
                 
