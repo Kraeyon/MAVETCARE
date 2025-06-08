@@ -79,8 +79,8 @@ class AdminEmployeeController extends BaseController {
                 } else if (isset($_POST['schedule'])) {
                     foreach ($days as $day) {
                         if (isset($_POST['schedule'][$day]['active'])) {
-                            $start_time = $_POST['schedule'][$day]['start_time'] ?: '09:00';
-                            $end_time = $_POST['schedule'][$day]['end_time'] ?: '17:00';
+                            $start_time = !empty($_POST['schedule'][$day]['start_time']) ? $_POST['schedule'][$day]['start_time'] : '09:00';
+                            $end_time = !empty($_POST['schedule'][$day]['end_time']) ? $_POST['schedule'][$day]['end_time'] : '17:00';
                             $stmt = $pdo->prepare("INSERT INTO staff_schedule (staff_code, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)");
                             $stmt->execute([$staff_code, $day, $start_time, $end_time]);
                         }
@@ -125,12 +125,10 @@ class AdminEmployeeController extends BaseController {
                 // Insert new schedule
                 if (isset($_POST['schedule'])) {
                     foreach ($days as $day) {
-                        if (isset($_POST['schedule'][$day]['active']) && 
-                            !empty($_POST['schedule'][$day]['start_time']) && 
-                            !empty($_POST['schedule'][$day]['end_time'])) {
-                            
-                            $start_time = $_POST['schedule'][$day]['start_time'];
-                            $end_time = $_POST['schedule'][$day]['end_time'];
+                        if (isset($_POST['schedule'][$day]['active'])) {
+                            // Use default values if time fields are empty
+                            $start_time = !empty($_POST['schedule'][$day]['start_time']) ? $_POST['schedule'][$day]['start_time'] : '09:00';
+                            $end_time = !empty($_POST['schedule'][$day]['end_time']) ? $_POST['schedule'][$day]['end_time'] : '17:00';
                             
                             $stmt = $pdo->prepare("INSERT INTO staff_schedule (staff_code, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)");
                             $stmt->execute([$staff_code, $day, $start_time, $end_time]);

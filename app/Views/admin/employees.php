@@ -418,14 +418,14 @@ function formatSchedule($scheduleDetails) {
                                                                         <input type="time" class="form-control" 
                                                                                name="schedule[<?= $day ?>][start_time]" 
                                                                                value="<?= $startTime ?>" 
-                                                                               required>
+                                                                               <?= $active ? 'required' : '' ?>>
                                                                     </div>
                                                                     <div class="col">
                                                                         <label class="form-label small">End Time</label>
                                                                         <input type="time" class="form-control" 
                                                                                name="schedule[<?= $day ?>][end_time]" 
                                                                                value="<?= $endTime ?>" 
-                                                                               required>
+                                                                               <?= $active ? 'required' : '' ?>>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -500,7 +500,10 @@ function formatSchedule($scheduleDetails) {
                         <?php foreach ($days as $day): ?>
                             <div class="schedule-day mb-2">
                                 <div class="form-check">
-                                    <input class="form-check-input schedule-toggle" type="checkbox" name="schedule[<?= $day ?>][active]" id="add-<?= $day ?>">
+                                    <input class="form-check-input schedule-toggle" type="checkbox" 
+                                           name="schedule[<?= $day ?>][active]" 
+                                           id="add-<?= $day ?>"
+                                           onchange="toggleTimeInputs(this)">
                                     <label class="form-check-label" for="add-<?= $day ?>"> <?= $day ?> </label>
                                 </div>
                                 <div class="row time-inputs" style="display:none;">
@@ -553,6 +556,37 @@ function formatSchedule($scheduleDetails) {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+// Add form submission handler for all staff forms
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all staff forms (both add and edit)
+    const staffForms = document.querySelectorAll('form[action="/admin/employees/add"], form[action="/admin/employees/edit"]');
+    
+    staffForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            // Check all days that are active
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            let formValid = true;
+            
+            days.forEach(day => {
+                const checkbox = form.querySelector(`input[name="schedule[${day}][active]"]`);
+                if (checkbox && checkbox.checked) {
+                    const startInput = form.querySelector(`input[name="schedule[${day}][start_time]"]`);
+                    const endInput = form.querySelector(`input[name="schedule[${day}][end_time]"]`);
+                    
+                    // If checkbox is checked but time fields are empty, set default values
+                    if (!startInput.value) startInput.value = '09:00';
+                    if (!endInput.value) endInput.value = '17:00';
+                }
+            });
+            
+            if (!formValid) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+            }
+        });
+    });
+});
+
 // Inline editing logic
 const staffTable = document.getElementById('staffTable');
 let editingRow = null;
@@ -620,6 +654,9 @@ function toggleTimeInputs(checkbox) {
         timeInputs.style.display = '';
         startTimeInput.required = true;
         endTimeInput.required = true;
+        // Set default values if fields are empty
+        if (!startTimeInput.value) startTimeInput.value = '09:00';
+        if (!endTimeInput.value) endTimeInput.value = '17:00';
     } else {
         scheduleDay.classList.remove('active');
         timeInputs.style.display = 'none';
