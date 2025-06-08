@@ -247,57 +247,62 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
 </div>
 
 <!-- Notifications Box -->
-<div class="position-fixed bottom-0 end-0 m-4" style="z-index: 1030; width: 350px;">
+<div class="position-fixed bottom-0 end-0 m-4 d-none" style="z-index: 1030; width: 350px;" id="notificationPanel">
     <div class="card shadow">
         <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
             <div>
                 <i class="bi bi-bell-fill me-2"></i>Notifications / Reminders
             </div>
-            <?php
-            // Count total notifications for badge
-            $totalNotifications = 0;
-            
-            // Get pending appointments
-            $pendingStmt = $db->prepare("
-                SELECT COUNT(*) FROM appointment 
-                WHERE UPPER(status) = 'PENDING' AND DATE(preferred_date) >= ?
-            ");
-            $pendingStmt->execute([$today]);
-            $pendingCount = $pendingStmt->fetchColumn();
-            $totalNotifications += $pendingCount;
-            
-            // Get low stock products (below 10 items)
-            $lowStockStmt = $db->query("
-                SELECT COUNT(*) FROM product 
-                WHERE prod_stock < 10
-            ");
-            $lowStockCount = $lowStockStmt->fetchColumn();
-            $totalNotifications += $lowStockCount;
-            
-            // Get upcoming appointments
-            $nextWeek = date('Y-m-d', strtotime('+7 days'));
-            $upcomingStmt = $db->prepare("
-                SELECT COUNT(*) FROM appointment 
-                WHERE preferred_date BETWEEN ? AND ? AND UPPER(status) = 'CONFIRMED'
-            ");
-            $upcomingStmt->execute([$today, $nextWeek]);
-            $upcomingAppts = $upcomingStmt->fetchColumn();
-            $totalNotifications += $upcomingAppts;
-            
-            // Get recent reviews (last 3 days)
-            $recentReviewsDate = date('Y-m-d', strtotime('-3 days'));
-            $recentReviewsStmt = $db->prepare("
-                SELECT COUNT(*) FROM review 
-                WHERE review_date >= ?
-            ");
-            $recentReviewsStmt->execute([$recentReviewsDate]);
-            $recentReviewsCount = $recentReviewsStmt->fetchColumn();
-            $totalNotifications += $recentReviewsCount;
-            ?>
-            
-            <?php if ($totalNotifications > 0): ?>
-                <span class="badge bg-light text-danger"><?php echo $totalNotifications; ?></span>
-            <?php endif; ?>
+            <div class="d-flex align-items-center">
+                <?php
+                // Count total notifications for badge
+                $totalNotifications = 0;
+                
+                // Get pending appointments
+                $pendingStmt = $db->prepare("
+                    SELECT COUNT(*) FROM appointment 
+                    WHERE UPPER(status) = 'PENDING' AND DATE(preferred_date) >= ?
+                ");
+                $pendingStmt->execute([$today]);
+                $pendingCount = $pendingStmt->fetchColumn();
+                $totalNotifications += $pendingCount;
+                
+                // Get low stock products (below 10 items)
+                $lowStockStmt = $db->query("
+                    SELECT COUNT(*) FROM product 
+                    WHERE prod_stock < 10
+                ");
+                $lowStockCount = $lowStockStmt->fetchColumn();
+                $totalNotifications += $lowStockCount;
+                
+                // Get upcoming appointments
+                $nextWeek = date('Y-m-d', strtotime('+7 days'));
+                $upcomingStmt = $db->prepare("
+                    SELECT COUNT(*) FROM appointment 
+                    WHERE preferred_date BETWEEN ? AND ? AND UPPER(status) = 'CONFIRMED'
+                ");
+                $upcomingStmt->execute([$today, $nextWeek]);
+                $upcomingAppts = $upcomingStmt->fetchColumn();
+                $totalNotifications += $upcomingAppts;
+                
+                // Get recent reviews (last 3 days)
+                $recentReviewsDate = date('Y-m-d', strtotime('-3 days'));
+                $recentReviewsStmt = $db->prepare("
+                    SELECT COUNT(*) FROM review 
+                    WHERE review_date >= ?
+                ");
+                $recentReviewsStmt->execute([$recentReviewsDate]);
+                $recentReviewsCount = $recentReviewsStmt->fetchColumn();
+                $totalNotifications += $recentReviewsCount;
+                ?>
+                
+                <?php if ($totalNotifications > 0): ?>
+                    <span class="badge bg-light text-danger me-2"><?php echo $totalNotifications; ?></span>
+                <?php endif; ?>
+                <button id="toggleNotifications" class="btn btn-sm text-white" title="Hide notifications">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
         </div>
         
         <div class="card-body small p-0">
@@ -361,6 +366,18 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
     </div>
 </div>
 
+<!-- Notification Bell Button -->
+<div class="position-fixed bottom-0 end-0 m-4" id="minimizedNotification">
+    <button class="btn btn-danger rounded-circle shadow" id="showNotifications" title="Show notifications">
+        <i class="bi bi-bell-fill"></i>
+        <?php if ($totalNotifications > 0): ?>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-danger">
+                <?php echo $totalNotifications; ?>
+            </span>
+        <?php endif; ?>
+    </button>
+</div>
+
         </div>
     </div>
 
@@ -393,6 +410,38 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
     .sortable.desc .sort-icon::after {
         content: '↓';
         color: #0d6efd;
+    }
+    
+    /* Notification panel styles */
+    #notificationPanel {
+        transition: all 0.3s ease;
+    }
+    
+    #toggleNotifications {
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+    
+    #toggleNotifications:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    #minimizedNotification button {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    #minimizedNotification .badge {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.4rem;
     }
     </style>
     
@@ -454,80 +503,127 @@ $todayAppointments = $todayApptsStmt->fetchAll(\PDO::FETCH_ASSOC);
     // Client-side table sorting
     document.addEventListener('DOMContentLoaded', function() {
         const table = document.getElementById('appointmentsTable');
-        const headers = table.querySelectorAll('th.sortable');
-        
-        // Add click event to sortable headers
-        headers.forEach(header => {
-            header.addEventListener('click', function() {
-                const dataSort = this.getAttribute('data-sort');
-                const isAsc = !this.classList.contains('asc');
-                
-                // Reset all headers
-                headers.forEach(h => {
-                    h.classList.remove('asc', 'desc');
-                });
-                
-                // Set current sort direction
-                this.classList.add(isAsc ? 'asc' : 'desc');
-                
-                // Get all rows except the header
-                const rows = Array.from(table.querySelectorAll('tbody tr'));
-                
-                // Sort rows
-                rows.sort((a, b) => {
-                    let cellA, cellB;
+        if (table) {
+            const headers = table.querySelectorAll('th.sortable');
+            
+            // Add click event to sortable headers
+            headers.forEach(header => {
+                header.addEventListener('click', function() {
+                    const dataSort = this.getAttribute('data-sort');
+                    const isAsc = !this.classList.contains('asc');
                     
-                    switch(dataSort) {
-                        case 'pet':
-                            cellA = a.cells[0].getAttribute('data-value');
-                            cellB = b.cells[0].getAttribute('data-value');
-                            break;
-                        case 'owner':
-                            cellA = a.cells[1].getAttribute('data-value');
-                            cellB = b.cells[1].getAttribute('data-value');
-                            break;
-                        case 'time':
-                            cellA = a.cells[2].getAttribute('data-value');
-                            cellB = b.cells[2].getAttribute('data-value');
-                            break;
-                        case 'service':
-                            cellA = a.cells[3].getAttribute('data-value');
-                            cellB = b.cells[3].getAttribute('data-value');
-                            break;
-                        case 'status':
-                            cellA = a.cells[4].getAttribute('data-value');
-                            cellB = b.cells[4].getAttribute('data-value');
-                            break;
-                        default:
-                            return 0;
+                    // Reset all headers
+                    headers.forEach(h => {
+                        h.classList.remove('asc', 'desc');
+                    });
+                    
+                    // Set current sort direction
+                    this.classList.add(isAsc ? 'asc' : 'desc');
+                    
+                    // Get all rows except the header
+                    const rows = Array.from(table.querySelectorAll('tbody tr'));
+                    
+                    // Sort rows
+                    rows.sort((a, b) => {
+                        let cellA, cellB;
+                        
+                        switch(dataSort) {
+                            case 'pet':
+                                cellA = a.cells[0].getAttribute('data-value');
+                                cellB = b.cells[0].getAttribute('data-value');
+                                break;
+                            case 'owner':
+                                cellA = a.cells[1].getAttribute('data-value');
+                                cellB = b.cells[1].getAttribute('data-value');
+                                break;
+                            case 'time':
+                                cellA = a.cells[2].getAttribute('data-value');
+                                cellB = b.cells[2].getAttribute('data-value');
+                                break;
+                            case 'service':
+                                cellA = a.cells[3].getAttribute('data-value');
+                                cellB = b.cells[3].getAttribute('data-value');
+                                break;
+                            case 'status':
+                                cellA = a.cells[4].getAttribute('data-value');
+                                cellB = b.cells[4].getAttribute('data-value');
+                                break;
+                            default:
+                                return 0;
+                        }
+                        
+                        // Check if values are dates or numbers
+                        if (dataSort === 'time') {
+                            // Time comparison
+                            return isAsc 
+                                ? new Date('1970/01/01 ' + cellA) - new Date('1970/01/01 ' + cellB) 
+                                : new Date('1970/01/01 ' + cellB) - new Date('1970/01/01 ' + cellA);
+                        } else {
+                            // Default string comparison
+                            return isAsc
+                                ? cellA.localeCompare(cellB)
+                                : cellB.localeCompare(cellA);
+                        }
+                    });
+                    
+                    // Remove existing rows
+                    const tbody = table.querySelector('tbody');
+                    while (tbody.firstChild) {
+                        tbody.removeChild(tbody.firstChild);
                     }
                     
-                    // Check if values are dates or numbers
-                    if (dataSort === 'time') {
-                        // Time comparison
-                        return isAsc 
-                            ? new Date('1970/01/01 ' + cellA) - new Date('1970/01/01 ' + cellB) 
-                            : new Date('1970/01/01 ' + cellB) - new Date('1970/01/01 ' + cellA);
-                    } else {
-                        // Default string comparison
-                        return isAsc
-                            ? cellA.localeCompare(cellB)
-                            : cellB.localeCompare(cellA);
-                    }
-                });
-                
-                // Remove existing rows
-                const tbody = table.querySelector('tbody');
-                while (tbody.firstChild) {
-                    tbody.removeChild(tbody.firstChild);
-                }
-                
-                // Add sorted rows
-                rows.forEach(row => {
-                    tbody.appendChild(row);
+                    // Add sorted rows
+                    rows.forEach(row => {
+                        tbody.appendChild(row);
+                    });
                 });
             });
-        });
+        }
+        
+        // Notification panel toggle functionality
+        const notificationPanel = document.getElementById('notificationPanel');
+        const minimizedNotification = document.getElementById('minimizedNotification');
+        const showNotificationsBtn = document.getElementById('showNotifications');
+        
+        // Function to hide notification panel and show bell icon
+        function hideNotificationPanel() {
+            if (notificationPanel) notificationPanel.classList.add('d-none');
+            if (minimizedNotification) minimizedNotification.classList.remove('d-none');
+            localStorage.setItem('notificationMinimized', 'true');
+        }
+        
+        // Function to show notification panel and hide bell icon
+        function showNotificationPanel() {
+            if (notificationPanel) notificationPanel.classList.remove('d-none');
+            if (minimizedNotification) minimizedNotification.classList.add('d-none');
+            localStorage.setItem('notificationMinimized', 'false');
+        }
+        
+        // Set initial state - default to minimized (just bell icon)
+        hideNotificationPanel();
+        
+        // Check if notification should be shown based on localStorage
+        const shouldShowNotifications = localStorage.getItem('notificationMinimized') === 'false';
+        if (shouldShowNotifications) {
+            showNotificationPanel();
+        }
+        
+        // Toggle button click event - now just minimizes the panel
+        const toggleBtn = document.getElementById('toggleNotifications');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                hideNotificationPanel();
+            });
+        }
+        
+        // Show notifications button click event
+        if (showNotificationsBtn) {
+            showNotificationsBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showNotificationPanel();
+            });
+        }
     });
     </script>
 </body>
