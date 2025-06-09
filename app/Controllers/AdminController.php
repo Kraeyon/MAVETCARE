@@ -70,15 +70,37 @@ class AdminController extends BaseController{
     
     public function editDoctorSchedule($staffCode) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $newSchedule = trim($_POST['schedule']);
-
-            // Call the model method to update the schedule in the database
-            $doctorModel = new DoctorModel();
-            $doctorModel->updateDoctorSchedule($staffCode, $newSchedule);
-
-            // Redirect back to the doctor list page
-            header('Location: /admin/doctor');
-            exit;
+            try {
+                $pdo = $this->getPDO();
+                $pdo->beginTransaction();
+                
+                // Delete existing schedule
+                $stmt = $pdo->prepare("DELETE FROM staff_schedule WHERE staff_code = ?");
+                $stmt->execute([$staffCode]);
+                
+                // Insert new schedule
+                if (isset($_POST['schedule'])) {
+                    foreach ($_POST['schedule'] as $day => $details) {
+                        if (isset($details['active'])) {
+                            // Use default values if time fields are empty
+                            $start_time = !empty($details['start_time']) ? $details['start_time'] : '09:00';
+                            $end_time = !empty($details['end_time']) ? $details['end_time'] : '17:00';
+                            
+                            $stmt = $pdo->prepare("INSERT INTO staff_schedule (staff_code, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)");
+                            $stmt->execute([$staffCode, $day, $start_time, $end_time]);
+                        }
+                    }
+                }
+                
+                $pdo->commit();
+                header('Location: /admin/doctor?updated=1');
+                exit;
+            } catch (\PDOException $e) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                die("Database error: " . $e->getMessage());
+            }
         }
     }
 
